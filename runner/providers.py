@@ -191,6 +191,25 @@ def _retry(fn, *, attempts: int = 8, base: float = 2.0, cap: float = 120.0):
             if any(t in msg for t in ("request too large", "reduce max_tokens",
                                       "expected output tokens exceed")):
                 raise
+
+            # A spent DAILY budget is likewise not something to wait out here. Two reasons to
+            # re-raise at once rather than climb the ladder:
+            #
+            #   * A provider with spare credentials can only rotate to them once the exception
+            #     escapes this function -- rotation wraps `step`, and `step` calls `_retry`. Backing
+            #     off first means a caller with three healthy keys sits idle for ten minutes before
+            #     touching any of them. That inversion was live in this project and is what this
+            #     branch fixes.
+            #   * A provider WITHOUT spare credentials gains nothing either: the Retry-After on a
+            #     daily limit is minutes to hours, the ladder cannot outlast it, and the episode is
+            #     better recorded as a retryable `api_error` for a later pass than held open.
+            #
+            # Per-MINUTE limits are excluded deliberately -- those do clear inside an episode, and
+            # `_retry` is exactly the right place to absorb them.
+            if any(t in msg for t in ("tokens per day", "(tpd)", "requests per day", "(rpd)",
+                                      "quota exceeded", "insufficient_quota", "daily limit",
+                                      "out of credits", "payment required")):
+                raise
             transient = rate_limited or unreachable or any(
                 t in msg for t in ("overload", "timeout", "connection", "529", "503", "500", "502"))
 
