@@ -181,6 +181,16 @@ def _retry(fn, *, attempts: int = 8, base: float = 2.0, cap: float = 120.0):
             msg = str(exc).lower()
             rate_limited = "429" in msg or "rate limit" in msg or "rate_limit" in msg
             unreachable = any(t in msg for t in _UNREACHABLE)
+
+            # Some 429s are deterministic refusals wearing a throttle's status code. Groq rejects
+            # a request whose *requested* output exceeds the per-minute ceiling -- "Request too
+            # large ... Limit 1000, Requested 2048" -- before running it. The parameters are
+            # unchanged on retry, so every attempt fails identically; waiting the full ladder
+            # spends minutes per episode to arrive at the same error. Re-raise at once so the
+            # episode is recorded and the cause is visible, instead of being buried in backoff.
+            if any(t in msg for t in ("request too large", "reduce max_tokens",
+                                      "expected output tokens exceed")):
+                raise
             transient = rate_limited or unreachable or any(
                 t in msg for t in ("overload", "timeout", "connection", "529", "503", "500", "502"))
 
@@ -328,7 +338,17 @@ class GroqProvider(OpenAIProvider):
         "billing", "payment required", "out of credits",
     )
 
-    def __init__(self, model: str = "openai/gpt-oss-20b", max_tokens: int = 2048):
+    #: Groq's free tier enforces an OUTPUT-tokens-per-minute ceiling *per request*: ask for more
+    #: than this and the call is rejected before it runs, with a 429 that no amount of waiting and
+    #: no other key will clear. Measured 13 Sep 2026 on `qwen/qwen3.8-27b`: "Request too large ...
+    #: on output tokens per minute (OTPM): Limit 1000, Requested 2048". The default here is
+    #: therefore below that ceiling rather than at the generic 2048, because the failure it causes
+    #: is deterministic and looks exactly like throttling. Observed completions in this project run
+    #: 27-265 tokens, so the cap costs nothing. Raise it only with a paid tier.
+    FREE_TIER_OTPM = 1000
+
+    def __init__(self, model: str = "openai/gpt-oss-20b",
+                 max_tokens: int = FREE_TIER_OTPM):
         keys = self._collect_keys()
         if not keys:
             raise RuntimeError("no Groq key set (GROQ_API_KEYS, GROQ_API_KEY, GROQ_API_KEY_2, ...)")
