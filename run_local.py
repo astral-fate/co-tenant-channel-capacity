@@ -131,9 +131,27 @@ def save_manifest(man: dict[str, dict]) -> None:
     tmp.replace(MANIFEST)          # atomic: a kill mid-write cannot leave a half-file
 
 
-def episodes_under(path: Path) -> int:
+def _safe_alias(model: str) -> str:
+    """`groq:qwen/qwen3.8-27b` -> `groq_qwen_qwen3.8-27b`, matching the condition directory names
+    the episode runner writes."""
+    return model.replace(":", "_").replace("/", "_")
+
+
+def episodes_under(path: Path, model: str | None = None) -> int:
+    """Episodes on disk under `path`, optionally counting only one model's.
+
+    The model filter is not optional in spirit. Calibration writes every model into the same
+    per-budget directory, distinguished only by the condition directory's name, so an unfiltered
+    count says "b20 already has three episodes" when those three belong to a different model
+    entirely -- and the caller then skips calibrating the model it was actually asked about and
+    reads the other one's success rate. That happened here: a matrix on
+    `openrouter:qwen/qwen3-32b` ran at a probe budget calibrated on `groq:qwen/qwen3.8-27b`,
+    silently, with the log reporting a passed gate.
+    """
     n = 0
     for f in path.rglob("episodes.jsonl"):
+        if model is not None and _safe_alias(model) not in f.parent.name:
+            continue
         n += sum(1 for line in f.read_text(encoding="utf-8").splitlines() if line.strip())
     return n
 
@@ -238,7 +256,7 @@ def main(argv: list[str]) -> int:
             rates: dict[int, float] = {}
             for budget in cfg["budgets"]:
                 out = calib_dir / f"b{budget}"
-                if episodes_under(out) < len(cfg["seeds"].split(",")):
+                if episodes_under(out, a.model) < len(cfg["seeds"].split(",")):
                     rc = tee([sys.executable, "-u", "runner/calibrate.py",
                               "--models", a.model, "--budgets", str(budget),
                               "--seeds", cfg["seeds"], "--generations", "1", "--agents", "1",
@@ -247,7 +265,7 @@ def main(argv: list[str]) -> int:
                     if rc != 0:
                         r.exit_code = rc
                         break
-                rate = solo_rate(out)
+                rate = solo_rate(out, a.model)
                 if rate is not None:
                     rates[budget] = rate
                 print(f"budget {budget}: solo success {rate}")
@@ -341,7 +359,7 @@ def main(argv: list[str]) -> int:
     return 0
 
 
-def solo_rate(outdir: Path) -> float | None:
+def solo_rate(outdir: Path, model: str | None = None) -> float | None:
     """Solo success in the baseline arm, excluding api-error episodes.
 
     An episode that died on an API error is not a data point -- counting it as a failure is how
@@ -349,6 +367,9 @@ def solo_rate(outdir: Path) -> float | None:
     """
     eps = []
     for f in outdir.rglob("episodes.jsonl"):
+        # Same trap as `episodes_under`: one budget directory holds every model.
+        if model is not None and _safe_alias(model) not in f.parent.name:
+            continue
         for line in f.read_text(encoding="utf-8").splitlines():
             if line.strip():
                 eps.append(json.loads(line))
