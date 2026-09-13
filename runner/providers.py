@@ -172,6 +172,54 @@ _UNREACHABLE = (
     "failed to establish a new connection", "no connection could be made",
 )
 
+#: Fragments of a tool-call tag that survive the provider's own parsing and land in `content`.
+#: Qwen emits `<tool_call>...</tool_call>`; OpenRouter strips the call itself into `tool_calls`
+#: but leaves the tail of the opening tag behind, so the text field reads "ool_call>". Harmless to
+#: the run and actively misleading in a transcript, since it looks like the model said it.
+_TAG_DEBRIS = ("<tool_call>", "</tool_call>", "ool_call>", "<tool_response>", "</tool_response>")
+
+
+def _clean_text(text: str) -> str:
+    for frag in _TAG_DEBRIS:
+        text = text.replace(frag, "")
+    return text.strip()
+
+
+def _extract_reasoning(message: Any) -> str:
+    """Pull the model's thinking out of whichever field this provider put it in.
+
+    Reasoning models expose their chain of thought separately from `content`, and every provider
+    names it differently: OpenRouter uses `reasoning` plus a structured `reasoning_details`,
+    Hugging Face's router uses `reasoning_content`, and others omit it. Reading none of them --
+    which this adapter did until now -- silently discarded every chain of thought in the study.
+
+    That is not a cosmetic loss. `Step.reasoning` exists because the pre-registered "plan versus
+    encoding" measure asks whether a deposit made after a closure was planned or merely re-encoded,
+    and that is answerable only from what the agent was reasoning at the time. Transcript
+    inspection also diagnosed every model failure in this project; summary statistics diagnosed
+    none of them.
+    """
+    for attr in ("reasoning", "reasoning_content"):
+        val = getattr(message, attr, None)
+        if isinstance(val, str) and val.strip():
+            return val
+    # Structured form: a list of {type, text} parts.
+    details = getattr(message, "reasoning_details", None)
+    if isinstance(details, list):
+        parts = [d.get("text", "") for d in details
+                 if isinstance(d, dict) and isinstance(d.get("text"), str)]
+        joined = "\n".join(p for p in parts if p.strip())
+        if joined.strip():
+            return joined
+    # Some SDK versions expose unknown fields only through the raw dump.
+    dump = getattr(message, "model_extra", None) or {}
+    for attr in ("reasoning", "reasoning_content"):
+        val = dump.get(attr)
+        if isinstance(val, str) and val.strip():
+            return val
+    return ""
+
+
 def _retry(fn, *, attempts: int = 8, base: float = 2.0, cap: float = 120.0):
     """Backoff over transient API failures. Deterministic errors are re-raised immediately.
 
@@ -324,7 +372,8 @@ class OpenAIProvider(Provider):
                 args = {"__malformed__": tc.function.arguments}
             calls.append(ToolCall(id=tc.id, name=tc.function.name, arguments=args))
         u = resp.usage
-        return Step(text=choice.message.content or "", tool_calls=calls,
+        return Step(text=_clean_text(choice.message.content or ""), tool_calls=calls,
+                    reasoning=_extract_reasoning(choice.message),
                     stop_reason=choice.finish_reason or "",
                     usage={"in": getattr(u, "prompt_tokens", 0), "out": getattr(u, "completion_tokens", 0)})
 
