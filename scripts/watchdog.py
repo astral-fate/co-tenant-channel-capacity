@@ -86,6 +86,18 @@ class Journal:
                 self.events = []          # a corrupt journal costs history, never the run
 
     def add(self, kind: str, **fields) -> None:
+        # Re-read before appending. Two Journal objects can point at one file -- the supervisor's
+        # exit handler builds its own so it can record a crash even if main() never got that far --
+        # and each holds the whole history in memory. Without this reload the last writer replaces
+        # the file with only its own events, which silently erased every "launched" and "done"
+        # entry the run had produced.
+        if self.path.exists():
+            try:
+                disk = json.loads(self.path.read_text(encoding="utf-8")).get("events", [])
+                if len(disk) > len(self.events):
+                    self.events = disk
+            except (json.JSONDecodeError, OSError):
+                pass
         ev = {"at": now(), "kind": kind, **fields}
         self.events.append(ev)
         tmp = self.path.with_suffix(".tmp")
@@ -151,9 +163,16 @@ class Supervised:
     def start(self) -> None:
         self.log_path.parent.mkdir(parents=True, exist_ok=True)
         self._fh = self.log_path.open("a", encoding="utf-8")
+        # On Windows the child gets its OWN process group. Without it, a console-control event
+        # aimed at the child is delivered to the whole group -- including this supervisor. That is
+        # not hypothetical: `stop()` sent CTRL_BREAK_EVENT, the supervisor received its own signal,
+        # and it died twice while its log recorded "sigbreak-ignored" moments earlier. The handler
+        # was never the problem; the sender was.
+        flags = getattr(subprocess, "CREATE_NEW_PROCESS_GROUP", 0) if os.name == "nt" else 0
         self.proc = subprocess.Popen(
             self.cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
             text=True, encoding="utf-8", errors="replace", bufsize=1, cwd=str(ROOT),
+            creationflags=flags,
         )
         self.last_output = time.time()
         threading.Thread(target=self._pump, daemon=True).start()
@@ -212,13 +231,22 @@ def main(argv: list[str]) -> int:
                     help="seconds between liveness entries in the journal (default 180)")
     ap.add_argument("--journal", default=str(ROOT / "logs" / "watchdog.json"))
     ap.add_argument("--results", default=str(ROOT / "results"))
+    ap.add_argument("--child", default=str(ROOT / "run_local.py"),
+                    help="script the supervisor runs (default run_local.py). Exists so the "
+                         "supervisor's own restart loop can be tested against a controllable "
+                         "stub instead of a multi-hour pipeline -- an untested supervisor is "
+                         "worth very little, and this one shipped three fixes before its core "
+                         "loop was ever exercised.")
     ap.add_argument("rest", nargs=argparse.REMAINDER,
-                    help="-- followed by the run_local.py arguments")
+                    help="-- followed by the child's arguments")
     a = ap.parse_args(argv)
 
     passthrough = [x for x in a.rest if x != "--"]
-    if not passthrough:
-        print("nothing to run: put the run_local.py arguments after --", file=sys.stderr)
+    # The guard is on the CHILD existing, not on there being arguments for it. Requiring arguments
+    # made a child that needs none unsupervisable -- which is every stub the supervisor's own tests
+    # use, so the tests exited 2 without ever reaching the restart loop.
+    if not Path(a.child).exists():
+        print(f"no such child script: {a.child}", file=sys.stderr)
         return 2
 
     journal = Journal(Path(a.journal))
@@ -232,7 +260,7 @@ def main(argv: list[str]) -> int:
                 args[args.index("--model") + 1] = model_override
             else:
                 args += ["--model", model_override]
-        return [sys.executable, "-u", str(ROOT / "run_local.py"), *args]
+        return [sys.executable, "-u", a.child, *args]
 
     current_model: str | None = None
     restarts = 0
@@ -335,8 +363,18 @@ def _guarded(argv: list[str]) -> int:
     import atexit
     import traceback
 
-    journal = Journal(Path(ROOT / "logs" / "watchdog.json"))
-    pid_file = ROOT / "logs" / "watchdog.pid"
+    # Honour --journal here too. Hardcoding the default meant the exit record always went to the
+    # real journal, so a test run wrote its own lifecycle events into the live one and its
+    # temporary journal was never created at all.
+    journal_path = Path(ROOT / "logs" / "watchdog.json")
+    for i, arg in enumerate(argv):
+        if arg == "--journal" and i + 1 < len(argv):
+            journal_path = Path(argv[i + 1])
+        elif arg.startswith("--journal="):
+            journal_path = Path(arg.split("=", 1)[1])
+
+    journal = Journal(journal_path)
+    pid_file = journal_path.with_name("watchdog.pid")
     pid_file.write_text(f"{os.getpid()}\n{now()}\n", encoding="utf-8")
 
     def farewell(kind: str, **fields) -> None:
