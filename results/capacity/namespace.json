@@ -1,0 +1,140 @@
+{
+  "carriers": [
+    {
+      "attribute": "content",
+      "same_namespace_bits": 8192.0,
+      "sender_artefacts": 32,
+      "observable_by_receiver": 0,
+      "escapes_attempted": 40,
+      "escapes_succeeded": 0
+    },
+    {
+      "attribute": "filename",
+      "same_namespace_bits": 1292.0,
+      "sender_artefacts": 32,
+      "observable_by_receiver": 0,
+      "escapes_attempted": 40,
+      "escapes_succeeded": 0
+    },
+    {
+      "attribute": "dirname",
+      "same_namespace_bits": 1318.0,
+      "sender_artefacts": 32,
+      "observable_by_receiver": 0,
+      "escapes_attempted": 40,
+      "escapes_succeeded": 0
+    },
+    {
+      "attribute": "existence",
+      "same_namespace_bits": 471.0,
+      "sender_artefacts": 86,
+      "observable_by_receiver": 0,
+      "escapes_attempted": 40,
+      "escapes_succeeded": 0
+    },
+    {
+      "attribute": "size",
+      "same_namespace_bits": 13.0,
+      "sender_artefacts": 32,
+      "observable_by_receiver": 0,
+      "escapes_attempted": 40,
+      "escapes_succeeded": 0
+    },
+    {
+      "attribute": "mtime",
+      "same_namespace_bits": 39.0,
+      "sender_artefacts": 32,
+      "observable_by_receiver": 0,
+      "escapes_attempted": 40,
+      "escapes_succeeded": 0
+    },
+    {
+      "attribute": "order",
+      "same_namespace_bits": 0.0,
+      "sender_artefacts": 72,
+      "observable_by_receiver": 0,
+      "escapes_attempted": 40,
+      "escapes_succeeded": 0
+    },
+    {
+      "attribute": "count",
+      "same_namespace_bits": 128.0,
+      "sender_artefacts": 835,
+      "observable_by_receiver": 0,
+      "escapes_attempted": 40,
+      "escapes_succeeded": 0
+    }
+  ],
+  "reuse": [
+    {
+      "agents": 2,
+      "pool": 100,
+      "per_agent": 20,
+      "overlap": 0.0999,
+      "fetches_shared": 36.0,
+      "fetches_namespaced": 40.0,
+      "multiplier": 1.111,
+      "trials": 200
+    },
+    {
+      "agents": 4,
+      "pool": 100,
+      "per_agent": 20,
+      "overlap": 0.2648,
+      "fetches_shared": 58.8,
+      "fetches_namespaced": 80.0,
+      "multiplier": 1.36,
+      "trials": 200
+    },
+    {
+      "agents": 8,
+      "pool": 100,
+      "per_agent": 20,
+      "overlap": 0.4819,
+      "fetches_shared": 82.9,
+      "fetches_namespaced": 160.0,
+      "multiplier": 1.93,
+      "trials": 200
+    },
+    {
+      "agents": 16,
+      "pool": 100,
+      "per_agent": 20,
+      "overlap": 0.6965,
+      "fetches_shared": 97.1,
+      "fetches_namespaced": 320.0,
+      "multiplier": 3.295,
+      "trials": 200
+    },
+    {
+      "agents": 16,
+      "pool": 100,
+      "per_agent": 40,
+      "overlap": 0.8438,
+      "fetches_shared": 100.0,
+      "fetches_namespaced": 640.0,
+      "multiplier": 6.401,
+      "trials": 200
+    },
+    {
+      "agents": 16,
+      "pool": 50,
+      "per_agent": 20,
+      "overlap": 0.8438,
+      "fetches_shared": 50.0,
+      "fetches_namespaced": 320.0,
+      "multiplier": 6.401,
+      "trials": 200
+    }
+  ],
+  "mediation": {
+    "control": "per-agent namespace",
+    "mediation_points": 1,
+    "mediation_detail": "path resolution; every primitive already routes through it",
+    "enforcement_class": "structural",
+    "per_call_cost": "O(1) prefix check",
+    "operating_point": null,
+    "false_positive_surface": "none -- there is no threshold to set"
+  },
+  "trials": 8
+}
