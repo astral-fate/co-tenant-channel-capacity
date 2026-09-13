@@ -125,10 +125,19 @@ def _retry_after_seconds(exc: Exception) -> float | None:
     m = re.search(r"retry[- _]?after[\"']?\s*[:=]\s*[\"']?([0-9.]+)", str(exc), re.I)
     if m:
         return float(m.group(1))
-    m = re.search(r"try again in ([0-9.]+)\s*(m|s)", str(exc), re.I)
+    # Compound forms are the common case on Groq -- "try again in 4m54.192s" -- and a regex that
+    # stops at the first unit reads that as 240s, under-waiting by nearly a minute and earning a
+    # second 429 immediately. Sum every unit present instead.
+    m = re.search(r"try again in ([0-9hms.\s]+)", str(exc), re.I)
     if m:
-        v = float(m.group(1))
-        return v * 60 if m.group(2).lower() == "m" else v
+        span = m.group(1)
+        total = 0.0
+        found = False
+        for value, unit in re.findall(r"([0-9.]+)\s*([hms])", span, re.I):
+            total += float(value) * {"h": 3600.0, "m": 60.0, "s": 1.0}[unit.lower()]
+            found = True
+        if found:
+            return total
     return None
 
 
@@ -373,6 +382,13 @@ class GroqProvider(OpenAIProvider):
             raise RuntimeError("no Groq key set (GROQ_API_KEYS, GROQ_API_KEY, GROQ_API_KEY_2, ...)")
         self._keys = keys
         self._key_index = 0
+        #: Wall-clock time at which each key becomes eligible again. Groq's daily limit is a
+        #: ROLLING window -- "Used 199082/200000, try again in 4m54s" means this key recovers in
+        #: minutes, not that it is finished for the day. The first version of this rotation treated
+        #: a quota error as permanent and advanced one way, so a seven-key chain was consumed in
+        #: under a minute and the run then had nothing left while every key was about to recover.
+        #: Parking with an expiry turns the chain into a pool.
+        self._available_at = [0.0] * len(keys)
         self.model = model
         self.max_tokens = max_tokens
         self._connect()
@@ -406,17 +422,53 @@ class GroqProvider(OpenAIProvider):
         self.client = OpenAI(api_key=self._keys[self._key_index],
                              base_url="https://api.groq.com/openai/v1")
 
+    #: Longest we will wait for a parked key to recover rather than failing the episode. Beyond
+    #: this the limit is behaving like a real daily exhaustion and the episode is better recorded
+    #: as a retryable `api_error` for a later pass.
+    MAX_PARK_WAIT = 420.0
+
+    def _park(self, exc: Exception) -> None:
+        """Mark the current key unavailable until the server says it has recovered."""
+        wait = _retry_after_seconds(exc)
+        if wait is None:
+            wait = 300.0                        # no hint given; assume a five-minute window
+        self._available_at[self._key_index] = time.time() + wait
+        print(f"[groq] key {self._key_index + 1}/{len(self._keys)} "
+              f"(...{self._keys[self._key_index][-4:]}) parked for {wait:.0f}s", flush=True)
+
     def _advance_key(self) -> bool:
-        """Move to the next key. False when there is none left."""
-        if self._key_index + 1 >= len(self._keys):
-            return False
-        self._key_index += 1
-        self._connect()
-        # Identify by position and last four characters only; a key never reaches a log or a
-        # transcript in this project.
-        print(f"[groq] primary key exhausted; rotating to key {self._key_index + 1}"
-              f"/{len(self._keys)} (...{self._keys[self._key_index][-4:]})", flush=True)
-        return True
+        """Rotate to a key that is available now, waiting briefly if none is.
+
+        Round-robin over a pool rather than a one-way walk down a list: a key parked after a
+        rolling-window limit comes back into service once its retry-after has elapsed. Identified
+        in logs by position and last four characters only; a key never reaches a log or a
+        transcript in this project.
+        """
+        n = len(self._keys)
+        now_t = time.time()
+        for step in range(1, n + 1):             # try every other key, in order, from here
+            cand = (self._key_index + step) % n
+            if self._available_at[cand] <= now_t:
+                self._key_index = cand
+                self._connect()
+                print(f"[groq] rotating to key {cand + 1}/{n} "
+                      f"(...{self._keys[cand][-4:]})", flush=True)
+                return True
+
+        # Everything is parked. Wait for the soonest, if that is sooner than giving up.
+        soonest = min(self._available_at)
+        delay = soonest - now_t
+        if delay <= self.MAX_PARK_WAIT:
+            cand = self._available_at.index(soonest)
+            print(f"[groq] all {n} keys parked; waiting {delay:.0f}s for key {cand + 1}",
+                  flush=True)
+            time.sleep(max(0.0, delay) + 1.0)
+            self._key_index = cand
+            self._connect()
+            return True
+        print(f"[groq] all {n} keys parked, soonest in {delay:.0f}s -- giving up on this episode",
+              flush=True)
+        return False
 
     def _is_quota(self, exc: Exception) -> bool:
         msg = str(exc).lower()
@@ -434,8 +486,10 @@ class GroqProvider(OpenAIProvider):
             try:
                 return super().step(system, messages, tools)
             except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous types
-                if self._is_quota(exc) and self._advance_key():
-                    continue
+                if self._is_quota(exc):
+                    self._park(exc)              # this key, until the server says otherwise
+                    if self._advance_key():
+                        continue
                 raise
 
 
