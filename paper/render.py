@@ -151,6 +151,26 @@ def _joint_all() -> list:
     return json.loads((ROOT / "results" / "capacity" / "joint.json").read_text(encoding="utf-8"))
 
 
+def _namespace() -> dict[str, Any]:
+    return json.loads((ROOT / "results" / "capacity" / "namespace.json").read_text(encoding="utf-8"))
+
+
+def _reuse_row(agents: int, pool: int, per_agent: int) -> dict[str, Any]:
+    for r in _namespace()["reuse"]:
+        if (r["agents"], r["pool"], r["per_agent"]) == (agents, pool, per_agent):
+            return r
+    raise KeyError(f"no reuse row for agents={agents} pool={pool} per_agent={per_agent}")
+
+
+def _reuse_table_tex() -> str:
+    rows = []
+    for r in _namespace()["reuse"]:
+        rows.append(f"{r['agents']} & {r['pool']} & {r['per_agent']} & "
+                    f"{r['overlap']:.2f} & {r['fetches_shared']:.0f} & "
+                    f"{r['fetches_namespaced']:.0f} & {r['multiplier']:.2f}")
+    return " \\\\\n".join(rows) + " \\\\"
+
+
 # --------------------------------------------------------------------------- calibration
 #: Where `run_local.py` writes the baseline-arm sweep. The gate is measured ONLY here: the
 #: `no_substrate` condition has no shared store, so an operating point chosen from it cannot have
@@ -844,6 +864,37 @@ CLAIMS: list[Claim] = [
           lambda: str(max(len(v) for v in _gen_cells(_arms()["open"]).values()))),
     Claim("N_BLOCKED_DRAWN", "blocked tasks drawn in the matrix",
           lambda: str(sum(1 for e in _all_eps() if e.get("task_kind") == "blocked"))),
+
+    # --- per-agent namespacing: the control the ladder is measured against ------------------
+    Claim("NS_CARRIERS", "Carriers checked for cross-namespace leakage",
+          lambda: str(len(_namespace()["carriers"]))),
+    Claim("NS_VISIBLE", "Sender artefacts observable from the receiver's namespace",
+          lambda: str(sum(c["observable_by_receiver"] for c in _namespace()["carriers"]))),
+    Claim("NS_PLANTED", "Sender artefacts planted across the confinement probe",
+          lambda: str(sum(c["sender_artefacts"] for c in _namespace()["carriers"]))),
+    Claim("NS_ESCAPES", "Namespace escape attempts made",
+          lambda: str(sum(c["escapes_attempted"] for c in _namespace()["carriers"]))),
+    Claim("NS_ESCAPES_OK", "Namespace escape attempts that resolved",
+          lambda: str(sum(c["escapes_succeeded"] for c in _namespace()["carriers"]))),
+    Claim("NS_SAME_TOTAL", "Same-namespace achievable total, the positive control",
+          lambda: f"{sum(c['same_namespace_bits'] for c in _namespace()['carriers']):,.0f}"),
+    Claim("NS_MEDIATION", "Mediation points a namespace control needs",
+          lambda: str(_namespace()["mediation"]["mediation_points"])),
+    Claim("NS_CLASS", "Enforcement class of the namespace control",
+          lambda: str(_namespace()["mediation"]["enforcement_class"])),
+    Claim("NS_REUSE_TABLE", "Cache-reuse cost rows", lambda: _reuse_table_tex(), raw=True),
+    Claim("NS_WORST_MULT", "Largest measured fetch multiplier under namespacing",
+          lambda: f"{max(r['multiplier'] for r in _namespace()['reuse']):.2f}"),
+    Claim("NS_WORST_AGENTS", "Agent count at the largest multiplier",
+          lambda: str(max(_namespace()["reuse"], key=lambda r: r["multiplier"])["agents"])),
+    Claim("NS_WORST_SHARED", "Fetches under one shared cache at that workload",
+          lambda: f"{max(_namespace()['reuse'], key=lambda r: r['multiplier'])['fetches_shared']:.0f}"),
+    Claim("NS_WORST_NS", "Fetches under per-agent namespaces at that workload",
+          lambda: f"{max(_namespace()['reuse'], key=lambda r: r['multiplier'])['fetches_namespaced']:.0f}"),
+    Claim("NS_MIN_MULT", "Smallest measured fetch multiplier (two agents)",
+          lambda: f"{_reuse_row(2, 100, 20)['multiplier']:.2f}"),
+    Claim("NS_TRIALS", "Workload draws per reuse row",
+          lambda: str(_namespace()["reuse"][0]["trials"])),
 
     Claim("JOINT_BITS", "Bits recovered by ONE joint encoder after content closure",
           lambda: str(_joint()["bits_recovered"])),

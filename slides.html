@@ -137,7 +137,7 @@
 <body>
 <section class="slide center">
   <div class="slide-brand"><b>Permitted Operations</b></div>
-  <div class="slide-num">01 / 22</div>
+  <div class="slide-num">1 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Apart Research &times; CeSIA &mdash; AI Incident Response Sprint &middot; Track 1</div>
   <h1>Permitted Operations</h1>
@@ -154,7 +154,7 @@
 
 <section class="slide center">
   <div class="slide-brand"><b>The question</b></div>
-  <div class="slide-num">02 / 22</div>
+  <div class="slide-num">2 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">The question</div>
   <p class="askq">
@@ -170,7 +170,7 @@
 
 <section class="slide">
   <div class="slide-brand"><b>Context</b></div>
-  <div class="slide-num">03 / 22</div>
+  <div class="slide-num">3 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Context</div>
   <h2>1,200 agents. Five days. One cache that outlived them all.</h2>
@@ -187,7 +187,7 @@
 
 <section class="slide">
   <div class="slide-brand"><b>The cost</b></div>
-  <div class="slide-num">04 / 22</div>
+  <div class="slide-num">4 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">What the remediation taught us</div>
   <h2>The wipe worked. The channel moved to filenames.</h2>
@@ -212,7 +212,7 @@
 
 <section class="slide">
   <div class="slide-brand"><b>The gap</b></div>
-  <div class="slide-num">05 / 22</div>
+  <div class="slide-num">5 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Why existing controls miss it</div>
   <h2>Every published control checks the wrong boundary.</h2>
@@ -240,7 +240,7 @@
 
 <section class="slide center">
   <div class="slide-brand"><b>Insight</b></div>
-  <div class="slide-num">06 / 22</div>
+  <div class="slide-num">6 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Insight</div>
   <h1 style="max-width:1150px;">Authorization cannot see a channel
@@ -258,7 +258,7 @@
 
 <section class="slide">
   <div class="slide-brand"><b>The approach</b></div>
-  <div class="slide-num">07 / 22</div>
+  <div class="slide-num">7 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">The approach</div>
   <h2>Two questions that need two different experiments.</h2>
@@ -281,7 +281,7 @@
 
 <section class="slide">
   <div class="slide-brand"><b>How it works</b></div>
-  <div class="slide-num">08 / 22</div>
+  <div class="slide-num">8 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">How it works &mdash; the measurement rule</div>
   <h2>A cell counts only if it is recovered exactly, eight times out of eight.</h2>
@@ -307,7 +307,7 @@ count_it_only_if guess == payload
 
 <section class="slide">
   <div class="slide-brand"><b>How it works</b></div>
-  <div class="slide-num">09 / 22</div>
+  <div class="slide-num">9 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">How it works &mdash; the closure ladder</div>
   <h2>Close attributes in the order a defender would actually adopt them.</h2>
@@ -328,18 +328,20 @@ count_it_only_if guess == payload
 
 <section class="slide">
   <div class="slide-brand"><b>Measured result</b></div>
-  <div class="slide-num">10 / 22</div>
+  <div class="slide-num">10 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Measured result</div>
   <h2>Closing content is the control most operators run. It is not enough.</h2>
   <div class="ladder">
     <div class="rung"><div class="rl"><span class="rn">nothing closed</span><span class="rv">&ge; 11,453 bits</span></div>
       <div class="track"><div class="fill" style="width:100%"></div></div></div>
-    <div class="rung"><div class="rl"><span class="rn">content closed &nbsp;&mdash; the payload monitor</span><span class="rv">&ge; 3,261 bits</span></div>
+    <div class="rung"><div class="rl"><span class="rn">content closed &nbsp;&mdash; the payload monitor</span><span class="rv">3,075 bits joint &nbsp;<span style="opacity:.55">(3,261 summed)</span></span></div>
       <div class="track"><div class="fill" style="width:28.5%"></div></div></div>
-    <div class="rung"><div class="rl"><span class="rn">+ filename closed</span><span class="rv">1,789 bits</span></div>
+    <div class="rung"><div class="rl"><span class="rn">+ filename closed</span><span class="rv">1,802 bits</span></div>
       <div class="track"><div class="fill" style="width:15.6%"></div></div></div>
-    <div class="rung dead"><div class="rl"><span class="rn">+ dirname closed</span><span class="rv">0 bits &mdash; channel dead</span></div>
+    <div class="rung"><div class="rl"><span class="rn">+ dirname closed</span><span class="rv">13 bits &mdash; an object&rsquo;s size</span></div>
+      <div class="track"><div class="fill" style="width:1.5%"></div></div></div>
+    <div class="rung dead"><div class="rl"><span class="rn">+ fixed manifest</span><span class="rv">0 bits &mdash; channel dead</span></div>
       <div class="track"><div class="fill zero"></div></div></div>
   </div>
   <div class="hook">
@@ -352,7 +354,7 @@ count_it_only_if guess == payload
 
 <section class="slide center">
   <div class="slide-brand"><b>Headline</b></div>
-  <div class="slide-num">11 / 22</div>
+  <div class="slide-num">11 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">The number to quote</div>
   <h1 style="font-size:clamp(56px,9vw,130px);">3,075 bits</h1>
@@ -369,7 +371,7 @@ count_it_only_if guess == payload
 
 <section class="slide">
   <div class="slide-brand"><b>Rigour</b></div>
-  <div class="slide-num">12 / 22</div>
+  <div class="slide-num">12 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Rigour &mdash; why not the bigger number</div>
   <h2>A sum of cells is an upper bound, never a residual.</h2>
@@ -398,16 +400,17 @@ gap                   <span class="b">186</span></pre>
 
 <section class="slide">
   <div class="slide-brand"><b>Cost</b></div>
-  <div class="slide-num">13 / 22</div>
+  <div class="slide-num">13 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Cost to the defender</div>
   <h2>The control that works costs four more mediation points.</h2>
   <table class="cmp">
     <thead><tr><th>Closure</th><th>Residual</th><th>Mediation points</th><th>Class</th><th>Verdict</th></tr></thead>
     <tbody>
-      <tr><td><code>content</code></td><td>&ge; 3,261 bits</td><td>2</td><td>payload</td><td class="deny">insufficient</td></tr>
-      <tr><td><code>+ filename</code></td><td>1,789 bits</td><td>&mdash;</td><td>structural</td><td class="warn">still open</td></tr>
-      <tr><td><code>+ dirname</code></td><td><b>0 bits</b></td><td>6</td><td>structural</td><td class="allow">channel closed</td></tr>
+      <tr><td><code>content</code></td><td>3,075 bits <span style="opacity:.6">(joint)</span></td><td>2</td><td>payload</td><td class="deny">insufficient</td></tr>
+      <tr><td><code>+ filename</code></td><td>1,802 bits</td><td>&mdash;</td><td>structural</td><td class="warn">still open</td></tr>
+      <tr><td><code>+ dirname</code></td><td>13 bits</td><td>6</td><td>structural</td><td class="warn">size survives</td></tr>
+      <tr><td><code>+ fixed manifest</code></td><td><b>0 bits</b></td><td>6</td><td>structural</td><td class="allow">channel closed</td></tr>
     </tbody>
   </table>
   <div class="hook">
@@ -419,8 +422,36 @@ gap                   <span class="b">186</span></pre>
 </section>
 
 <section class="slide">
+  <div class="slide-brand"><b>The objection</b></div>
+  <div class="slide-num">14 / 23</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">&ldquo;Just give every agent its own namespace&rdquo;</div>
+  <h2>The strongest objection is correct. Here is what it costs.</h2>
+  <table class="cmp">
+    <thead><tr><th>Workload</th><th>Overlap</th><th>Shared cache</th><th>Per-agent</th><th>Fetches</th></tr></thead>
+    <tbody>
+      <tr><td>2 agents, pool 100</td><td>0.10</td><td>36</td><td>40</td><td class="allow">1.11&times;</td></tr>
+      <tr><td>8 agents, pool 100</td><td>0.48</td><td>83</td><td>160</td><td class="warn">1.93&times;</td></tr>
+      <tr><td>16 agents, pool 100</td><td>0.70</td><td>97</td><td>320</td><td class="warn">3.30&times;</td></tr>
+      <tr><td>16 agents, 40 each</td><td>0.84</td><td>100</td><td>640</td><td class="deny">6.40&times;</td></tr>
+    </tbody>
+  </table>
+  <div class="hook">
+    <b>Namespacing wins on capacity and we say so.</b> 0 of 1,153 planted artefacts
+    visible across the boundary, 0 of 320 escapes resolved, against an 11,453-bit
+    same-namespace control. One mediation point, structural, no threshold.
+    <br><br>
+    <b>It loses on reuse.</b> The multiplier rises with exactly the overlap that
+    justifies having a cache. So: namespace what you can partition, and use the ladder
+    for the residual &mdash; shared build artefacts, content-addressed blobs, any store
+    whose value <i>is</i> that two agents reach the same object. The incident&rsquo;s
+    substrate was that kind.
+  </div>
+</section>
+
+<section class="slide">
   <div class="slide-brand"><b>Validity</b></div>
-  <div class="slide-num">14 / 22</div>
+  <div class="slide-num">15 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Answering &ldquo;your substrate is synthetic&rdquo;</div>
   <h2>Probed on infrastructure nobody in this study configured.</h2>
@@ -444,7 +475,7 @@ gap                   <span class="b">186</span></pre>
 
 <section class="slide">
   <div class="slide-brand"><b>Behaviour</b></div>
-  <div class="slide-num">15 / 22</div>
+  <div class="slide-num">16 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">The behavioural arm</div>
   <h2>Agents read the store 38 times. They wrote to it zero times.</h2>
@@ -463,7 +494,7 @@ gap                   <span class="b">186</span></pre>
 
 <section class="slide">
   <div class="slide-brand"><b>Negative result</b></div>
-  <div class="slide-num">16 / 22</div>
+  <div class="slide-num">17 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">What we refuse to claim</div>
   <h2>&Delta; is undefined for this configuration &mdash; not small.</h2>
@@ -497,7 +528,7 @@ Fisher exact p          : <span class="n">1.0000</span></pre>
 
 <section class="slide">
   <div class="slide-brand"><b>Instrumentation</b></div>
-  <div class="slide-num">17 / 22</div>
+  <div class="slide-num">18 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Instrumentation</div>
   <h2>A null from an incompetent model looks identical to a null from an absent channel.</h2>
@@ -519,7 +550,7 @@ Fisher exact p          : <span class="n">1.0000</span></pre>
 
 <section class="slide">
   <div class="slide-brand"><b>The screen</b></div>
-  <div class="slide-num">18 / 22</div>
+  <div class="slide-num">19 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Model selection, disclosed</div>
   <h2>Five models run. One reported. Here is every one.</h2>
@@ -543,7 +574,7 @@ Fisher exact p          : <span class="n">1.0000</span></pre>
 
 <section class="slide">
   <div class="slide-brand"><b>Limits</b></div>
-  <div class="slide-num">19 / 22</div>
+  <div class="slide-num">20 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Owning the failure modes</div>
   <h2>What this does not establish.</h2>
@@ -573,12 +604,12 @@ Fisher exact p          : <span class="n">1.0000</span></pre>
 
 <section class="slide">
   <div class="slide-brand"><b>The ask</b></div>
-  <div class="slide-num">20 / 22</div>
+  <div class="slide-num">21 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">What a lab should adopt</div>
   <h2>An AIS-11 amendment with a measurement attached.</h2>
   <ul class="bullets">
-    <li><b>Do not rely on payload inspection.</b> Two mediation points, and it leaves &ge; 3,261 bits &mdash; 148&times; what a successor needs.</li>
+    <li><b>Do not rely on payload inspection.</b> Two mediation points, and it leaves 3,075 bits measured jointly &mdash; 148&times; what a successor needs.</li>
     <li><b>Mediate the namespace, not the bytes.</b> Only directory-name closure reaches zero, at six mediation points, all structural.</li>
     <li><b>Audit co-tenant flow, not just cross-tenant.</b> AIS-11 and AIS-14 pass while the channel is in active use.</li>
     <li><b>Run the ladder as an acceptance test.</b> A script and a substrate &mdash; not a proof obligation. It is the verification method AIS-11 states as policy and does not supply.</li>
@@ -592,7 +623,7 @@ Fisher exact p          : <span class="n">1.0000</span></pre>
 
 <section class="slide">
   <div class="slide-brand"><b>Next</b></div>
-  <div class="slide-num">21 / 22</div>
+  <div class="slide-num">22 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Next step</div>
   <h2>From a measured ladder to a deployed gate.</h2>
@@ -617,7 +648,7 @@ make paper      <span class="c"># rebuild every number</span></pre>
 
 <section class="slide center">
   <div class="slide-brand"><b>Thank you</b></div>
-  <div class="slide-num">22 / 22</div>
+  <div class="slide-num">23 / 23</div>
   <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
   <div class="eyebrow">Thank you</div>
   <h1 style="max-width:1150px;">Every operation was permitted.</h1>

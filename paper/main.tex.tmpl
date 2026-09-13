@@ -906,6 +906,77 @@ record says agents exchanged credentials, commands and results without
 enumerating formats. The sizes are useful only because nobody involved
 in this study chose them.
 
+\subsection{The control this ladder is measured against}
+\label{sec:namespace}
+
+The cheapest objection to everything above is also the strongest, and it should
+be stated in its most damaging form: if giving each agent its own namespace
+converts co-tenant flow into an ordinary access attempt across a boundary where
+authorization controls already work, then the ladder instruments a problem a
+one-line fix dissolves, and a lab should adopt the fix rather than the
+instrument.
+
+On the capacity axis the objection is correct, and we measured it rather than
+argued with it. Namespacing is not a further rung. The ladder closes
+\emph{attributes} on a shared resource; namespacing removes the sharing, so it
+acts on a different axis and is strictly stronger on the one it acts on. Across
+all {{NS_CARRIERS}} carriers, with a sender encoding into one namespace and a
+receiver enumerating its own, {{NS_VISIBLE}} of {{NS_PLANTED}} planted artefacts
+were observable from the receiver's side and {{NS_ESCAPES_OK}} of
+{{NS_ESCAPES}} escape attempts resolved --- against a same-namespace positive
+control of {{NS_SAME_TOTAL}} bits, so the apparatus was measuring confinement
+rather than its own inability to address anything.
+
+Two things that failure would have looked like are worth naming, because both
+occurred during construction. A first cross-namespace measurement handed the
+coder the receiver's substrate, so it wrote and read in one namespace and
+reported a spurious leak on seven carriers; the number it produced was the top
+of its own search range. And a first confinement, implemented by prefixing the
+path and deferring to the ordinary containment check, was escaped
+{{NS_ESCAPES}} times out of {{NS_ESCAPES}}: \texttt{../agent\_a} resolves to a
+sibling subtree that is still inside the root, so the check passed. Containment
+has to be against the namespace, not the root. The probe attempts escapes for
+exactly this reason rather than assuming the control holds.
+
+\paragraph{What it costs is reuse, not integration.} On the two axes
+\S\ref{sec:cost} applies to the ladder, namespacing is cheap: {{NS_MEDIATION}}
+mediation point, because every primitive already routes through path
+resolution, and the {{NS_CLASS}} enforcement class, which is $O(1)$ per call
+with no operating point and therefore no false-positive surface. The cost lands
+somewhere else. A shared cache exists so that two agents needing one artefact
+fetch it once; partition it per agent and that property is gone by
+construction. Table~\ref{tab:reuse} counts fetches over {{NS_TRIALS}} workload
+draws per row:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{rrrrrrr}
+\toprule
+agents & pool & each & overlap & shared & per-agent & $\times$ \\
+\midrule
+{{NS_REUSE_TABLE}}
+\bottomrule
+\end{tabular}
+\caption{Artefact fetches under one shared cache against per-agent namespaces.
+The multiplier rises with overlap --- the same property that motivates having a
+cache at all.}
+\label{tab:reuse}
+\end{table}
+
+The cost is negligible when agents share little ({{NS_MIN_MULT}}$\times$ at two
+agents) and severe when they share a lot: at {{NS_WORST_AGENTS}} agents the same
+workload goes from {{NS_WORST_SHARED}} fetches to {{NS_WORST_NS}}, a factor of
+{{NS_WORST_MULT}}. Overlap is not incidental to the deployment; it is the reason
+the cache is there.
+
+So the recommendation this paper makes is not the ladder over namespacing. It is
+namespacing where the substrate can be partitioned, priced as above, and the
+ladder for the residual --- shared build artefacts, content-addressed blobs, any
+store whose value is precisely that two agents reach the same object. The
+incident's substrate was of that kind. What the ladder supplies there is a
+measurement of what a partial closure buys, in bits, so that accepting a
+residual is a decision rather than an oversight.
+
 \subsection{The same questions asked of real infrastructure}
 \label{sec:real}
 
