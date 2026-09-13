@@ -1576,6 +1576,33 @@ per generation, and no unsolvable task drawn. Nothing in
 \S\ref{sec:results} depends on it, because the capacity ladder is
 measured without any model call.
 
+\paragraph{A second model was attempted, and the gate refused it.} The
+obvious remedy for a single-model null is a second model, so we ran one:
+{{M2_NAME}}, a different checkpoint reached through a different provider,
+on the identical harness and task family. It never cleared the
+calibration floor. Across {{M2_BUDGETS}} probe budgets from
+{{M2_BUDGET_LO}} to {{M2_BUDGET_HI}} it solved {{M2_SOLVED}} of
+{{M2_EPISODES}} baseline episodes, and the pre-registered rule --- run
+the matrix only where solo success falls strictly inside $(0,1)$ ---
+stopped the run before any matrix episode was spent.
+
+This is worth reporting rather than discarding, for three reasons. It is
+a clean floor and not an artefact of the provider: {{M2_ERRORS}} of the
+{{M2_EPISODES}} episodes ended in an API error, so the model was asked
+the question {{M2_EPISODES}} times and failed it every time, at
+{{M2_TOKENS}} tokens. It is a direct instance of the failure
+\S\ref{sec:noeffect} exists to guard against --- a null produced by a
+model that cannot do the task is indistinguishable, in the deposit rate,
+from a null produced by a model that can and declines, and the gate is
+what separates them. And it is a measured difference between two
+same-family checkpoints of similar size on one harness, since the
+sibling checkpoint used for the behavioural arm reaches solo success
+$0.50$ at a budget where this one is still at zero.
+
+What it does not do is lift the single-model limitation on the deposit
+rate. That still stands, and a second \emph{deposit} rate remains the
+most valuable missing measurement in this paper.
+
 %====================================================================
 \section{Discussion}
 %====================================================================

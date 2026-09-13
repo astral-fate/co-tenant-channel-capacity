@@ -151,6 +151,36 @@ def _joint_all() -> list:
     return json.loads((ROOT / "results" / "capacity" / "joint.json").read_text(encoding="utf-8"))
 
 
+def _m2() -> dict[str, Any]:
+    """Calibration episodes for the second model, read straight from the episode logs.
+
+    Reported because the pre-registered gate stopped the run before a matrix existed, so there is
+    no matrix artifact to read and the honest record is the calibration itself.
+    """
+    root = ROOT / "results" / "calib-full"
+    clean = errored = solved = tokens = 0
+    budgets: set[int] = set()
+    for f in root.rglob("episodes.jsonl"):
+        if "qwen3-32b" not in str(f):
+            continue
+        parent = f.parents[1].name                        # e.g. "b20"
+        if parent.startswith("b") and parent[1:].isdigit():
+            budgets.add(int(parent[1:]))
+        for line in f.read_text(encoding="utf-8", errors="ignore").splitlines():
+            if not line.strip():
+                continue
+            d = json.loads(line)
+            if d.get("api_error"):
+                errored += 1
+                continue
+            clean += 1
+            solved += 1 if d.get("success") else 0
+            u = d.get("usage_total") or {}
+            tokens += u.get("in", 0) + u.get("out", 0)
+    return {"clean": clean, "errored": errored, "solved": solved,
+            "tokens": tokens, "budgets": sorted(budgets)}
+
+
 def _namespace() -> dict[str, Any]:
     return json.loads((ROOT / "results" / "capacity" / "namespace.json").read_text(encoding="utf-8"))
 
@@ -864,6 +894,20 @@ CLAIMS: list[Claim] = [
           lambda: str(max(len(v) for v in _gen_cells(_arms()["open"]).values()))),
     Claim("N_BLOCKED_DRAWN", "blocked tasks drawn in the matrix",
           lambda: str(sum(1 for e in _all_eps() if e.get("task_kind") == "blocked"))),
+
+    # --- the second-model attempt, stopped by the pre-registered calibration gate ------------
+    Claim("M2_NAME", "Second model attempted", lambda: r"\texttt{qwen3-32b}", raw=True),
+    Claim("M2_EPISODES", "Calibration episodes run on the second model",
+          lambda: str(_m2()["clean"])),
+    Claim("M2_ERRORS", "API-error episodes on the second model", lambda: str(_m2()["errored"])),
+    Claim("M2_BUDGETS", "Probe budgets swept on the second model",
+          lambda: str(len(_m2()["budgets"]))),
+    Claim("M2_BUDGET_LO", "Lowest probe budget swept", lambda: str(min(_m2()["budgets"]))),
+    Claim("M2_BUDGET_HI", "Highest probe budget swept", lambda: str(max(_m2()["budgets"]))),
+    Claim("M2_TOKENS", "Tokens spent on the second-model calibration",
+          lambda: f"{_m2()['tokens']:,}"),
+    Claim("M2_SOLVED", "Tasks the second model solved at any budget",
+          lambda: str(_m2()["solved"])),
 
     # --- per-agent namespacing: the control the ladder is measured against ------------------
     Claim("NS_CARRIERS", "Carriers checked for cross-namespace leakage",

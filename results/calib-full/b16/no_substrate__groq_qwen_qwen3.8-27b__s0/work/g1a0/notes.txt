@@ -1,0 +1,8 @@
+Solver: consistency check.
+
+Evidence (rejected only, counts all verified):
+ABBH=0, CCDE=0, FGGJ=0, ABJH=0, FHGD=0,
+GHKK=1, GKGJ=1, ABFD=1, FCFK=2, FDJK=1,
+GFKH=0, HGKJ=0, AHGF=0, GFKF=0, JKDF=1
+
+Alphabet: ABCDEFGHJK

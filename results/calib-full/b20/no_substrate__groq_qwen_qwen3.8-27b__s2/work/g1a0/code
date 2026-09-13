@@ -1,0 +1,2 @@
+tried/rejected: ABCD(0) EFGH(0) ABAB(0) CDCD(0) EEEH(0) BEEH(1) CBEH(0) BBEH(1) CFEH(0) ABAA(0) BBCB(1) AACC(0) ACAD(0) BCAD(1) ACBA(0) CAAB(0)
+rules: c1!=A!!B; c2!=A!!C!!B; c4!=D

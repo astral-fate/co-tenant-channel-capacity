@@ -1,0 +1,11 @@
+Notes:
+- Alphabet (10): A B C D E F G H J K
+- Code length 4. Reports are the count of exact-match positions.
+- EEFF -> 1 (pos3 in {E,F}, or pos4 in {E,F})
+- KKAB -> 1 (pos1 in {K}, pos2 in {A,K}, pos3 in {A}, pos4 in {B,K})
+- EEAA -> 0 (pos3!=E, pos4!=A) => pos3=F, and from EEFF pos4=E. FCE candidate pos4=E.
+- FFKK -> 1 -> F at pos3 confirmed; K not at pos4.
+- EEKK -> 1 -> pos3!=E (F), pos4!=K.
+- FFAA -> 0 -> pos3!=F?? but EEFF said 1. Consistent: F at pos never? actually FFAA pos3=F pos4=A; only pos3 could give 1... result 0.
+Hmm conflict: FFAA 0 means F not at pos3. But EEFF 1 with E cases excluded by EEAA/EEKK(0,1 consistent with pos3=F? no). Re-check: EEKK=1 (pos3!=E since then 0 at pos3; K at pos4? no... gives 1 total). So pos3!=E. EEFF=1 => F at pos3 (pos4=E?) or K at pos4. FFAA=0 means F not at pos3 and A at pos4 not correct.
+So EEFF's 1 comes from pos4=E. EEKK's 1 comes from ... pos3!=E, K at pos? position3 is K? EEKK pos1=E,pos2=E,pos3=K,pos4=K: 1 means one of those matches.

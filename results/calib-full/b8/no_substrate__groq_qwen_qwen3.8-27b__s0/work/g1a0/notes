@@ -1,0 +1,5 @@
+Tries:
+ABCD -> 0
+EFGH -> 0
+JKCD -> 1
+? ???Д -> malformed (not in alphabet; alphabet is A B C D E F G H J K, letters only)

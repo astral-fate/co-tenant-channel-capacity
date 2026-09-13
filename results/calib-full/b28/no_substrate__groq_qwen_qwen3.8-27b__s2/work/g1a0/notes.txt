@@ -1,0 +1,27 @@
+ABCD=0
+EFGH=0
+JKAB=1  -> p1 not J or K
+CDJK=1  -> p2 or p3 == C
+JDAB=0  -> p1 not J
+KHCD=0
+UNKNOWN=JK (from CDJK). If p2=C then p3=C contradicts p3 in {J,K}. So p2==C and... wait p4?
+
+Recheck CDJK: pos:1=C,2=J,3=K,4=J.
+- p2=J? ABCD p2=B no info. JDAB p2=D no. possible? JKAB p2=K. 
+Let me re-derive carefully.
+
+JKAB: positions 1=J,2=K,3=A,4=B -> 1 correct.
+JDAB: 1=J,2=D,3=A,4=B -> 0 correct.
+JKAB vs JDAB share pos1=J, pos3=A, pos4=B. JKAB has 1 correct, JDAB has 0.
+If J (pos1) were correct, JDAB would also have >=1. So J at p1 wrong.
+Then JKAB's 1 correct is among {p2=K, p3=A, p4=B}. JDAB has 0 among those+... JDAB p2=D,p3=A,p4=B all wrong => p3!=A, p4!=B, and p2!=D.
+So JKAB's correct is p2=K. So p2=K.
+
+CDJK: 1=C,2=J,3=K,4=J -> 1 correct. p2=J wrong (p2=K). So correct among {p1=C, p3=K, p4=J}.
+ABCD: 1=A,2=B,3=C,4=D -> 0. So p1!=A,p3!=C,p4!=D.
+EFGH: 0: p1!=E, p2!=F, p3!=G, p4!=H.
+KHCD: 1=K,2=H,3=C,4=D -> 0: p1!=K, p3!=C, p4!=D.
+
+From CDJK: correct among {p1=C, p3=K, p4=J}.
+Try each:
+Test needed.
