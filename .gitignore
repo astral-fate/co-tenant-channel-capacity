@@ -14,10 +14,23 @@ real/freellm/gateway.env.bak
 real/freellm/unified.key
 
 # ---------------------------------------------------------------------------
-# Manuscript. Excluded from this repository by choice; the artifacts every
-# figure is built from are all present under results/.
+# Manuscript. Source is tracked so the arXiv build is reproducible from this
+# repository; LaTeX intermediates and generated files are not. `main.tex` and
+# `main-8pp.tex` are OUTPUTS of render.py -- editing them is a mistake the
+# build warns about, so they are deliberately untracked and the .tmpl files
+# are the authored source.
 # ---------------------------------------------------------------------------
-paper/
+paper/main.tex
+paper/main-8pp.tex
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.log
+paper/*.out
+paper/*.toc
+paper/*.synctex.gz
+paper/*.fls
+paper/*.fdb_latexmk
 
 # ---------------------------------------------------------------------------
 # Python
@@ -37,3 +50,5 @@ venv/
 .DS_Store
 Thumbs.db
 *.swp
+paper/*.bak-*
+paper/*.bak

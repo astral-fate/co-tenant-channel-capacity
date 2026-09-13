@@ -1,0 +1,28 @@
+{
+  "_comment": [
+    "Release metadata for the artifact statement in the manuscript.",
+    "Everything here is substituted into the paper at build time, like every other",
+    "number. Fields whose value is null are reported by render.py as PENDING and",
+    "printed as a visible marker in the PDF, so the manuscript cannot be submitted",
+    "quietly claiming an artifact that has not been deposited."
+  ],
+
+  "url": null,
+  "archive_doi": null,
+  "commit": "a2a334fc7d34aa1f88fa3585339475544d85fcc3",
+
+  "license_code": "MIT",
+  "license_data": "CC BY 4.0",
+
+  "python": "CPython 3.14.4",
+  "python_minimum": "3.11",
+  "third_party": [],
+
+  "model_id": "anthropic/claude-haiku-4.5",
+  "model_route": "OpenRouter",
+  "model_dated": "2026-08",
+
+  "seeds_behavioural": [0, 1, 2, 3, 4, 5, 6, 7],
+  "seed_rule_capacity": "1000*attribute_index + trial_index",
+  "seed_rule_joint": "9000 + trial_index"
+}

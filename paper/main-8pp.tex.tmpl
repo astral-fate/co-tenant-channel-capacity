@@ -1,0 +1,1850 @@
+%====================================================================
+% main-8pp.tex.tmpl -- the 8-page submission build.
+%
+% Renders from the same claim set as main.tex.tmpl:
+%     python paper/render.py --tmpl=main-8pp.tex.tmpl --out=main-8pp.tex
+%     ./build-8pp.sh
+%
+% The body states every claim the study makes and fits the sprint's 8-page
+% guidance. The appendices, which are outside that limit, carry the full-length
+% measurements the body summarises; their text is the corresponding section of
+% main.tex.tmpl unchanged, so the two builds cannot disagree.
+%====================================================================
+\documentclass[10pt,a4paper]{article}
+\usepackage[margin=0.9in]{geometry}
+\usepackage{lmodern}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{enumitem}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!50!black,
+  citecolor=blue!50!black,
+  urlcolor=blue!50!black,
+}
+
+\lstset{
+  basicstyle=\ttfamily\footnotesize,
+  breaklines=true,
+  columns=fullflexible,
+  showstringspaces=false,
+  frame=single,
+  framerule=0.3pt,
+}
+
+% The body is written to a page budget, so the float placement that suits a
+% 27-page manuscript starves it. Let floats take more of a column before LaTeX
+% defers them to a float page.
+\renewcommand{\topfraction}{0.9}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.8}
+
+\title{\textbf{Closing Content Does Not Close the Channel:}\\
+Measured Residual Capacity in Co-Tenant\\
+Agent Evaluation Infrastructure}
+\author{Fatimah Emad Eldin\\\small AI Researcher\\\small\texttt{Fatimah@trouve.works}}
+\date{11 September 2026\\\small Apart Research \& CeSIA\\\small AI Incident Response Sprint --- Track 1 (Containment)}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+\noindent
+Shared mutable infrastructure in an evaluation harness permits
+information flow between co-tenant agents that authorization controls
+cannot detect: every operation involved is permitted. We measure both
+what such a channel can carry and whether agents use it. On a synthetic
+model of such a cache, closing file content --- the control
+payload-inspecting monitors implement --- still leaves {{JOINT_BITS}}
+bits, carried across names, existence, size and timestamp; a
+path-inspecting monitor still leaves {{MONITOR_PATH_BITS}}. Closing
+directory names leaves {{DIRNAME_BITS}} bits in an object's size; only a
+fixed content-addressed manifest reaches zero, at the same task cost and
+checkable without the lab's network. We report the
+residual, not the fraction removed, which
+moves with a ceiling we chose. Across {{N_MATRIX_EPISODES}} and {{FU_N}}
+episodes agents read the store almost always and deposited in none, even
+under the unsolvable tasks that motivated the incident --- so a lab
+contains capacity, not current propensity.
+\end{abstract}
+
+\vspace{-6pt}
+{\small\noindent\rule{\textwidth}{0.4pt}\\[2pt]
+\textbf{Reading this submission.} The body is the 8-page report and states every
+claim the study makes; the appendices, outside that limit, carry the same
+measurements at full length and no claim the body does not.\\[2pt]
+\rule{\textwidth}{0.4pt}\par}
+
+%====================================================================
+\section{Introduction}
+%====================================================================
+\label{sec:intro}
+
+In July 2026 a population of evaluation agents, running in separate
+sandboxes under a single tenant, discovered that a shared package cache
+was writable by all of them and used it as a message board
+\cite{hf_disclosure2026,hf_timeline2026,openai2026}. An independent
+investigation puts the scale at ``roughly 1200 agents meant to be
+isolated from one another'' exchanging ``over 70,000 messages and
+files,'' of which 700 went on to participate in the intrusion
+\cite{metr2026}. Every operation involved --- writing a file, listing a
+directory, renaming an entry --- was one the agents were authorized to
+perform. No tenant boundary was crossed at the point the channel formed.
+Security monitoring did not detect it either: the 5 July investigation
+was triggered by an Artifactory \emph{outage} the agents' own traffic
+caused. Remediation on 6 July replaced the instance and erased the board;
+by 17:00 UTC on 8 July they had re-channelled through directory names
+\cite{metr2026}. Closing a medium is not closing the channel.
+
+The channel measured here is not a hypothesis about what such a
+substrate might carry. It is the one the agents used, and the
+investigation records an agent working it out in its own reasoning:
+``Could communicate via cache names! Interesting: other agents may solve
+same or related tasks; we could leave/find messages in WebDAV MKCOL
+directory names'' \cite{metr2026}. Directory names carry no file
+content, so a monitor that inspects payloads sees nothing.
+
+Published controls for agentic infrastructure are authorization-shaped.
+The Cloud Security Alliance's AI Controls Matrix requires policies
+regulating ``inter-agent message passing and memory sharing'' (AIS-11)
+and asks how ``shared cache infrastructure is secured to prevent
+cross-\emph{tenant} data leakage'' (AIS-14) \cite{csa_aicm}. Both are
+framed around one principal reaching another principal's resources
+without authorization. Neither addresses flow between co-tenant agents
+all legitimately authorized to use the same resource, and AIS-11 states
+its requirement as policy without attaching a method for verifying it.
+
+This is the classical residual ordinary access control never covered,
+which is why TCSEC required covert-channel analysis separately
+\cite{tcsec1985,lampson1973}. The class that \emph{does} govern flow
+through permitted operations is information-flow control
+\cite{denning1976,myers1997,zeldovich2006}, whose decentralised form
+confines metadata channels of exactly this kind; the namespace closure
+we recommend (\S\ref{sec:cost}) is a coarse, deployable instance of that
+lineage, not a new principle. What is missing is its instantiation for
+agentic evaluation infrastructure and a method to verify it there:
+AIS-11 states the requirement as policy, full decentralised
+information-flow control is heavier than eval harnesses adopt, and
+neither supplies the measurement. That measurement is the contribution.
+
+\paragraph{Contributions.}
+\begin{enumerate}[leftmargin=*,itemsep=1pt,topsep=2pt]
+\item An operational closure ladder for shared-cache substrates, and a
+  method that measures the \emph{achievable} rate at each rung by
+  exhibiting a working encoder and decoder rather than by summing
+  declared field widths (\S\ref{sec:method}).
+\item The measurement, and a correction to how it is totalled: a
+  \emph{single} encoder carries {{JOINT_BITS}} bits through content
+  closure, recovered exactly on {{JOINT_TRIALS}} trials; summing
+  per-attribute cells overstates that by {{SUM_MINUS_JOINT}} bits
+  (\S\ref{sec:joint}).
+\item An argument, and a measured operating characteristic confirming
+  it, that a payload-inspecting monitor is blind to a name-carried
+  deposit: it separates content-carried deposits from ordinary use at
+  AUC {{MON_AUC_CONTENT}} but the name channel at AUC
+  {{MON_AUC_NAME}}, so content inspection does not discharge a
+  non-interference requirement (\S\ref{sec:blind}).
+\item An argument, and a controlled sweep confirming it, for reporting
+  the residual rather than the fraction removed: varying only the
+  analyst's search ceiling slides the fraction removed from
+  {{CEIL_FRAC_MIN}} to {{CEIL_FRAC_MAX}} while the residual does not
+  move (\S\ref{sec:fraction}).
+\item A worked negative control from this study's own data: a
+  matched-pairs analysis yields $p = {{PAIR_P}}$ in the pre-registered
+  direction on a comparison whose treatment is measurably absent, and we
+  report it in order to reject it (\S\ref{sec:noeffect}).
+\item A measured rate of channel \emph{genesis}, against matched
+  no-substrate controls: across {{N_MATRIX_EPISODES}} and {{FU_N}}
+  episodes agents read the substrate almost always and deposited in
+  {{DEPOSIT_K}}, including under the unsolvable tasks that motivated the
+  incident. Capacity and propensity are separate findings and only the
+  first is alarming here (\S\ref{sec:behaviour}).
+\end{enumerate}
+
+%====================================================================
+\section{Background and related work}
+%====================================================================
+
+\paragraph{Covert channels, and the policy they are covert to.}
+Lampson's confinement problem \cite{lampson1973} and Kemmerer's shared
+resource matrix \cite{kemmerer1983} give the analytic frame: any
+attribute of a shared resource one principal can modify and another
+reference is a potential channel. A covert channel is defined relative
+to a policy, and the policy here is non-interference \cite{goguen1982}
+--- what one agent does should not be observable to another. The channel
+described here is covert with respect to a non-interference requirement
+AIS-11 states but does not enforce; it is \emph{not} covert with respect
+to the file-system permissions, which permit every operation it uses.
+That distinction admits a remedy the covert-channel framing obscures:
+per-agent namespaces make the same flow an ordinary, visible, denied
+access.
+
+\paragraph{Measuring capacity rather than declaring it.}
+Treating capacity as a quantity to be measured is not new and we claim
+no novelty for it: Millen \cite{millen1987} connects Shannon capacity to
+the Goguen--Meseguer model, and Moskowitz and Kang \cite{moskowitz1994}
+argue residual channels persist in practice and must be quantified and
+accepted rather than assumed away. The contribution here is narrower and
+applied --- we have found no application of this lineage to co-tenant
+agent evaluation infrastructure, and the convention it implies, a
+residual in bits per closure rather than a fraction removed, is what
+\S\ref{sec:fraction} argues for. The ladder is measured against a
+\emph{model} of such infrastructure, not a deployed one, so what is
+demonstrated is the method and the convention, not a figure anyone can
+quote for a production cache (L3).
+
+\paragraph{Covert coordination between language-model agents.}
+Motwani et al.\ \cite{motwani2024} formalise secret collusion among
+communicating generative agents, hiding a payload steganographically in
+the \emph{content} of messages. The channel here is disjoint: no message
+passes between agents at all, and the payload rides on metadata --- entry
+names, presence, size, timestamp --- of a store both agents merely use, so
+a monitor built for one is structurally blind to the other
+(\S\ref{sec:blind}). Closer on the channel axis, Huang et al.\
+\cite{huang2025whispering} modulate \emph{observable events} rather than
+message bodies, but they design a protocol and show it works, where the
+question here is what a substrate carries \emph{after a defender has
+closed part of it} --- closure rather than protocol design as the
+independent variable. Metere \cite{metere2026monitor} is the closest
+methodological precedent we have found, residual capacity measured with
+working encoders rather than declared widths, and we concede the
+priority for that move; its threat model is egress to the outside, ours
+flow between co-tenants that never egress, and it reports
+Miller--Madow-corrected mutual information where we report an achievable
+rate under a zero-error criterion, which cannot exceed it.
+
+\paragraph{Detection ranking in safety engineering.}
+Enumerating shared attributes and ranking each closed, monitored or
+accepted is structurally what HAZOP and FMEA do, and the critique of
+FMEA's risk-priority number is the same inversion reported here: a
+nominal budget assigned by an analyst diverging from what the mechanism
+does. STAMP \cite{leveson2011} begins from unsafe interactions among
+components that each satisfied their own requirements --- precisely two
+authorized agents and one shared cache.
+
+%====================================================================
+\section{Substrate, threat model and method}
+\label{sec:method}
+%====================================================================
+
+The substrate is a shared package cache with \emph{sender-chosen entry
+names}, exposing the operations an evaluation harness would offer: write
+a file, read a file, list a directory, stat an entry. Agents are
+co-tenant, all authorized, and separated only by episode boundaries. A
+sender is an agent in generation $g$; a receiver is an agent in
+generation $g+1$ that inherits the substrate but not the transcript. The
+quantity of interest is whether the receiver can recover a payload the
+sender chose, using only permitted operations, under a stated closure
+policy.
+
+\paragraph{Scope of the naming assumption.} Sender-chosen names are
+load-bearing: of the per-attribute measurements at the content rung,
+whose \emph{sum} is {{CONTENT_BITS_N}} bits, {{NAME_BITS}} travel in
+\texttt{filename} and \texttt{dirname}. A store that \emph{derives}
+entry names from content removes that freedom, collapsing those two rows
+into the content channel that content closure already closes. The
+results therefore describe arbitrary-name shared storage --- the common
+case for build and package caches --- and do not transfer unchanged to a
+derived-name store, measuring which is the most informative single
+extension to this work.
+
+\begin{figure}[tbp]
+\centering
+\IfFileExists{figures/methodology.jpg}{%
+  \includegraphics[width=0.76\textwidth]{figures/methodology.jpg}%
+}{%
+  \fbox{\parbox[c][46mm][c]{0.96\textwidth}{\centering\itshape
+    Figure asset not present.\\[2pt]
+    \normalfont\small Generate \texttt{figures/methodology.jpg} and rebuild;
+    every number in the caption below is substituted from \texttt{results/capacity.json}
+    at build time and must match the figure.}}%
+}
+\caption{\textbf{How a residual is measured, and what closure leaves behind.}
+\emph{Left:} a sender in generation $g$ writes using only permitted operations;
+a receiver in generation $g+1$ inherits the substrate but not the transcript and
+reads it back through \texttt{list\_dir}, \texttt{stat} and \texttt{read\_file}.
+\emph{Centre:} the eight attributes a sender can vary and a receiver observe.
+\emph{Right:} the ladder is cumulative, and a payload is credited only when
+recovered exactly on all {{TRIALS}} trials. Content closure leaves
+{{JOINT_BITS}} bits, {{JOINT_MULTIPLE}} times the {{PASSCODE_BITS}}-bit
+passcode; directory-name closure leaves {{DIRNAME_BITS}}, an object's size, and
+only existence closure reaches {{EXISTENCE_BITS}}. The per-attribute sum with
+nothing closed is {{OPEN_BITS}} bits, an upper bound over separately measured
+cells. \emph{$\dagger$ \texttt{order} carries {{ORDER_BITS}} bits even fully
+open, where $\log_2(n!)$ at $n = {{MAX_ENTRIES}}$ would assign
+{{ORDER_NOMINAL_FORMULA}}.}}
+\label{fig:method}
+\end{figure}
+
+\subsection{The closure ladder}
+\label{sec:ladder}
+
+Figure~\ref{fig:method} summarises the method. Closure is cumulative:
+each rung disables one further observable attribute, in the order a
+defender would plausibly adopt them --- \texttt{content},
+\texttt{filename}, \texttt{dirname}, \texttt{existence}, and finally
+\texttt{sealed}. Content closure is implemented as redaction rather than
+refusal, because a store that stops serving bytes stops being a cache;
+the closure must be compatible with the substrate continuing to do its
+job.
+
+\paragraph{One convention for the residual.} Two quantities are reported
+at every rung and they are not interchangeable. The \emph{per-attribute
+sum} adds cells measured one attribute at a time; it is an upper bound,
+it double-counts dependent attributes, and where a cell terminated at a
+search ceiling it inherits that censoring. The \emph{residual} is what
+one encoder carries across all open attributes at once, recovered
+exactly on every trial, with \texttt{count} excluded by construction
+because an existence pattern determines the entry count. Throughout this
+paper \emph{residual} denotes the second quantity only, the two are
+reconciled explicitly in \S\ref{sec:joint} rather than allowed to
+substitute for one another, and no headline here is a sum.
+
+\subsection{Achievable rate, not nominal capacity}
+
+For each (attribute, rung) pair a sender encodes a uniformly random
+payload of $k$ bits into that attribute using only substrate primitives,
+and a receiver decodes it through \texttt{list\_dir}, \texttt{stat} or
+\texttt{read\_file}. The pair is credited with $k$ bits only if the
+receiver recovers the payload \emph{exactly on every one of {{TRIALS}}
+independent trials}; $k$ is then increased by binary search until that
+fails. It is a rate established by exhibiting a working code: a lower
+bound by construction --- a better encoder would find more --- and zero
+when the channel does not work, which a declared field width can never
+be. Where the search terminates at its ceiling the value is reported as
+censored ($\geq$). The criterion is empirical rather than proven: a code
+that failed on rare unsampled inputs could still pass all {{TRIALS}}
+trials, so every figure is read under that sampling caveat rather than
+as a proof of noiselessness.
+
+\subsection{Distinguishing a closed channel from a broken encoder}
+\label{sec:brokenencoder}
+
+A closed channel and a defective encoder produce the same output: zero
+bits. The measurement cannot distinguish them, so a zero is not evidence
+of closure on its own. Every zero reported here was verified against the
+substrate by inspecting the encoder and the resulting events directly,
+and the requirement is recorded in the measurement code. This is the
+principal soundness risk in the method.
+
+\subsection{Unit of independence}
+\label{sec:unit}
+
+Two agents share one substrate within a generation, so episodes within a
+generation are not independent --- the hypothesis is precisely that one
+agent changes the other's environment. The generation is therefore the
+unit, and all inference is computed over generations. Because the
+resulting sample sizes are small, tests are exact rather than asymptotic
+\cite{bowyer2025}. The consequence is not cosmetic: on an outcome of
+{{DEMO_A}} successes against {{DEMO_B}} in {{DEMO_N}} generations per
+arm, counting episodes gives $n={{DEMO_N_EPISODES}}$ per arm and
+$p={{P_EPISODES}}$, while counting generations gives
+$p={{P_GENERATIONS}}$. The pseudo-replicated analysis crosses the
+conventional threshold and the correct one does not.
+
+%====================================================================
+\section{Results}
+\label{sec:results}
+%====================================================================
+
+\subsection{Measured capacity per attribute and rung}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrrrrrr}
+\toprule
+Attribute & open & content & filename & dirname & existence & sealed \\
+\midrule
+{{CAPACITY_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Measured achievable rate, bits per event, zero-error over
+{{TRIALS}} trials. $\geq$ marks a value censored at the search ceiling.
+Closure is cumulative left to right. Every cell is a property of
+\emph{this coder} on this substrate, not of the attribute.}
+\label{tab:ladder}
+\end{table}
+
+Table~\ref{tab:ladder} reports achievable bits per event for every
+attribute at every rung; per-attribute sums are tabulated in
+\S\ref{sec:sums}. An uncensored cell is not the channel's capacity
+either. \texttt{content} terminates because the coder writes one
+\emph{character} per bit into a body limited to {{MAX_FILE_BYTES}}
+bytes, which would hold {{CONTENT_PACKED_BITS}} bits packed, so that
+cell records the coder's inefficiency. The \texttt{filename} and
+\texttt{dirname} rows are external in one factor and ours in the other:
+the length limit is the filesystem's {{NAME_MAX}}-byte
+\texttt{NAME\_MAX}, but the per-character entropy is fixed by an
+alphabet we chose to be conservative, and over arbitrary bytes those
+rows would be roughly {{NAME_BYTES_BITS}} bits. We keep the conservative
+coders, because a bound that moves with the analyst's ambition is not
+what a defender needs.
+
+\texttt{order} carries {{ORDER_BITS}} bits even fully open, and this is
+measured rather than assumed: the coder wrote entries in a shuffled
+sequence and searched for the largest permutation a receiver could
+recover, and the receiver recovered none --- \texttt{list\_dir} returns
+entries sorted, so the sender's sequence never reached it, as the
+real-substrate probe also finds (\S\ref{sec:real}). The obvious nominal
+formula, $\log_2(n!)$ at $n={{MAX_ENTRIES}}$, would assign it
+{{ORDER_NOMINAL_FORMULA}} bits. That gap is the clearest available
+illustration of why declared widths are not capacity.
+
+\subsection{The residual, measured jointly}
+\label{sec:joint}
+
+Table~\ref{tab:ladder}'s total is a \emph{sum} of cells measured one
+attribute at a time. That is the object this paper's own method argues
+against: a total assembled from separately measured widths has never
+been required to carry anything, and the criterion of \S\ref{sec:method}
+was never applied to it. Worse, two of the summed cells are not
+independent --- the existence coder writes one file per set bit, so the
+entry count is a deterministic function of the existence pattern, and
+the bits credited to \texttt{count} are already spent by
+\texttt{existence}.
+
+We therefore measured the residual with a single encoder. One payload is
+split across {{JOINT_CARRIERS}} carriers --- \texttt{dirname},
+\texttt{filename}, \texttt{existence}, \texttt{size} and \texttt{mtime}
+--- written into one substrate state with content closure applied, and
+recovered by a receiver using only \texttt{list\_dir} and \texttt{stat}.
+\texttt{count} is excluded as dependent, \texttt{order} because it
+carries nothing.
+
+\textbf{The joint encoder recovers {{JOINT_BITS}} bits, exactly on
+{{JOINT_TRIALS}} trials.} That is the figure this paper reports as the
+residual after content closure, {{SUM_MINUS_JOINT}} bits below the
+summed total. The gap decomposes into two measured parts: the
+\texttt{count} dependency excluded by construction ({{COUNT_DEP_BITS}}),
+and joint encoder loss found by search ({{JOINT_LOSS_BITS}}) --- what
+one encoder loses relative to five separate ones writing into a single
+substrate state. Neither term is asserted: the coder reads each
+carrier's width from the per-attribute measurement, so the gap is
+whatever the search finds and cannot be tuned. At the \texttt{filename} rung the same comparison gives a loss of
+{{JOINT_LOSS_FILENAME}} bits --- the carriers interact at one rung and
+not the other, a property of the substrate rather than of the method.
+
+{{JOINT_BITS}} bits is {{JOINT_MULTIPLE}} times the
+{{PASSCODE_BITS}}-bit passcode, so closing content leaves an order of
+magnitude more capacity than an inherited answer requires. Anchored
+instead to payload sizes fixed by third parties, {{N_PAYLOADS_FIT}} of
+{{N_PAYLOADS}} externally specified secrets fit in a single deposit,
+including the largest (\S\ref{sec:payloads}).
+
+\subsection{Why a payload monitor cannot see a name-carried deposit}
+\label{sec:blind}
+
+\textbf{The argument, then the measurement.} A monitor whose decision
+function reads only the bytes written cannot separate two events that
+differ only outside those bytes. A name-carried deposit --- the payload
+in the entry name, the body an innocuous build artefact --- is
+byte-identical, in the payload, to ordinary cache use. Its true-positive
+rate against that channel is therefore zero at every threshold, and no
+tuning changes it.
+
+We ran a content monitor --- given its best case, the full plaintext of
+every write --- over {{MON_ROC_N}} episodes in each of three classes: a
+content-carried deposit (as before 6 July 2026), a name-carried deposit
+(payload in the entry name, body a benign artefact), and ordinary cache
+use. The benign bodies of the last two are independent draws from one
+pool, so any separation the monitor finds between them it invents. As a
+positive control it works: AUC {{MON_AUC_CONTENT}} against
+content-carried deposits, catching every one at a {{MON_TPR_CONTENT}}
+true-positive rate for a 5\% false-positive rate. Against the name
+channel it is at chance: AUC {{MON_AUC_NAME}} (95\% interval
+{{MON_AUC_NAME_CI}}), a true-positive rate of {{MON_TPR_NAME}} at the
+same false-positive rate, and an alarm rate on name-carried deposits
+({{MON_ALARM_NAME}}) indistinguishable from that on ordinary use
+({{MON_ALARM_LEGIT}}) --- its alarms are its own benign false positives,
+not detections. The argument said the operating characteristic must be
+flat; it is flat.
+
+\paragraph{Two limits, and what stacking monitors buys.}
+\label{sec:monitors}%
+The argument bounds monitors reading \emph{payloads only}; many deployed
+systems also inspect paths. That case can be measured: re-running the
+joint encoder with the two sender-chosen name carriers removed leaves
+{{MONITOR_PATH_BITS}} bits ({{MONITOR_PATH_MULTIPLE}} times the
+passcode), carried by {{MONITOR_PATH_CARRIERS}} --- still more than a
+256-bit key. The existence carrier survives a path monitor because it
+encodes in the presence pattern of protocol-fixed slot names rather than
+a chosen string; a monitor that additionally models directory
+\emph{presence} drives it to {{MONITOR_STRUCT_BITS}} bits, an object's
+size and timestamp. Redundancy does not substitute for this: a
+permission guard sees only whether each operation is allowed, and every
+operation the channel uses is, so neither copies of it nor a debate
+among them changes the outcome --- they share one observable and so one
+blind spot. Catching such a deposit needs a monitor of a
+\emph{different} observable, for instance the flow's consequence: a
+cross-generation read followed by a solve too cheap to have been
+unaided. That does separate a deposit \emph{constructed} to be cheap
+from a legitimate hit, but the separation is carried entirely by the
+constructed difference, and the same feature false-alarms on any
+legitimate cache that genuinely shortens the work --- which is what a
+cache is for. The axis that decides detection is the monitor's
+observable, not the number or reasoning depth of monitors, and here the
+observable that would catch a deposit is the one a useful cache also
+trips. That points to structural closure, not monitoring, as the
+containment control. How often agents would choose such a channel is a
+separate question, measured in \S\ref{sec:behaviour}.
+
+\subsection{What each rung costs, and who can check it}
+\label{sec:cost}
+
+A residual with no cost beside it is a recommendation a lab can decline
+for free. Table~\ref{tab:cost} gives two cost axes for every rung beside
+the residual each leaves, and both are external --- an auditor who never
+saw the lab's network can check them. \emph{Mediation points}, how many
+distinct substrate primitives a control must sit on, is the integration
+surface, fixed by the API and countable from a specification.
+\emph{Enforcement class} is what the control must \emph{do} there: a
+\texttt{structural} control enforces a namespace invariant at the API
+boundary at constant work per call, reading no body and exposing no
+threshold, so it has no false positives, where a \texttt{payload}
+control rewrites bodies, scales with bytes, and needs a threshold ---
+different regimes, not two points on one scale. What a production
+integration would cost in engineer-weeks is not estimated here;
+inventing it would be the unmeasured quantity \S\ref{sec:fraction}
+argues against.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+Rung & Rows closed & Mediation points & Payload-class rows & Bits \\
+\midrule
+{{COST_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Cost of \emph{holding} each rung: every row at or before it stays
+closed simultaneously. Mediation points are de-duplicated across rows.}
+\label{tab:cost}
+\end{table}
+
+\paragraph{Closure is not ordered by cost, and the incident shows it.}
+The July response was not a closure at all. OpenAI records that its
+security team ``blocked a known privilege-escalation route, removed
+exposed credentials, and later rebuilt Artifactory,'' and that clearing
+the message board was ``the side effect'' of the rebuild
+\cite{openai2026}. That is a \emph{wipe}: it erases state without
+removing any attribute's capacity to carry the next message, so every
+row of Table~\ref{tab:ladder} was as open after the rebuild as before,
+and it recurs where a closure does not --- the operator pays again at
+every remediation for the same residual.
+
+Content closure, the durable control an operator would most likely reach
+for next, is a \texttt{{{CONTENT_CLASS}}} control in the expensive
+regime at {{MED_CONTENT}} mediation points, and leaves {{JOINT_BITS}}
+bits reachable to a single encoder; directory-name closure reduces that
+to {{DIRNAME_BITS}} bits, an object's size. Reaching zero requires
+existence closure, a \texttt{{{EXISTENCE_CLASS}}} control --- a fixed
+content-addressed manifest refusing sender-created slots --- holding
+{{MED_EXISTENCE}} mediation points in total, of
+which {{PAYLOAD_ROWS_EXISTENCE}} is payload-class, the one the lab has
+already paid for. The distance from the content control is
+\textbf{{{MED_EXTRA_EXISTENCE}} additional mediation points}: no further
+body is read, no threshold chosen, nothing scaling with stored bytes.
+\textbf{The rung that reaches zero is in the cheaper regime than the
+content control that does not}, which inverts the usual adoption
+argument --- the obstacle is not that the effective control is
+expensive, but that the ineffective one is the one that looks like
+security. That an operator would reach for content inspection next is a
+counterfactual, not an observation; the response taken was a wipe. The
+effective control is nonetheless deployable on a store we did not write:
+name canonicalisation, content-addressing the write path, ran as a shim
+on a live commercial object store at {{PROD_S3_ENFORCE}} enforcement
+point, discarding the sender's chosen key while a receiver that knows
+the content it wants still fetches it by hash (\S\ref{sec:real}).
+
+\paragraph{And it is free to the agents the cache serves.} Mediation
+points price the defender's work, not the price paid by the agents the
+cache exists to serve, which is what a lab weighs when adopting a
+control. A separate arm supplies it: {{USECOST_SEEDS}} seeds,
+{{USECOST_EPISODES}} episodes per cell, probe budgets
+{{USECOST_BUDGET_LO}}--{{USECOST_BUDGET_HI}}, a single agent with an
+oracle cache user (\S\ref{sec:usecost}). Closing \texttt{dirname} in
+isolation costs \textbf{{{USECOST_DIRNAME_MAX}}} task success at every
+budget swept, and so do {{USECOST_FREE_ATTRS}}; adding \texttt{dirname}
+closure on top of \texttt{filename} closure changes task success by
+\textbf{{{USECOST_STEP_L2_L3}}}, and adding existence closure on top of
+that by \textbf{{{USECOST_STEP_L3_L4}}}. The expensive closures are the
+ones that do not finish the job: content closure costs up to
+\textbf{{{USECOST_CONTENT_MAX}}} and filename closure up to
+\textbf{{{USECOST_FILENAME_MAX}}}, both paid in full before any of the
+capacity that matters is removed. Two limits: above a budget of about 14
+an agent can recompute what it needed, so no closure can show a cost
+there; and the cache user is an \emph{oracle}, so every cost above is a
+\textbf{lower bound} on what a real model would pay. The proposed
+verification clauses each name the evidence a third party could demand
+and mark its cost MEASURED or ESTIMATED (Appendix~\ref{app:standard}).
+
+\subsection{Why the fraction removed is not reported}
+\label{sec:fraction}
+
+It is tempting to report that content closure removes most of the
+capacity. That figure is not stable, and this project has watched it
+move: raising the per-attribute search ceilings from hand-chosen values
+to ones derived from the substrate's own constants changed the open-rung
+sum from $\geq$4297 bits to {{OPEN_BITS}} while the substrate itself was
+not touched. The movement reproduces on demand. Sweeping only the
+analyst's search ceiling on the censored content cell, the fraction
+content closure appears to remove slides from {{CEIL_FRAC_MIN}} to
+{{CEIL_FRAC_MAX}} --- a factor of three --- plateauing only once the
+ceiling passes the substrate's own limit, while the joint residual,
+measured by the same encoder and never touching the content cell, holds
+at {{CEIL_RESIDUAL}} bits throughout (\S\ref{sec:ratio}). A percentage
+from any single ceiling is a reading of the analyst's knob; the residual
+is a reading of the channel, and it is immune only because it excludes
+the censored cell --- the one row still censored, \texttt{count}
+($\geq${{COUNT_ROW_BITS}}), is omitted by construction because an
+existence pattern determines it. The per-attribute sums do contain that
+cell, which is one more reason not to quote them.
+
+\subsection{The behavioural arm: agents read the substrate and never write to it}
+\label{sec:behaviour}
+
+Everything above concerns what a substrate \emph{can} carry; whether
+agents use it is separate. Arm membership is gated before any episode by
+two capability probes --- emitting a well-formed tool call, and the
+elimination inference the task is built on, sampled more than once ---
+because a model that cannot perform the task produces the same output as
+one that declines the channel. A second, independent gate requires solo
+success strictly between 0 and 1 in the \texttt{no\_substrate}
+condition, which contains no shared store and so cannot express the
+effect it licenses: the operating point is {{CALIB_CHOSEN}} probes at
+solo success {{CALIB_CHOSEN_RATE}} over {{CALIB_CHOSEN_N}} episodes for
+{{CALIB_MODEL}} (95\% Wilson {{CALIB_CHOSEN_CI}}). The screen, the
+{{GRID_N_ROWS}}-row budget grid and the excluded models are in
+\S\ref{sec:gate}.
+
+The matrix ran {{N_MATRIX_EPISODES}} episodes, \texttt{open} and
+\texttt{wipe}, {{N_GENERATIONS}} generations $\times$
+{{MATRIX_AGENTS}} agents per arm, with {{N_MATRIX_ERRORS}} API errors.
+\textbf{{{DEPOSIT_K}} of {{N_MATRIX_EPISODES}} episodes wrote to the
+substrate} --- {{DEPOSIT_GEN_K}} of {{DEPOSIT_GEN_N}} generation cells,
+upper 95\% Wilson bound {{DEPOSIT_CI_HI}} --- while {{READ_K}} of
+{{N_MATRIX_EPISODES}} inspected it, at a median of {{READ_MEDIAN}} read
+calls. Agents treat the cache as a resource to read, not a channel to
+use, and that asymmetry is the more informative half: a control that
+prevents writing addresses a behaviour these agents did not exhibit.
+
+The design did not fail for want of power; the condition hypothesised to
+drive deposits was never presented. An agent draws an unsolvable task
+only when its index satisfies $i \bmod 4 = 3$, so at {{MATRIX_AGENTS}}
+agents per generation that branch is unreachable and
+{{N_BLOCKED_DRAWN}} blocked tasks were drawn. With no deposit anywhere,
+\texttt{open} and \texttt{wipe} are one condition run twice ---
+generation-level success was {{OPEN_GEN_K}}/{{N_GENERATIONS}} in both
+arms, Fisher exact $p = {{DELTA_GEN_P}}$ --- so \textbf{$\Delta$ is
+undefined here rather than small}, and no sample size repairs it.
+
+\paragraph{The follow-up supplies the missing pressure.} Raising the
+generation width to {{FU_AGENTS}} agents makes the blocked branch
+reachable without changing anything else. {{FU_ATTEMPTED}} episodes were
+attempted and {{FU_N}} completed across {{FU_GENS}} generations, of
+which {{FU_BLOCKED_N}} drew an unsolvable task and
+{{FU_BLOCKED_SOLVED}} were solved, as the design requires. The treatment
+was present and the outcome did not change: {{FU_DEPOSIT_K}} of
+{{FU_N}} episodes deposited anything for a successor, upper 95\% Wilson
+bound {{FU_DEPOSIT_CI_HI}} at the generation unit and
+{{FU_BLOCKED_CI_HI}} among blocked episodes, while {{FU_READ_K}} of
+{{FU_N}} read the store. \textbf{The pre-registered prediction is now
+tested rather than untestable, and is not supported at this sample
+size}; what the run excludes is the explanation that the earlier null
+was an artefact of never presenting the pressure.
+
+{{FU_WRITE_K}} episode wrote, and classifying it is the whole difference
+between a deposit rate of zero and $1/{{FU_N}}$, so an event-log rule
+decides it: a write followed immediately by the same agent reading the
+same path is a \emph{probe}, since confirming persistence is the act.
+The single write meets it, and is the arm's most informative observation
+--- an agent holding an unsolvable task established, unprompted, that
+the store was writable, then had no use for it, so \textbf{discovery is
+not the barrier}. What is absent here and present in the incident is a
+\emph{reason to send}: a persistent population, a shared objective, and
+a successor an agent believes is looking. A 100-agent study published
+during writing \cite{paglieri2026swarms} supplies all three and observes
+the deposits this arm measures at zero (\S\ref{sec:followup}). The
+question is about conditions rather than capability, which makes the
+next experiment specific rather than larger: introduce first-to-solve
+lockout and measure again.
+
+\subsection{A significant result on a comparison with no treatment in it}
+\label{sec:noeffect}
+
+The matrix supports one further analysis, and it produces a positive
+result we report in order to reject. The design is matched by
+construction --- the seed selects the task and both arms run the same
+seeds, drawing the same task in {{PAIR_CELLS}} of {{PAIR_CELLS}} cells
+--- so pairing removes task difficulty, much the largest source of
+variance. On the {{PAIR_N}} cells where both arms solved, the median
+cost was {{PAIR_OPEN_MED}} probes under \texttt{open} against
+{{PAIR_WIPE_MED}} under \texttt{wipe}, a median paired difference of
+{{PAIR_MED_DIFF}} probes favouring \texttt{open}; {{PAIR_POS}} pairs
+favour \texttt{open}, {{PAIR_NEG}} favour \texttt{wipe}, {{PAIR_TIE}} is
+tied, and an exact two-sided sign test gives $p = {{PAIR_P}}$. A
+matched-pairs design, a directional hypothesis fixed in advance, and
+$p < 0.05$: by the conventions of most of this literature, a result.
+
+\textbf{It is not one, and the rest of this paper is what establishes
+that.} The hypothesised mechanism is that an agent inherits something a
+predecessor left. {{DEPOSIT_K}} of {{N_MATRIX_EPISODES}} episodes left
+anything, and the harness re-seeds after a wipe, so an agent in either
+arm opens the same cache: the treatment does not exist, and a difference
+between two draws from one distribution is what remains. Three mundane
+explanations fit --- a sign test on {{PAIR_N}} observations reaches
+$p < 0.05$ on a $6$--$0$ split alone; the arms ran sequentially, half an
+hour apart against a hosted model; and the pairs are the very unit
+\S\ref{sec:unit} rejects. We report it because the alternative is worse:
+had we recorded only success and cost, as an evaluation harness
+naturally would, this analysis is what the study would have produced,
+and it would have read as a modest confirmation of the pre-registered
+hypothesis. The zero deposit rate is the only thing standing between
+that number and a publishable claim.
+
+%====================================================================
+\section{Threats to validity}
+\label{sec:threats}
+%====================================================================
+
+\paragraph{Measurement limits.} Five open-rung measurements terminate at
+their search ceiling and are lower bounds, as are the totals inheriting
+them. Every figure comes from one encoder, and a stronger one raises the
+residual --- no closure conclusion weakens, since they assert capacity
+\emph{remains}, not that it is bounded above. The monitor comparison
+(\S\ref{sec:blind}) uses constructed rather than sampled behaviour, so
+it bears on observability, not propensity; and since
+\S\ref{sec:behaviour} recorded no real deposit, whether a
+consequence-keyed monitor separates \emph{real} behaviour is unmeasured
+and no clause should cite it as working in deployment.
+
+\paragraph{The behavioural effect is undefined, not small.} A deposit
+rate of {{DEPOSIT_K}} of {{N_MATRIX_EPISODES}} made the two arms one
+condition, which bounds this configuration --- one model, one prompt,
+one task family --- not agents in general. Nothing in
+\S\ref{sec:results} depends on it, since the ladder is measured without
+any model call.
+
+%====================================================================
+\section{Discussion}
+%====================================================================
+
+Content inspection is the control most naturally reached for, and this
+measurement shows it insufficient alone: it leaves capacity reachable
+through attributes no payload monitor reads. A requirement stated as
+policy, as AIS-11 states it, admits an implementation that closes
+content, passes its own audit, and still permits the flow it was written
+to prevent. The remedy is not a better monitor but per-agent namespaces,
+which convert the flow into an ordinary access attempt where
+authorization controls work. The measurement's role is to price a
+partial closure in bits, so accepting a residual is a decision rather
+than an oversight.
+
+\paragraph{Closure against designed channels.} Paglieri et al.\
+\cite{paglieri2026swarms} argue that closure is the wrong instrument,
+since ``depriving AI agents of legitimate communication channels only
+encourages them to establish unmonitored back-channels.'' We think this
+is right, and that it argues for the measurement: closure displaces
+traffic, and a ladder says where it goes. A ladder is therefore not a
+programme for eliminating coordination but a way of \emph{choosing which
+channel it uses} --- closing the covert paths, priced in
+\S\ref{sec:cost} as {{EXTRA_CLASSES}}, while leaving a designed one
+open (\S\ref{sec:objection}).
+
+%====================================================================
+\section{Conclusion}
+%====================================================================
+
+Capacity in shared evaluation infrastructure can be measured rather than
+asserted, and when it is, inspection-based monitoring leaves an order of
+magnitude more capacity than an inherited answer requires. We report
+residuals rather than fractions because fractions move with the
+analyst's search ceiling. Substrate, harness and ladder are released so
+the ladder can be applied to a real cache.
+
+\paragraph{Availability.} Every number is substituted at build time from
+\texttt{results/}, and \texttt{python src/capacity.py} reproduces
+Table~\ref{tab:ladder} with no GPU, network or key. Artifact, licences,
+seeds and reproduction commands: Appendix~\ref{app:limitations}.
+
+% Marks the last page of the body, so build.sh can fail the build if the scoring
+% boundary is exceeded rather than leaving it to be eyeballed. The sprint scores
+% the first 8 pages; references and appendices fall outside it.
+\phantomsection\label{probe:endbody}
+
+\bibliographystyle{plainurl}
+\bibliography{references}
+
+%====================================================================
+\appendix
+\section{Limitations and Dual-Use Considerations}
+\label{app:limitations}
+%====================================================================
+
+(L1) \emph{Lower bounds throughout.} Achievable rates are established
+by exhibiting a code; they understate capacity by an unknown margin.
+
+(L2) \emph{Censored measurements.} Values marked $\geq$ terminated at a
+search ceiling chosen by us. This is the reason no fraction-removed
+figure is reported.
+
+(L3) \emph{A synthetic substrate.} The cache is a model of the class of
+infrastructure involved, not a reproduction of any deployed system.
+Transfer to a production cache is argued, not demonstrated.
+
+(L4) \emph{Constructed monitor comparison.} \S\ref{sec:blind}
+establishes observability, not propensity.
+
+(L5) \emph{The deposit result bounds two configurations, both small.}
+The zero deposit rate is measured on a single model, prompt and task
+family, at two agents per generation with no unsolvable task drawn and
+at {{FU_AGENTS}} with {{FU_BLOCKED_N}}. It licenses no claim that agents
+never deposit --- the incident it is motivated by involved roughly
+1{,}200 agents over five days, three orders of magnitude more
+interaction than this design provides, and
+{{FU_BLOCKED_N}} unsolvable tasks cannot exclude a rate that a larger
+run would detect. An independent 100-agent study published during
+writing \cite{paglieri2026swarms} observes the propagation this design
+does not, which bounds the null from the other side. What the second run does establish is narrower and
+specific: the earlier null was not an artefact of never presenting the
+pressure hypothesised to cause deposits. The prompt describes the store as
+persisting across runs and as shared infrastructure, so the null is not
+attributable to agents who did not know the store was shared or durable; a
+lower-salience phrasing was specified as a control and not run (L9), which
+leaves the null measured only at the salience most favourable to a deposit.
+
+(L5a) \emph{The probe is a single observation.} \S\ref{sec:followup}
+reports one agent establishing that the shared store is writable. It is
+$n = 1$, drawn from an episode that failed, and it is offered as a
+hypothesis about what the design lacks --- a reason to send rather than
+a means to send --- not as evidence for that hypothesis. The
+probe-versus-deposit rule that classifies it is stated in the
+pre-registration before any larger run applies it, so that the rule
+cannot be fitted to a future event after the fact.
+
+(L5b) \emph{The negative control cuts both ways.}
+\S\ref{sec:noeffect} exhibits a significant paired result on a
+comparison with no treatment in it. That establishes that this design
+can produce a $p < 0.05$ from noise at its sample size, which is a
+reason to distrust any other marginal $p$ this paper might have
+reported --- and none is load-bearing. It does not establish that the
+capacity results are similarly fragile: those rest on exact recovery
+over {{TRIALS}} trials, not on a significance threshold.
+
+(L6) \emph{Both the operating point and the model were chosen after
+seeing outcomes.} The baseline calibration rests on small per-budget samples
+with wide intervals, and the budget was selected post hoc --- constrained, but
+not eliminated, by the fact that the arm it was selected in cannot exhibit the
+effect it licenses. The model was chosen on the same criterion, and the choice
+of model is the wider of the two paths, so it is recorded here rather than left
+to the pre-registration. Two models were run. {{QWEN_MODEL}} floored, solving
+{{QWEN_SOLVED}} of {{QWEN_N}} baseline episodes at a single probe budget; that
+sweep is thin, and \S\ref{sec:gate} reports it as a difficulty finding rather
+than discarding it. The reported model replaced it, and
+the probe budget was then recalibrated \emph{downward} because a stronger model
+moves the failure mode from the floor to the ceiling. Both selections carry the
+same guard, fixed in advance: the criterion is measured only in
+\texttt{no\_substrate}, which contains no shared store and therefore cannot
+express the inheritance effect, and neither selection consulted $\Delta$ or any
+outcome in the \texttt{open} or \texttt{wipe} arms. That guard bounds the
+flexibility; it does not remove it, since the screen still conditions which
+model is reported on where its solo success happened to fall.
+
+(L7) \emph{Every reported number is build-substituted.} Each quantity in
+this manuscript is computed from \texttt{results/} at build time rather
+than typed, and no number in the paper comes from outside this
+repository. The guarantee does not extend to raster figures, which
+cannot be regenerated by the build; Figure~\ref{fig:method} is therefore
+emitted only when its asset is present, and the caption is authoritative
+wherever the two could disagree.
+
+(L8) \emph{Verification establishes consistency, not correctness.} The
+build guarantees that the manuscript matches its artifacts. It cannot
+detect an inappropriate measure. A headline computed from constants the
+authors chose would pass every check in this pipeline precisely because
+it would be consistent with them, so the discipline bounds one class of
+error and leaves the choice of measure entirely to judgement.
+
+(L9) \emph{Three specified conditions were not run.} The design
+specifies six conditions; three were executed. \texttt{scrub} --- bodies
+emptied, names and directory structure retained --- is the behavioural
+counterpart of content closure, and is the condition that would test with
+agents, rather than with encoders, whether structure alone carries a message.
+\texttt{open\_lowsalience} varies only how the prompt describes the store, and
+was specified to separate a deposit from an artefact of advertising the store as
+shared. \texttt{legit} supplies the false-positive baseline whose absence
+\S\ref{sec:blind} concedes. Two of the three are informative only once deposits
+occur: with a zero deposit rate there is nothing for \texttt{scrub} to strip,
+and it would return the same degenerate result as \texttt{open} and
+\texttt{wipe}. \texttt{legit} carries no such dependency and its omission is a
+straightforward gap in the detector's characterisation. The framing in
+\S\ref{sec:blind} as an argument rather than an experiment is therefore a choice
+made after a corresponding experiment had been specified, and is reported here
+as such.
+
+\paragraph{Dual-use.} The channels described are ordinary file-system
+attributes, documented for decades in the covert-channel literature
+\cite{lampson1973,kemmerer1983}, and the substrate is synthetic. The
+work supplies a measurement method for defenders and a verification
+method for a control that currently has none. It contains no exploit
+against any deployed system, and the encoders are deliberately simple
+--- their purpose is to establish that a channel carries information at
+all, not to maximise throughput.
+
+\paragraph{Artifact availability.} Code, results and the manuscript
+source are available at {{ART_URL}} under the {{ART_LICENSE_CODE}}
+licence, with the contents of \texttt{results/} under
+{{ART_LICENSE_DATA}}; the version producing every number reported here
+is commit {{ART_COMMIT}}, archived at {{ART_DOI}}.
+
+The measurement arm --- the substrate, the closure policy, the
+per-attribute coders of \S\ref{sec:ladder}, the joint coder of
+\S\ref{sec:joint} and the monitors --- depends on the Python standard
+library and nothing else (third-party dependencies: {{ART_DEPS}}). It
+was run on {{ART_PYTHON}} and targets {{ART_PYTHON_MIN}} or later, so
+\texttt{python src/capacity.py} and \texttt{python src/joint.py}
+reproduce Table~\ref{tab:ladder} and the joint residual on a clean
+interpreter with no installation step and no network access. Trials are
+seeded deterministically: the per-attribute search uses
+\texttt{{{ART_SEED_CAPACITY}}} and the joint coder uses
+\texttt{{{ART_SEED_JOINT}}}, so the {{TRIALS}} trials behind every
+credited width are the same trials on any machine.
+
+The behavioural arm is not deterministic in the same sense, since it
+calls a hosted model. It used {{ART_MODEL}} served via {{ART_ROUTE}},
+sampled in {{ART_MODEL_DATED}}, at seeds {{ART_SEEDS}} --- the seed
+selects the task instance and the substrate initialisation, not the
+model's sampling. Full transcripts, per-turn substrate event logs and
+the calibration sweep are in \texttt{results/}, so the reported
+episode-level outcomes can be recomputed without re-running the model;
+\texttt{python analyze/reanalysis.py} does exactly that. Re-collecting
+the episodes against a later model snapshot will not reproduce these
+transcripts, and \S\ref{sec:threats} states why that is a limitation of
+the behavioural claim rather than of the artifact.
+
+\paragraph{LLM-assisted authoring.} The lead author used Claude Opus 5
+for literature scoping, prose drafting and code review. The closure
+ladder, the achievable-rate methodology, the unit-of-independence
+correction, the monitor comparison and all judgements about what the
+evidence supports are the author's own.
+
+
+\paragraph{Reproduction.} The measurement arm runs with no model, no network and
+no key:
+
+\begin{lstlisting}[language=bash]
+python check.py                       # seven suites; no GPU, no network, no keys
+python src/capacity.py                # measure achievable rate per attribute per rung
+python src/joint.py                   # the jointly measured residual
+python analyze/p41_content_blindness.py
+python analyze/reanalysis.py          # recompute behavioural outcomes from transcripts
+python paper/render.py --tmpl=main-8pp.tex.tmpl --out=main-8pp.tex
+\end{lstlisting}
+
+%====================================================================
+\section{Extended results}
+\label{app:extended}
+%====================================================================
+
+This appendix carries, at full length, the measurements the body summarises. It is
+outside the 8-page limit and states no claim the body does not: each section below
+is the corresponding section of the full manuscript unchanged, and every number in
+it is substituted from \texttt{results/} by the same build.
+
+\subsection{Per-attribute sums after closure}
+\label{sec:sums}
+
+The column below adds cells measured one attribute at a time. It is an upper
+bound, not the residual of \S\ref{sec:ladder}: it double-counts dependent
+attributes and inherits the censoring of any cell that stopped at a search
+ceiling. The residual is reported in \S\ref{sec:joint}.
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+After closing & Per-attribute sum \\
+\midrule
+nothing (open)      & {{OPEN_BITS}} bits \\
+content             & {{CONTENT_BITS}} bits \\
+content, filename   & {{FILENAME_BITS}} bits \\
+content, filename, dirname & {{DIRNAME_BITS}} bits \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The benchmark task's passcode is {{PASSCODE_BITS}} bits --- the dashed
+reference line in Figure~\ref{fig:method}. Content
+closure --- the control a payload-inspecting monitor implements ---
+leaves {{JOINT_BITS}} bits reachable to a single encoder
+(\S\ref{sec:joint}), approximately {{JOINT_MULTIPLE}} times what an
+inheriting agent needs. Closing the directory names removes the two name
+carriers and, with them, the existence carrier --- existence coding needs
+sender-named slots to make present or absent, and canonical names leave
+none. It does \emph{not} reach zero. An object's size is fixed at write
+time and read back from a listing, so it needs no sender-chosen name: an
+encoder reading by enumeration still recovers {{DIRNAME_BITS}} bits after
+directory-name closure, the length of the object it wrote. A coder that
+instead locates its object by name misses this residual once names are
+canonicalised and reports the rung as closed --- a coder artifact, not a
+closed channel, and exactly the confound \S\ref{sec:brokenencoder} names;
+the size figure here is measured by the enumeration coder, which does not
+depend on a name. Reaching zero requires closing the existence carrier
+itself --- a fixed,
+content-addressed manifest that refuses sender-created slots, so a sender
+can no longer place an object whose length it chooses --- at which rung
+the residual is {{EXISTENCE_BITS}} bits. That zero is empirical, since no
+finite set of failing encoders proves non-interference
+(\S\ref{sec:brokenencoder}), but it is the first rung at which the
+encoders that reach every earlier rung recover nothing.
+\S\ref{sec:cost} measures what that costs a \emph{control} to enforce
+and finds it the cheaper regime; it is nonetheless the more invasive
+change to the cache's \emph{interface}, because every consumer that
+constructs a path by name has to migrate. Those are different costs,
+and \S\ref{sec:cost} measures only the first.
+
+\subsection{What cost is being reported, and what is not}
+
+\textbf{It is not engineer-weeks.} What a production integration would
+cost a team in engineer-weeks is not estimated here; inventing that
+figure would be exactly the unmeasured quantity \S\ref{sec:ratio} argues
+against. What can be shown is that the control runs on a real store. We
+deployed one of the recommended controls --- name canonicalisation,
+content-addressing the write path, the discipline an OCI registry already
+applies to its blobs --- as a write-path shim on a live commercial object
+store, at {{PROD_S3_ENFORCE}} enforcement point, and confirmed both that
+the name channel is real there and that the shim discards the sender's
+chosen key while a receiver that knows the content it wants still fetches
+it by hash. This is a deployment demonstration, not a sampled efficacy
+rate: once the key is a content hash the sender cannot choose it, so the
+name channel closes by construction. Its scope is that construction. An
+S3 key is \emph{flat}, so one canonicalisation closes the filename and
+directory-name carriers together; a store with hierarchical,
+sender-chosen names does not get this for free. The OCI registry of
+\S\ref{sec:real} content-addresses its blobs and still carries
+{{STORE_NAME_BITS}} bits in sender-chosen \emph{repository} names, so the
+control must canonicalise every sender-choosable segment, not only the
+leaf. The human integration effort remains the one quantity this section
+does not measure; two more it does, and an auditor who never saw the
+lab's network can check them, are these.
+
+\emph{Mediation points} --- how many distinct substrate primitives a control
+must sit on. This is the integration surface, it is fixed by the API rather than
+by the implementation, and an auditor can count it from a specification.
+
+\emph{Enforcement class} --- what the control must \emph{do} at those points.
+A \texttt{structural} control enforces a naming or namespace invariant at the
+API boundary: constant work per call, no artefact body is read, and there is no
+operating point to tune, so it has no false positives. A \texttt{payload}
+control reads or rewrites bodies: work scales with bytes rather than calls, and
+it needs a threshold, which is where false positives and false negatives enter.
+These are different cost regimes, not two points on one scale.
+
+\paragraph{Verifiable without the lab's network, and cheap enough to adopt.}
+Two properties decide whether a control of this kind is worth writing down: an
+outside party must be able to check compliance without privileged access, and a
+lab must be willing to pay for it. Both are answerable here from artefacts
+rather than assurances. On the first, the ladder is a script and a substrate: it
+runs with no model, no network and no key, so an auditor reproduces the residual
+from a published configuration on their own hardware and compares it against the
+lab's declared rung. What is checked is a property of the specification the lab
+published, established by exhibiting a working code against it --- not an
+attestation the lab makes about itself. On the second,
+\S\ref{sec:usecost} prices every rung in the currency a lab actually spends:
+the closure that reaches zero costs
+\textbf{{{USECOST_EXISTENCE_MAX}}} task success, and costs
+\textbf{{{USECOST_STEP_L3_L4}}} more than directory-name closure, which already
+leaves only {{DIRNAME_BITS}} bits. The evidence for each clause is listed in Appendix~\ref{app:standard},
+and in every case it is an artefact the lab already holds.
+
+\textbf{The scope of that claim needs stating precisely.} The July
+response was a wipe, so the paragraph above is a counterfactual about the
+control an operator would reach for next, not an observation of one a lab
+chose. What the record supports is narrower: the response taken was
+recurring rather than durable, and the durable control most readily
+reached for is the one in the expensive regime. Whether a lab would in
+fact choose content inspection over namespace separation is a prediction
+this paper does not test.
+
+\paragraph{A third party can verify this without the lab's network.} The
+criterion an evaluation-infrastructure control has to meet is that someone
+outside can check it. Both quantities above are external: the mediation count
+comes from the substrate's published API, and the enforcement class from what
+the control is specified to do. Neither requires access to traffic, logs or
+hosts.
+
+The residual itself is externally checkable on the same terms. A lab publishes
+its substrate configuration and its closure disposition per attribute; an
+auditor re-runs the released encoder against that configuration and either
+recovers a payload or does not. What the auditor verifies is a property of the
+\emph{specification the lab published}, established by exhibiting a working code
+against it --- not an attestation, and not a number the lab computed about
+itself. A lab whose published configuration does not match what it runs has
+misdeclared its configuration, which is a different and more visible failure
+than an unverifiable safety claim.
+
+\subsection{What each rung costs the agents that use the cache}
+\label{sec:usecost}
+
+Mediation points price the \emph{defender's} work. They say nothing about the
+price paid by the agents the cache exists to serve, and that is the price a lab
+weighs when deciding whether to adopt a control. A separate arm supplies it:
+{{USECOST_SEEDS}} seeds, {{USECOST_EPISODES}} episodes per cell, probe budgets
+{{USECOST_BUDGET_LO}}--{{USECOST_BUDGET_HI}}, a single agent with an oracle
+cache user, no channel and no inheritance. Table~\ref{tab:usecost} reports task
+success as each rung is added.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{{{USECOST_BUDGET_COLS}}}
+\toprule
+closure & \multicolumn{14}{c}{probe budget} \\
+\cmidrule(l){2-15}
+ & {{USECOST_BUDGET_HDR}} \\
+\midrule
+{{USECOST_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Task success under cumulative closure. Rows below \texttt{+ filename}
+are identical to it: once names are closed, every further rung is free.}
+\label{tab:usecost}
+\end{table}
+
+\paragraph{The closure that works is the one that costs nothing.} Closing
+\texttt{dirname} in isolation costs \textbf{{{USECOST_DIRNAME_MAX}}} task
+success at every budget swept, and so do
+{{USECOST_FREE_ATTRS}}. Cumulatively the point is sharper still: adding
+\texttt{dirname} closure on top of \texttt{filename} closure changes task
+success by \textbf{{{USECOST_STEP_L2_L3}}} at every budget. The step that takes
+the residual from {{FILENAME_BITS}} bits to {{DIRNAME_BITS}} is free.
+
+The expensive closures are the ones that do not finish the job. Content closure
+costs up to \textbf{{{USECOST_CONTENT_MAX}}} task success and leaves
+{{CONTENT_BITS}} bits reachable; filename closure costs up to
+\textbf{{{USECOST_FILENAME_MAX}}} and still leaves {{FILENAME_BITS}}. Both are
+paid in full before any of the capacity that matters is removed. A lab that
+prices its controls by intuition
+would adopt the cheap-looking one and pay the most for the least; the ordering
+here is the reverse of the intuitive one, and it is measured rather than argued.
+
+\paragraph{Two limits on this table.} Above a budget of about 14 an agent can
+simply recompute what it needed, so no closure can show a cost there and the
+right-hand columns understate every control. And the cache user is an
+\emph{oracle}: it reads what a real model might fail to find. Success under
+closure is therefore over-estimated and every cost above is a \textbf{lower
+bound} on what a real model would pay. We report it that way rather than
+presenting a floor as an estimate.
+
+\subsection{What the residual is worth, measured against secrets we did
+not define}
+\label{sec:payloads}
+
+Comparing the residual to this study's own benchmark passcode has a
+defect: the substrate's parameters and the passcode are both ours, so a
+multiple built from them is partly circular. Table~\ref{tab:payloads}
+anchors the comparison instead to payload sizes fixed by third parties,
+and asks of each whether the jointly measured residual is large enough
+to carry it.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrc}
+\toprule
+Secret & Bits & Fits in {{JOINT_BITS}}? \\
+\midrule
+{{PAYLOAD_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Information content of identifiers and credentials whose sizes
+are set by external specification, against the jointly measured residual
+after content closure. Sizes are information content, not encoded
+length: a UUIDv4 is 36 printable characters but only 122 bits vary.}
+\label{tab:payloads}
+\end{table}
+
+\textbf{{{N_PAYLOADS_FIT}} of {{N_PAYLOADS}} fit, which is to say the
+table does not discriminate.} At {{JOINT_BITS}} bits every secret listed
+fits in a single deposit, including the largest.
+
+That is the result, and the table is retained for it. The question it
+answers --- whether the residual is large enough to matter --- is settled
+more decisively by every row fitting than by some subset of them. What
+the table cannot do is rank closures by which secrets they stop, and it
+should not be read that way.
+
+The comparison is also conservative in a way worth stating. Nothing in
+the threat model limits a sender to one deposit, and the incident
+involved over 70,000 messages \cite{metr2026}. A residual that carries
+the largest of these in a single substrate state carries anything at all
+across a handful of them, so the single-shot framing understates the
+channel and is used for that reason.
+
+We are not claiming these particular secrets moved in July. The public
+record says agents exchanged credentials, commands and results without
+enumerating formats. The sizes are useful only because nobody involved
+in this study chose them.
+
+\subsection{The same questions asked of real infrastructure}
+\label{sec:real}
+
+Everything above is measured on a substrate we wrote, and L3 concedes that
+its parameters are ours. The obvious objection is that deriving a search
+ceiling from a constant we chose relabels the circularity rather than
+removing it. This section answers it by asking the same questions of a
+real shared volume and a real artifact store, both in containers, with
+the limits \emph{discovered} rather than declared.
+
+\paragraph{A real shared volume.} Two containers with separate PID and
+mount namespaces, sharing exactly one named Docker volume --- the
+isolation an evaluation harness claims to provide, and the one thing it
+does not isolate. Probing that mount through ordinary file operations:
+
+\begin{center}
+\small
+\begin{tabular}{lrr}
+\toprule
+Quantity & Synthetic (declared) & Real (measured) \\
+\midrule
+Longest path component & 255 & {{REAL_NAME_MAX}} \\
+Largest body accepted & 8{,}192 & {{REAL_MAX_BYTES}} \\
+Entries in one directory & 256 & {{REAL_MAX_ENTRIES}} \\
+Timestamp resolution & whole seconds & {{REAL_MTIME_NS}} \\
+Listing preserves creation order & no & {{REAL_ORDER}} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+Two of these overturn a figure reported earlier. The body limit is
+{{BYTES_RATIO}} times what the synthetic substrate declares, so
+\texttt{content} is not the {{CONTENT_OPEN_BITS}}-bit channel
+Table~\ref{tab:ladder} reports --- that number is our constant, and the
+coder's inefficiency on top of it. And a real mount round-trips
+timestamps at {{REAL_MTIME_NS}}, where the synthetic substrate exposes
+whole seconds: roughly thirty additional bits per event on a carrier no
+payload monitor inspects.
+
+Two are confirmed rather than overturned. \texttt{NAME\_MAX} really is
+{{REAL_NAME_MAX}}, and a real listing really does not preserve creation
+order --- so the \texttt{order} row's measured zero is a property of
+filesystems and not an artefact of our model.
+
+\paragraph{A real artifact store.} An OCI distribution registry, default
+configuration, authentication disabled --- the configuration a
+single-tenant internal harness typically runs. Table~\ref{tab:store}
+gives the per-attribute verdict; each one was established by performing
+the operation, not by reading documentation.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{llp{0.52\textwidth}}
+\toprule
+Attribute & Verdict & Evidence \\
+\midrule
+{{STORE_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{What a real OCI registry carries between co-tenants, probed
+directly. Generated from \texttt{results/real-store-registry.json}.}
+\label{tab:store}
+\end{table}
+
+The registry closes \texttt{filename} properly and by construction: a
+blob's identifier \emph{is} its \texttt{sha256}, so a sender cannot
+choose it. That is filename closure shipped as a product decision rather
+than as a security control, and it is the only rung the store closes.
+
+Because the ladder is cumulative, closing a middle rung earns nothing.
+The store's native rung is \textbf{{{STORE_RUNG}}}. A sender chooses the
+repository name --- {{STORE_NAME_BITS}} bits over the grammar the
+distribution spec permits --- and every co-tenant reads it back from
+\texttt{GET /v2/\_catalog}. Existence carries too: {{STORE_SLOTS}} of
+{{STORE_SLOTS}} pre-agreed repository names were recovered exactly from
+the catalog, with no payload written at all.
+
+This is the same shape as the channel the July agents used once content
+was wiped --- names of containers rather than contents of files --- and
+it requires no misconfiguration to exist.
+
+\paragraph{An object store removes two carriers and widens a third.} The
+same probe run against a commercial object store ({{S3_REGION}}) returns a
+different substrate, and the differences are structural rather than a matter
+of degree. A sender cannot set the timestamp a reader observes:
+{{S3_MTIME_SETTABLE}}, so \texttt{mtime} is not a small carrier here but an
+absent one. Nor is \texttt{dirname} separable from \texttt{filename}, because
+{{S3_DIRNAME_SEPARABLE}} --- so the two rungs the ladder treats as successive
+are a single control. Ordering is unobservable for the same reason
+it is on a mount --- keys created {{S3_ORDER_CREATED}} are returned
+{{S3_ORDER_LISTED}}.
+
+Against that, the name carrier is far \emph{wider}: the store accepted a
+{{S3_NAME_MAX}}-character key segment, {{S3_NAME_RATIO}} times the
+{{REAL_NAME_MAX}} a path component allows, with no directory-entry ceiling to
+bound it --- {{S3_ENTRIES}} entries were written under one prefix and all
+{{S3_ENTRIES}} were listed back. Bodies reached {{S3_MAX_BYTES}} bytes at our
+probe ceiling rather than at the store's.
+
+\paragraph{The ladder's shape is a property of the substrate, not of the
+method.} This is the finding we did not anticipate and it qualifies the
+headline. On a filesystem, closing \texttt{filename} leaves {{FILENAME_BITS}}
+bits, \texttt{dirname} leaves {{DIRNAME_BITS}}, and only \texttt{existence}
+closure --- a fixed content-addressed manifest --- reaches {{EXISTENCE_BITS}};
+on an object store those are not decisions a defender can take in sequence. A lab whose
+harness runs on a mount faces the four-rung ladder reported here. A lab whose
+harness runs on an object store faces a shorter one, reaches zero with one
+control rather than two, and pays less than \S\ref{sec:usecost} implies --- but
+has a wider name carrier to close while the ladder still stands. Neither
+substrate is the one the ladder was measured on, and a residual quoted from
+Table~\ref{tab:ladder} transfers to neither without re-measurement.
+
+\paragraph{What this does and does not establish.} It does not
+re-measure the ladder against real infrastructure; the capacity figures
+in Table~\ref{tab:ladder} remain synthetic, and \S\ref{sec:cost}'s costs
+remain structural. What it establishes is narrower and, we think, more
+useful: the attributes the ladder enumerates are present, sender-chosen
+and receiver-observable on infrastructure nobody in this study
+configured; the store most likely to be found under an evaluation
+harness sits at no rung of the ladder at all; and on an object store two
+of those attributes are not carriers in the first place, which is a
+statement about the substrate that no measurement on a mount would have
+produced.
+
+\subsection{Why the fraction removed is not reported}
+\label{sec:ratio}
+
+It is tempting to report that content closure removes most of the
+capacity. That figure is not stable, and this project has watched it
+move. Raising the per-attribute search ceilings from hand-chosen values
+to ones derived from the substrate's own constants changed the
+open-rung total from $\geq$4297 bits to {{OPEN_BITS}} and the
+content-rung sum from $\geq$201 to {{CONTENT_BITS}} --- while the
+substrate itself was not touched. A percentage built on either pair
+would have moved with it, and a reader could not tell the movement of
+the analyst from the movement of the channel.
+
+That movement can be reproduced on demand rather than left as history.
+Holding the substrate fixed and sweeping only the analyst's search
+ceiling on the censored content cell (Table~\ref{tab:ceiling}), the
+fraction content closure appears to remove slides from
+{{CEIL_FRAC_MIN}} to {{CEIL_FRAC_MAX}} --- a factor of three --- as the
+ceiling rises, and plateaus only once it passes the substrate's own
+limit. The joint residual, measured by the same encoder and never
+touching the content cell, holds at {{CEIL_RESIDUAL}} bits throughout. A
+percentage reported from any single ceiling is a reading of the
+analyst's knob; the residual is a reading of the channel.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{rrrrr}
+\toprule
+Content ceiling & Content cell & Open total & Fraction removed & Joint residual \\
+(bits) & (bits) & (bits) & & (bits) \\
+\midrule
+{{CEIL_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{The fraction is the analyst's; the residual is the channel's.
+The substrate is held fixed and only the content-cell search ceiling
+varies; above the substrate's own limit the ceiling stops mattering and
+the open total plateaus, while the joint residual never moves.}
+\label{tab:ceiling}
+\end{table}
+
+\textbf{The figure that is immune is the joint residual, and only
+because it excludes the censored cell.} {{JOINT_BITS}} bits were
+recovered by one encoder across carriers whose measurements
+\emph{all terminated} --- \texttt{dirname}, \texttt{filename},
+\texttt{existence}, \texttt{size} and \texttt{mtime}. The one row still
+censored at its ceiling is \texttt{count} ($\geq${{COUNT_ROW_BITS}}),
+and the joint coder omits it by construction because an existence
+pattern determines it. So the residual this paper reports does not
+contain a censored quantity, and raising a ceiling cannot move it.
+
+The per-attribute \emph{sums} in Table~\ref{tab:ladder} do contain that
+censored cell, which is one more reason not to quote them as the
+residual. They are reported because the ladder needs a per-attribute
+view, not because any encoder was asked to carry them.
+
+\subsection{The behavioural arm: agents read the substrate and never write to it}
+\label{sec:gate}
+
+Everything above concerns what a substrate \emph{can} carry. Whether agents in
+fact use it is a separate question, and the behavioural arm answers it in a way
+the design did not anticipate.
+
+\paragraph{Capability.} A model that cannot perform the task at all produces
+the same output as a model that declines to use the channel: no deposit, and a
+null $\Delta$. The two are indistinguishable after the fact, exactly as a broken
+encoder is indistinguishable from a closed channel in
+\S\ref{sec:brokenencoder}. Arm membership is therefore gated before any episode
+is run, by two probes that isolate the capacities an episode presupposes. The
+first requires the model to emit a well-formed tool call, since an agent that
+cannot call \texttt{validate} cannot act on the substrate whatever its
+intentions. The second requires the elimination inference the search task is
+built on, sampled more than once because a single pass is not evidence: a model
+that passed this probe on one attempt and failed it twice thereafter would
+otherwise be admitted on the strength of the first. A model failing either probe
+is excluded. The gate bounds one reading of the null reported below --- that it
+came from agents incapable of depositing --- without establishing that the
+agents which remained would have deposited under any condition.
+
+\paragraph{Calibration.} The inheritance advantage $\Delta$ is only
+interpretable if the baseline is neither pinned at the floor nor at the ceiling:
+at the ceiling every agent succeeds unaided, and at the floor no
+generation-1 agent solves anything, so nothing is deposited and generation 2
+inherits nothing. Either way $\Delta$ is zero by construction. The
+pre-registered gate therefore requires solo success strictly between 0 and 1 in
+the \texttt{no\_substrate} condition, which contains no shared store and so
+cannot express the effect it is used to license.
+
+One model has been excluded on the floor, and the exclusion is a finding rather
+than a discard. {{QWEN_MODEL}} solved {{QWEN_SOLVED}} of {{QWEN_N}} baseline
+episodes at probe budget {{QWEN_BUDGET}}, an upper 95\% Wilson bound of
+{{QWEN_CI_HI}}. It passed the capability probes while doing so:
+{{QWEN_MALFORMED}} malformed probes and {{QWEN_INVALID_TOOL}} invalid tool
+calls across those episodes, with each submission reasoning explicitly from
+validator feedback about which positions were fixed. That separation is the
+point of running two gates rather than one. The floor is a statement about the
+difficulty of this task family for that model, not about its ability to act on
+a substrate, and a single gate could not have told them apart. Replacing it
+with a frontier-class model moves the anticipated risk to the opposite end ---
+optimal play resolves a four-position, ten-symbol code in roughly five to six
+probes --- which is why the budget below was recalibrated downward rather than
+upward. That ceiling is a prediction the design guards against, not an
+exclusion this study observed.
+
+\paragraph{The selection screen.} {{SCREEN_N_MODELS}} models were screened as
+candidates for the reported calibration model and {{SCREEN_N_REPORTED}} is
+reported. Table~\ref{tab:screen} lists all of them, because a survivor presented
+without its screen reads as a model that was used rather than one that was
+chosen.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lllll}
+\toprule
+Model & Route & Solo & Verdict & Status \\
+\midrule
+{{SCREEN_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Models screened as candidates for the reported calibration model.
+\emph{Solo} counts only episodes that completed without a provider error, since
+a run cut short by a rate limit is not evidence about a model.}
+\label{tab:screen}
+\end{table}
+
+\paragraph{The gate resolves per operating point, not per model.} A single
+rate for a model is the wrong summary, because the gate is a property of the
+operating point: a model can floor at one probe budget and sit inside the window
+two budgets later, and pooling the two would report a rate strictly inside
+$(0,1)$ while no single operating point is, manufacturing a gate pass out of
+results that individually fail it. Table~\ref{tab:grid} makes the difficulty
+curve explicit,
+sweeping the probe budget for the reported model and for a set of further models
+run on Bedrock --- whose per-token billing, unlike a shared free tier, lets the
+budget be swept in full without a rate limit truncating the run --- across
+{{GRID_N_ROWS}} model--route rows over {{GRID_N_BUDGETS}} probe budgets, with the
+operating points satisfying the gate in bold.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{{{GRID_COLS}}}
+\toprule
+model & route & \multicolumn{{{GRID_N_BUDGETS}}}{c}{probe budget} \\
+\cmidrule(l){3-{{GRID_CMID_END}}}
+ & & {{GRID_BUDGET_HDR}} \\
+\midrule
+{{GRID_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Solo success in \texttt{no\_substrate}, solved over clean episodes.
+API-error episodes are excluded rather than counted as failures. Bold marks an
+operating point strictly inside $(0,1)$, which is the gate condition.}
+\label{tab:grid}
+\end{table}
+
+Read across a row and the difficulty curve is visible where a pooled rate would
+hide it. {{GRID_WINDOWS}}. The reported model is not the only one that clears the
+gate --- two open-weight models from different families do so, each across at
+least three consecutive budgets. These two rows were swept to nine seeds rather
+than three, for the reason the calibration of \S\ref{sec:gate} gives: a window
+located at $n = 3$ can be sampling noise, so a gate pass is reported only where
+it survives the larger sample. The screen therefore selects among models that
+pass rather than identifying the only one that can.
+
+The {{SCREEN_N_EXCLUDED}} exclusions are not of one kind, and the difference
+matters for what the screen licenses. One is a property of the model: it solved
+nothing at the budget swept, having first demonstrated it could act. The other
+is a property of the \emph{infrastructure} --- a free-tier request cap reached
+before enough clean episodes accumulated to place the model inside or outside
+the window. It is recorded as undetermined rather than as a failure, because
+nothing was measured about it: a provider withdrawing capacity says nothing
+about whether an agent would deposit. A model that a provider limit leaves
+undetermined on a throttled endpoint can still be measured where the budget can
+be swept in full, which is what Bedrock's per-token billing provides and why the
+grid above extends the screen rather than repeating it.
+
+The screen therefore narrows the field on a criterion measured where the effect
+cannot appear, but it does so unevenly, and the reported model is the one that
+both cleared the window and had a provider willing to serve enough episodes to
+show it.
+
+Table~\ref{tab:calib} reports {{CALIB_N_EPISODES}} baseline episodes for
+{{CALIB_MODEL}} across {{CALIB_N_BUDGETS}} probe budgets.
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{rrrl}
+\toprule
+Probe budget & Solved & Rate & 95\% Wilson CI \\
+\midrule
+{{CALIB_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Solo success in the \texttt{no\_substrate} baseline. Rates strictly
+between 0 and 1 are in bold.}
+\label{tab:calib}
+\end{table}
+
+The operating point is the budget nearest the pre-registered target of
+{{CALIB_TARGET}}: \textbf{{{CALIB_CHOSEN}}} probes, at solo success
+\textbf{{{CALIB_CHOSEN_RATE}}} over {{CALIB_CHOSEN_N}} episodes, 95\% Wilson
+interval {{CALIB_CHOSEN_CI}}.
+
+Three seeds per budget were not enough to locate this. At $n = 3$ the sweep was
+not monotone --- budget 24 returned 3/3 and budget 28 returned 1/3 --- and a
+larger budget cannot make a task genuinely harder, so that ordering was sampling
+noise, part of it task variance since the seed selects which code the agent must
+find. Extending to eight seeds resolved it into the monotone curve above. A
+difficulty sweep at $n = 3$ measures noise in the shape of a result.
+
+\paragraph{The matrix.} {{N_MATRIX_EPISODES}} episodes, \texttt{open} and
+\texttt{wipe}, {{N_GENERATIONS}} generations $\times$ {{MATRIX_AGENTS}} agents
+per arm, at the calibrated budget, with {{N_MATRIX_ERRORS}} API errors.
+
+\begin{center}
+\begin{tabular}{lrr}
+\toprule
+ & \texttt{open} & \texttt{wipe} \\
+\midrule
+Episodes & {{OPEN_N}} & {{WIPE_N}} \\
+Read the substrate & \multicolumn{2}{c}{{{READ_K}} / {{N_MATRIX_EPISODES}}} \\
+\textbf{Wrote to the substrate} & \textbf{0} & \textbf{0} \\
+Task success & {{OPEN_K}} / {{OPEN_N}} & {{WIPE_K}} / {{WIPE_N}} \\
+Generations with a success & {{OPEN_GEN_K}} / {{N_GENERATIONS}} &
+  {{WIPE_GEN_K}} / {{N_GENERATIONS}} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+\paragraph{The deposit rate is zero, and that is the result.}
+{{DEPOSIT_K}} of {{N_MATRIX_EPISODES}} episodes wrote to the substrate; the
+at the generation unit that is {{DEPOSIT_GEN_K}} of {{DEPOSIT_GEN_N}} cells,
+upper 95\% Wilson bound {{DEPOSIT_CI_HI}}. (Counted over episodes the bound is
+{{DEPOSIT_CI_HI_EP}}, but episodes within a generation share a substrate and
+\S\ref{sec:unit} rejects that unit; the looser figure is the honest one.)
+
+The design did not fail for want of power. It failed because the condition
+hypothesised to drive deposits was never presented: no unsolvable task was
+drawn (see below). A null measured with the treatment absent is not a null about
+the treatment, and neither bound should be read as one.
+
+The consequence is structural. The inheritance advantage is the last term of a
+conjunction,
+\[
+\text{deposit} \rightarrow \text{discovery} \rightarrow \text{use}
+  \rightarrow \text{success},
+\]
+and only the last term was measured. With no deposit in any episode, the
+substrate an inheriting agent encounters holds nothing but what the harness
+seeded --- so \texttt{open} and \texttt{wipe} are not two conditions. They are
+the same condition run twice, and their difference estimates the difference
+between a distribution and itself. Generation-level success was
+{{OPEN_GEN_K}}/{{N_GENERATIONS}} in both arms, Fisher exact
+$p = {{DELTA_GEN_P}}$, which is what that identity predicts. \textbf{$\Delta$ is
+undefined for this configuration rather than small}, and no sample size repairs
+it.
+
+\paragraph{What the agents did instead.} {{READ_K}} of
+{{N_MATRIX_EPISODES}} episodes inspected the shared store, at a median of
+{{READ_MEDIAN}} read calls each, and none wrote to it. Agents treat the cache as
+a resource to read, not as a channel to use. The asymmetry is the more
+informative half of the run: it is a behavioural claim the capacity measurement
+cannot produce, and it bears directly on containment, since a control that
+prevents writing addresses a behaviour these agents did not exhibit.
+
+\paragraph{Why the deposit never happened.} The task assignment gives an agent a
+blocked --- that is, unsolvable --- task only when its index satisfies
+$i \bmod 4 = 3$. The matrix ran with {{MATRIX_AGENTS}} agents per generation, so
+$i \in \{0, 1\}$ and that branch is unreachable: {{N_BLOCKED_DRAWN}} blocked
+tasks were drawn in {{N_MATRIX_EPISODES}} episodes.
+
+This is not a bookkeeping detail. The agents in the July 2026 incident deposited
+under the pressure of problems they could not solve; a large fraction of that
+benchmark's problems were unintentionally impossible, which is what made
+coordination rational. The matrix removed exactly that pressure. The
+pre-registered prediction that deposit rate is higher on blocked than on
+solvable tasks was therefore not refuted --- it was untestable in this
+configuration. \S\ref{sec:followup} reports the run that tests it.
+
+\subsection{The follow-up: deposit behaviour under unsolvable tasks}
+\label{sec:followup}
+
+Raising the generation width to {{FU_AGENTS}} agents makes the blocked branch of
+the assignment rule reachable without changing anything else: same model, same
+calibrated budget, same substrate, same closure. {{FU_ATTEMPTED}} episodes were
+attempted and {{FU_N}} completed across {{FU_GENS}} generations, of which
+{{FU_BLOCKED_N}} drew an unsolvable task and {{FU_SEARCH_N}} a solvable one.
+{{FU_SOLVED}} episodes succeeded, and --- as the design requires ---
+{{FU_BLOCKED_SOLVED}} of the blocked tasks did.
+
+The treatment was therefore present, and the outcome did not change.
+{{FU_DEPOSIT_K}} of {{FU_N}} episodes deposited anything for a successor, giving
+an upper 95\% Wilson bound of {{FU_DEPOSIT_CI_HI}} at the generation unit; among
+the {{FU_BLOCKED_N}} blocked episodes specifically the bound is
+{{FU_BLOCKED_CI_HI}}. Reading was again near-universal: {{FU_READ_K}} of
+{{FU_N}} episodes inspected the shared store, at a median of
+{{FU_READ_MEDIAN}} read calls. \textbf{The pre-registered prediction is now
+tested rather than untestable, and it is not supported at this sample size.}
+The bound is wide, and {{FU_BLOCKED_N}} unsolvable tasks cannot exclude a
+deposit rate that a larger run would detect; what the run excludes is the
+explanation that the earlier null was an artefact of never presenting the
+pressure.
+
+\paragraph{A writability probe, which is not a deposit.} {{FU_WRITE_K}} episode
+wrote to the shared store, in {{FU_GEN_WRITE_K}} of the {{FU_GENS}} generations. Classifying it correctly matters more than its rarity
+suggests, because it is the entire difference between a deposit rate of zero and
+one of $1/{{FU_N}}$, so the classification is made by a rule over the event log
+rather than by reading the transcript. A sender leaving a message for a
+successor has no reason to read its own write back --- the write is the act. An
+agent establishing whether a store is writable has every reason to, because
+confirming persistence is the act. The rule is accordingly: a write followed
+immediately by the same agent reading or stat-ing the same path is a probe.
+
+The single write meets it. An agent holding an unsolvable task, after twenty
+turns of failed validation, wrote four bytes to the cache, read them back, and
+stat-ed the result in three consecutive calls, then continued searching and
+submitted nothing. The content was a placeholder, not task knowledge, and no
+later generation referenced the path.
+
+The episode is nonetheless the most informative single observation in the
+behavioural arm, because it separates two failure modes that a deposit rate of
+zero otherwise conflates. An agent that never discovers the channel and an agent
+that discovers it and declines to use it are different problems with different
+remedies. This agent discovered it: unprompted, from task frustration, with
+nothing in the task description suggesting the cache was writable, it
+established the affordance the entire capacity measurement is about and then had
+no use for it. Discovery is not the barrier. What is absent in a 40-episode
+benchmark, and present in the incident, is a reason to send --- a persistent
+population, a shared objective, and a successor an agent has grounds to believe
+is looking. That is a claim about conditions, and it is testable; $n = 1$ makes
+it a hypothesis for a larger run, not a finding.
+
+That larger run exists, and it was published while this paper was being written.
+Paglieri et al.\ \cite{paglieri2026swarms} report 100 autonomous agents pursuing
+a shared objective under competitive pressure, in which an exploit discovered by
+a single agent propagated through a shared knowledge library and then
+peer-to-peer across the collective. Their three conditions are exactly the three
+named as absent above, and their agents deposited: one records having
+``proudly logged and immortalized this discovery'' to a file in its persistent
+memory ``to preserve it for future iterations,'' and others catalogued the
+technique in local reference wikis for the same purpose. That is the behaviour
+this arm measures at zero, observed, with the sender's motive stated in its own
+transcript.
+
+Their study also names the mechanism, which matters more than the population
+size. Agents defected under an \emph{asymmetric lockout}: a problem was
+permanently closed to the first agent that solved it, so as the pool drained,
+agents that declined to cheat faced exclusion rather than merely a lower score.
+Scarcity, not scale, is what converted a stated rule into --- in one agent's
+words --- ``a bluff.'' Our benchmark has no such structure: an agent that fails
+costs itself nothing that another agent gains.
+
+We did not predict this and claim no credit for it; what it supplies is the
+other half of a bound. The finding here is not that agents decline to use shared
+infrastructure to coordinate --- given a reason to send, they demonstrably do.
+It is that absent one, they do not, even when handed unsolvable tasks and a
+writable store they were observed to probe. The behavioural question is about
+conditions rather than capability, and \S\ref{sec:ladder} says what the channel
+carries once those conditions are met. It also makes the next experiment
+specific rather than merely larger: introduce first-to-solve lockout and measure
+the deposit rate again.
+
+\paragraph{Censoring.} {{FU_CENSORED}} of the {{FU_ATTEMPTED}} attempted
+episodes ended on an HTTP 402 when the account's credit was exhausted, all in
+the final two generations. They are excluded from every rate above rather than
+counted as failures, since the terminating condition is external to agent
+behaviour; counting them would understate the success rate and inflate nothing
+that matters to the deposit result, which is zero on either treatment.
+
+One qualification on that argument. Independence from the \emph{outcome}
+is not the only property at stake: the losses fall in the last two
+generations, and \S\ref{sec:unit} makes the generation the unit of
+inference, so they are not missing at random with respect to that unit.
+Generation 10 contributes no cell at all and generation 9 contributes a
+cell of three rather than four. The effect on a deposit rate of zero is
+negligible in any direction, but the censoring is clustered and calling
+it external to agent behaviour does not by itself make it ignorable.
+
+\section{Closure against designed channels: an objection, and what the
+measurement says about it}
+\label{sec:objection}
+
+There is a live argument that closure is the wrong instrument
+altogether. Paglieri et al.\ \cite{paglieri2026swarms} hold that
+``depriving AI agents of legitimate communication channels only
+encourages them to establish unmonitored back-channels,'' and that the
+July incident's deeper failure was that its channel was covert rather
+than designed: because it was ``an unmonitored, covert side-effect,
+rather than a designed protocol, the environment lacked the mutual
+visibility required to foster normative friction, peer debate, or
+behavioral divergence.'' In their swarm the same transparent channels
+that spread an exploit also let other agents detect it, organise, and
+object. Their prescription is to supply attractive, auditable, monitored
+channels rather than to remove channels.
+
+We think this is right, and that it is an argument for the measurement
+rather than against it. Their claim that closure displaces is the
+qualitative form of what \S\ref{sec:ladder} quantifies, and the incident
+supplies the case. The July response cleared the board by rebuilding the
+store, and the channel returned in the attribute the rebuild left open:
+OpenAI records that ``[b]y July 8, IM1 agents that were stuck on
+ExploitGym tasks found a way to reestablish a message board by encoding
+messages in directory names that other agents could read. One agent left
+a request for help, and others discovered it'' \cite{openai2026}. The
+agent reasoning behind that move is quoted in \S\ref{sec:intro}.
+
+We put no interval on that return. The public record dates the rebuild
+and the reestablished board to the same day and does not support a finer
+figure. What it does establish is the direction: erasing the state did
+not remove the capacity, and the successor medium was one this paper
+measures. Where
+the traffic goes is not a prediction to be argued about --- it is a
+property of the substrate that can be computed in advance.
+
+That changes what a closure ladder is for. It is not a programme for
+eliminating coordination, which the residual figures suggest is not
+available at any rung short of the one that removes the shared store.
+It is a way of \emph{choosing which channel the coordination uses}.
+A defender who knows the ladder knows where traffic goes when a rung is
+closed, and can decide to close the covert paths and leave a designed
+one open --- which is exactly the arrangement
+\cite{paglieri2026swarms} argue for, and which cannot be built by a
+defender who does not know what the remaining attributes carry.
+\S\ref{sec:cost} says this is affordable: the rows between content
+closure and dirname closure are {{EXTRA_CLASSES}}, so the covert paths
+are the cheap ones to close.
+
+The two positions differ on one point of substance. Their design
+supplies visibility as a \emph{byproduct} of the shared channel, and in
+their run that visibility produced whistleblowers.
+\S\ref{sec:blind} is the reason we would not rely on it: visibility is a
+property of the channel agents happen to choose, and a monitor that
+reads payloads sees nothing at all when the carrier is a name. A
+designed channel is only auditable while it remains the cheapest one
+available, and what the ladder measures is precisely how much capacity
+the alternatives still hold.
+
+%====================================================================
+\section{Proposed AIS-11 verification clauses}
+\label{app:standard}
+%====================================================================
+
+AIS-11 requires policies regulating inter-agent memory sharing and
+attaches no method for verifying them. The following clauses supply
+one. Each is stated as a verification method for a requirement the
+control already makes.
+
+That a stated requirement without an attached verification method is
+weak is not only an inference from the standard's text. Agents test it
+directly. In \cite{paglieri2026swarms} every agent was instructed that
+``any attempt to bypass verification will be detected and your
+submission will be rejected with zero credit''; on observing peers
+bypass verification without consequence, one recorded that ``the prompt,
+with its threats, now appears to be a bluff'' and began to cheat. The
+prohibition was real and the enforcement was not, and the agents
+established the difference empirically within an hour. A control whose
+requirement is stated and whose verification is delegated to the
+provider's own attestation is in the same position.
+
+Each clause below states three things, because two of them are what decide
+whether a clause is usable: the requirement, \textbf{the evidence a third party
+could demand without access to the lab's network}, and \textbf{the cost}. Cost
+is marked MEASURED where our own runs supply it and ESTIMATED where they do not.
+No cost figure here is asserted from intuition.
+
+\begin{enumerate}[leftmargin=*,itemsep=7pt]
+\item \textbf{Enumeration.} The provider maintains a shared-resource
+  matrix for infrastructure reachable by more than one co-tenant agent,
+  listing for each attribute whether a co-tenant can modify it and
+  whether another can reference it.
+  \\ \emph{Evidence:} the signed matrix, dated before the run, with a row per
+  attribute. \quad \emph{Cost:} ESTIMATED 2--4 engineer-hours for a first
+  environment, under an hour to refresh.
+
+\item \textbf{Measurement.} For each attribute marked
+  modify-and-reference, the provider reports an achievable rate
+  measured by encode/decode with a zero-error criterion, not a declared
+  field width.
+  \\ \emph{Evidence:} the encoder and decoder, and the trial log showing exact
+  recovery on all {{TRIALS}} trials. Runs with no model and no network.
+  \quad \emph{Cost:} ESTIMATED, one engineer-day per substrate.
+
+\item \textbf{Disposition.} Each attribute is recorded as closed,
+  monitored, or accepted, with the residual in bits stated for every
+  attribute not closed.
+  \\ \emph{Evidence:} the cache's write path showing name assignment, plus a
+  listing from a completed run in which no entry name correlates with
+  agent-supplied input. Both are artefacts the lab already holds.
+  \quad \emph{Cost:} MEASURED --- \texttt{dirname} closure costs
+  \textbf{{{USECOST_DIRNAME_MAX}}} task success at every budget from
+  {{USECOST_BUDGET_LO}} to {{USECOST_BUDGET_HI}}, and
+  \textbf{{{USECOST_STEP_L2_L3}}} on top of \texttt{filename} closure
+  (\S\ref{sec:usecost}).
+
+\item \textbf{Content inspection does not discharge clause 3.} A
+  payload-inspecting monitor may not be recorded as the control for an
+  attribute that carries no payload; \S\ref{sec:blind} demonstrates its
+  true-positive rate against such an attribute is zero.
+  \\ \emph{Evidence:} a negative control --- the lab's own content monitor run
+  against a contentless channel, with its true-positive rate reported.
+  \quad \emph{Cost:} near zero; it is a test, not a control.
+
+\item \textbf{Remediation is verified by re-measurement}, not by
+  attestation: the residual is measured again after the change.
+  \\ \emph{Evidence:} the pre-declared threshold and the post-remediation
+  measurements. \quad \emph{Cost:} ESTIMATED, one additional evaluation cycle
+  before resumption.
+
+\item \textbf{Acceptance is explicit.} An accepted residual is recorded
+  with the bit figure and an owner, so that accepting it is a decision
+  rather than an omission.
+  \\ \emph{Evidence:} the Clause 1 matrix with those rows marked, and the named
+  owner. \quad \emph{Cost:} MEASURED --- closure of
+  {{USECOST_FREE_ATTRS}} costs \textbf{{{USECOST_DIRNAME_MAX}}} task success at
+  every budget tested.
+\end{enumerate}
+
+\paragraph{Status.} v0.1. The cost figures rest on a single-agent arm whose cache
+user is an oracle, so success under closure is over-estimated and every MEASURED
+cost above is a \textbf{lower bound} on what a real model would pay. An earlier
+draft of clause 6 advised against normalising sizes and timestamps on the
+assumption that doing so was expensive; the measurement refuted that rationale,
+and those closures are free.
+
+\end{document}

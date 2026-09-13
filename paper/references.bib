@@ -1,0 +1,207 @@
+@article{lampson1973,
+  author  = {Lampson, Butler W.},
+  title   = {A Note on the Confinement Problem},
+  journal = {Communications of the ACM},
+  volume  = {16},
+  number  = {10},
+  pages   = {613--615},
+  year    = {1973}
+}
+
+@techreport{tcsec1985,
+  author      = {{U.S. Department of Defense}},
+  title       = {Trusted Computer System Evaluation Criteria},
+  number      = {DoD 5200.28-STD},
+  institution = {National Computer Security Center},
+  year        = {1985},
+  note        = {Requires covert-channel analysis separately from its access-control requirements}
+}
+
+@article{kemmerer1983,
+  author  = {Kemmerer, Richard A.},
+  title   = {Shared Resource Matrix Methodology: An Approach to Identifying Storage and Timing Channels},
+  journal = {ACM Transactions on Computer Systems},
+  volume  = {1},
+  number  = {3},
+  pages   = {256--277},
+  year    = {1983}
+}
+
+@misc{csa_aicm,
+  author       = {{Cloud Security Alliance}},
+  title        = {{AI} Controls Matrix v1.1 --- Auditing Guidelines for Orchestrated Service Providers},
+  year         = {2026},
+  note         = {Controls AIS-11 (Agents Security Boundaries) and AIS-14 (AI Cache Protection)},
+  howpublished = {\url{https://cloudsecurityalliance.org/}}
+}
+
+@book{leveson2011,
+  author    = {Leveson, Nancy G.},
+  title     = {Engineering a Safer World: Systems Thinking Applied to Safety},
+  publisher = {MIT Press},
+  year      = {2011}
+}
+
+@misc{bowyer2025,
+  author = {Bowyer, Sam and others},
+  title  = {Position: Don't Use the {CLT} in {LLM} Evals with Fewer than a Few Hundred Datapoints},
+  year   = {2025},
+  note   = {Motivates the exact test used here in place of a normal approximation},
+  howpublished = {\url{https://arxiv.org/abs/2503.01747}}
+}
+
+@inproceedings{goguen1982,
+  author    = {Goguen, Joseph A. and Meseguer, Jos{\'e}},
+  title     = {Security Policies and Security Models},
+  booktitle = {Proceedings of the 1982 IEEE Symposium on Security and Privacy},
+  address   = {Oakland, CA},
+  pages     = {11--20},
+  year      = {1982},
+  doi       = {10.1109/SP.1982.10014},
+  note      = {The source of non-interference, the requirement this paper is written against.
+               Title, venue, pages and DOI verified 2026-09-05}
+}
+
+@inproceedings{millen1987,
+  author    = {Millen, Jonathan K.},
+  title     = {Covert Channel Capacity},
+  booktitle = {Proceedings of the 1987 IEEE Symposium on Security and Privacy},
+  address   = {Oakland, CA},
+  year      = {1987},
+  note      = {Connects Shannon capacity to the Goguen--Meseguer model, treating a reference
+               monitor as a state-transition automaton and the channel capacity as the measure
+               of covert information rate. Verified 2026-09-05}
+}
+
+@inproceedings{moskowitz1994,
+  author    = {Moskowitz, Ira S. and Kang, Myong H.},
+  title     = {Covert Channels --- Here to Stay?},
+  booktitle = {Proceedings of COMPASS '94: Computer Assurance},
+  address   = {Gaithersburg, MD},
+  pages     = {235--243},
+  month     = jun,
+  year      = {1994},
+  note      = {Verified 2026-09-05}
+}
+
+@inproceedings{motwani2024,
+  author    = {Motwani, Sumeet Ramesh and Baranchuk, Mikhail and Strohmeier, Martin and
+               Bolina, Vijay and Torr, Philip H. S. and Hammond, Lewis and Schroeder de Witt, Christian},
+  title     = {Secret Collusion among {AI} Agents: Multi-Agent Deception via Steganography},
+  booktitle = {Advances in Neural Information Processing Systems 38 (NeurIPS)},
+  year      = {2024},
+  note      = {arXiv:2402.07510, submitted 2024-02-12, revised 2025-07-25. Threat model is
+               steganography in the CONTENT of messages between communicating agents, not a
+               shared storage substrate. Title and author list verified against the arXiv API
+               2026-09-05},
+  url       = {https://arxiv.org/abs/2402.07510}
+}
+
+@misc{hf_disclosure2026,
+  author       = {{Hugging Face}},
+  title        = {Security Incident Disclosure --- July 2026},
+  year         = {2026},
+  month        = jul,
+  note         = {Retrieved 2026-09-04; SHA-256 866b9fe37a57000b...},
+  howpublished = {\url{https://huggingface.co/blog/security-incident-july-2026}}
+}
+
+@misc{hf_timeline2026,
+  author       = {{Hugging Face}},
+  title        = {Anatomy of a Frontier Lab Agent Intrusion: A Technical Timeline of the July 2026 Incident},
+  year         = {2026},
+  note         = {Retrieved 2026-09-04; SHA-256 94fb14df8c97104d...},
+  howpublished = {\url{https://huggingface.co/blog/agent-intrusion-technical-timeline}}
+}
+
+@misc{metr2026,
+  author       = {{METR} and {Redwood Research}},
+  title        = {Brief Independent Investigation of Agents' Behavior, Reasoning and Collaboration
+                  in the {OpenAI} / {Hugging Face} Hacking Incident},
+  year         = {2026},
+  month        = aug,
+  note         = {91 pages. Source of the population figures quoted here, verbatim: ``Roughly 1200
+                  agents meant to be isolated from one another found a way to communicate with one
+                  another on an unsanctioned message board, sending over 70,000 messages and files
+                  during the investigation period. Of these agents, 700 went on to participate in
+                  the attack on Hugging Face.'' Retrieved 2026-09-04; SHA-256 5b7d44d07be033d1...},
+  howpublished = {\url{https://metr.org/hugging-face-incident-report-aug-2026.pdf}}
+}
+
+@misc{openai2026,
+  author       = {{OpenAI}},
+  title        = {Hugging Face Model Evaluation Security Incident},
+  year         = {2026},
+  note         = {Retrieved 2026-09-04; SHA-256 b1cc141bb9313cfc...},
+  howpublished = {\url{https://openai.com/index/hugging-face-model-evaluation-security-incident/}}
+}
+
+@misc{huang2025whispering,
+  author       = {Huang, Kaibo and Wei, Yukun and Wu, Wansheng and Zhang, Tianhua and
+                  Yang, Zhongliang and Zhou, Linna},
+  title        = {Whispering Agents: An Event-driven Covert Communication Protocol
+                  For the Internet of Agents},
+  year         = {2025},
+  note         = {arXiv:2508.02188, submitted 2025-08-04, revised 2025-11-22. The nearest
+                  neighbour on the channel axis: covert communication between agents by
+                  modulating observable events rather than message content. Title, author list
+                  and dates verified against the arXiv API 2026-09-05},
+  howpublished = {\url{https://arxiv.org/abs/2508.02188}}
+}
+
+@misc{paglieri2026swarms,
+  author       = {Paglieri, Davide and Cross, Logan and Genewein, Tim and Leibo, Joel Z. and
+                  Tomasev, Nenad and Vezhnevets, Alexander Sasha},
+  title        = {A Case Study on Emergent Cheating and Whistleblowing in
+                  Autonomous Research Swarms},
+  year         = {2026},
+  note         = {arXiv:2609.04170, submitted 2026-09-03. 100 autonomous agents under
+                  competitive pressure; an exploit found by one agent propagates through a
+                  shared knowledge library and then peer-to-peer. Supplies the three conditions
+                  this paper names as absent from its own behavioural arm. Title, author list
+                  and date verified against the arXiv API 2026-09-05},
+  howpublished = {\url{https://arxiv.org/abs/2609.04170}}
+}
+
+@misc{metere2026monitor,
+  author       = {Metere, Alfredo},
+  title        = {An Application-Layer Multi-Modal Covert-Channel Reference Monitor
+                  for {LLM} Agent Egress},
+  year         = {2026},
+  note         = {arXiv:2605.20734, submitted 2026-05-20. Measures residual capacity with
+                  working encoders rather than declared widths; the threat model is egress from
+                  an agent, not flow between co-tenant agents through a shared store. Title,
+                  author and date verified against the arXiv API 2026-09-05},
+  howpublished = {\url{https://arxiv.org/abs/2605.20734}}
+}
+
+@article{denning1976,
+  author  = {Denning, Dorothy E.},
+  title   = {A Lattice Model of Secure Information Flow},
+  journal = {Communications of the ACM},
+  volume  = {19},
+  number  = {5},
+  pages   = {236--243},
+  year    = {1976},
+  note    = {Foundational information-flow control: the general-purpose control class for
+             flow through permitted operations.}
+}
+
+@inproceedings{myers1997,
+  author    = {Myers, Andrew C. and Liskov, Barbara},
+  title     = {A Decentralized Model for Information Flow Control},
+  booktitle = {Proceedings of the 16th ACM Symposium on Operating Systems Principles (SOSP)},
+  pages     = {129--142},
+  year      = {1997},
+  note      = {Decentralized information-flow control (DIFC); the ancestor of the
+               per-agent namespace remedy.}
+}
+
+@inproceedings{zeldovich2006,
+  author    = {Zeldovich, Nickolai and Boyd-Wickizer, Silas and Kohler, Eddie and Mazi\`{e}res, David},
+  title     = {Making Information Flow Explicit in {HiStar}},
+  booktitle = {Proceedings of the 7th USENIX Symposium on Operating Systems Design and Implementation (OSDI)},
+  pages     = {263--278},
+  year      = {2006},
+  note      = {A DIFC operating system built specifically to minimize covert storage channels.}
+}
