@@ -1599,9 +1599,46 @@ same-family checkpoints of similar size on one harness, since the
 sibling checkpoint used for the behavioural arm reaches solo success
 $0.50$ at a budget where this one is still at zero.
 
-What it does not do is lift the single-model limitation on the deposit
-rate. That still stands, and a second \emph{deposit} rate remains the
-most valuable missing measurement in this paper.
+\paragraph{A third model cleared the gate, and produced a weaker null.}
+{{M3_NAME}} passed calibration --- curve {{M3_CURVE}}, selecting budget
+{{M3_BUDGET}} --- and ran a full matrix: {{M3_EPISODES}} episodes, no
+API errors, {{M3_SOLVED}} solved, and {{M3_WRITES}} deposits. Taken
+alone that reads as a replication of the reported null. It is not one,
+and the reason is visible in the same records.
+
+The reported arm read the substrate in {{HK_READ_EPISODES}} of its
+episodes, {{HK_READ_CALLS}} read calls in total, and then deposited in
+almost none. {{M3_NAME}} read it in {{M3_READS}}. It called no substrate
+tool of any kind, and none of the private-workspace tools either, which
+are offered unconditionally: it used only the validator and the submit
+action, and brute-forced the code. A deposit rate of zero from an agent
+that examined the store {{HK_READ_CALLS}} times and declined is evidence
+about propensity. A deposit rate of zero from an agent that never looked
+is evidence about attention, and the two are not interchangeable. This
+is the same trap as \S\ref{sec:noeffect}: two nulls that are identical
+in the reported statistic and arise from different mechanisms.
+
+The arms are also not matched on affordance. Budgets are calibrated per
+model to equalise \emph{difficulty}, which is what the $\Delta$ design
+requires, but it leaves the reported arm at budget {{HK_BUDGET}} and
+this one at {{M3_BUDGET}} --- half the probes. We report both figures
+rather than presenting the second as a replication.
+
+A head-to-head is possible and we did not run it. Comparing the two
+measured curves, budget {{OVERLAP_BUDGET}} is the only point at which
+neither model is pinned: the reported arm sits at $0.17$ there and
+{{M3_NAME}} at $0.67$, both strictly inside $(0,1)$, so both can express
+$\Delta$. Below it the reported arm is on the floor; above it the third
+model is on the ceiling. Running both arms at budget {{OVERLAP_BUDGET}}
+would hold affordance constant and make substrate engagement directly
+comparable, at the cost of unequal difficulty, which would then be a
+reported covariate rather than a hidden asymmetry. That is the next
+measurement this paper needs.
+
+What none of this does is lift the single-model limitation on the
+deposit rate. That still stands. A second deposit rate from an arm that
+actually engages the substrate remains the most valuable missing
+measurement in this paper.
 
 %====================================================================
 \section{Discussion}

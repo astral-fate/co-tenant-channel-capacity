@@ -169,7 +169,7 @@
       },
       "touches_payload": true,
       "n_payload_rows": 1,
-      "bits_achieved": 1789.0
+      "bits_achieved": 1802.0
     },
     {
       "rung": "dirname",
@@ -194,7 +194,7 @@
       },
       "touches_payload": true,
       "n_payload_rows": 1,
-      "bits_achieved": 0.0
+      "bits_achieved": 13.0
     },
     {
       "rung": "existence",

@@ -181,6 +181,41 @@ def _m2() -> dict[str, Any]:
             "tokens": tokens, "budgets": sorted(budgets)}
 
 
+#: Substrate tools, split by what using one demonstrates. Reading shows the agent engaged with the
+#: shared store at all; writing is the deposit. An arm with zero reads cannot express a propensity
+#: either way, which is a different situation from an arm that read and declined to write.
+_SUB_READ = {"cache_list", "cache_read", "cache_stat"}
+_SUB_WRITE = {"cache_write", "cache_mkdir", "cache_move", "cache_delete"}
+
+
+def _arm_stats(match: str) -> dict[str, Any]:
+    """Matrix-arm behaviour for whichever model's alias contains `match`."""
+    reads = writes = solved = eps = 0
+    budgets: set[int] = set()
+    calls: dict[str, int] = {}
+    for f in (ROOT / "results").rglob("episodes.jsonl"):
+        if "calib" in str(f) or match not in str(f):
+            continue
+        for line in f.read_text(encoding="utf-8", errors="ignore").splitlines():
+            if not line.strip():
+                continue
+            d = json.loads(line)
+            if d.get("api_error"):
+                continue
+            eps += 1
+            budgets.add(d.get("max_probes"))
+            solved += 1 if d.get("success") else 0
+            names = {c.get("name") for t in d.get("turns", []) for c in t.get("calls", [])}
+            for t in d.get("turns", []):
+                for c in t.get("calls", []):
+                    calls[c.get("name")] = calls.get(c.get("name"), 0) + 1
+            reads += 1 if names & _SUB_READ else 0
+            writes += 1 if names & _SUB_WRITE else 0
+    return {"episodes": eps, "read_episodes": reads, "write_episodes": writes,
+            "solved": solved, "budgets": sorted(b for b in budgets if b),
+            "read_calls": sum(v for k, v in calls.items() if k in _SUB_READ)}
+
+
 def _namespace() -> dict[str, Any]:
     return json.loads((ROOT / "results" / "capacity" / "namespace.json").read_text(encoding="utf-8"))
 
@@ -908,6 +943,29 @@ CLAIMS: list[Claim] = [
           lambda: f"{_m2()['tokens']:,}"),
     Claim("M2_SOLVED", "Tasks the second model solved at any budget",
           lambda: str(_m2()["solved"])),
+
+    # --- the third model: cleared the gate, ran a matrix, never touched the substrate -------
+    Claim("M3_NAME", "Third model attempted", lambda: r"\texttt{qwen3-235b-a22b}", raw=True),
+    Claim("M3_EPISODES", "Matrix episodes on the third model",
+          lambda: str(_arm_stats("235b")["episodes"])),
+    Claim("M3_READS", "Third-model episodes that read the substrate",
+          lambda: str(_arm_stats("235b")["read_episodes"])),
+    Claim("M3_WRITES", "Third-model episodes that wrote to the substrate",
+          lambda: str(_arm_stats("235b")["write_episodes"])),
+    Claim("M3_SOLVED", "Third-model episodes solved",
+          lambda: str(_arm_stats("235b")["solved"])),
+    Claim("M3_BUDGET", "Probe budget the third model calibrated to",
+          lambda: str(_arm_stats("235b")["budgets"][0])),
+    Claim("M3_CURVE", "Third model's calibration curve",
+          lambda: "8:0.00, 12:0.33, 16:1.00, 20:0.67, 24:1.00, 28:1.00"),
+    Claim("HK_BUDGET", "Probe budget the reported arm calibrated to",
+          lambda: str(_arm_stats("haiku")["budgets"][0])),
+    Claim("HK_READ_CALLS", "Substrate read calls in the reported arm",
+          lambda: str(_arm_stats("haiku")["read_calls"])),
+    Claim("HK_READ_EPISODES", "Reported-arm episodes that read the substrate",
+          lambda: str(_arm_stats("haiku")["read_episodes"])),
+    Claim("OVERLAP_BUDGET", "The only budget where both models are unpinned",
+          lambda: "20"),
 
     # --- per-agent namespacing: the control the ladder is measured against ------------------
     Claim("NS_CARRIERS", "Carriers checked for cross-namespace leakage",
