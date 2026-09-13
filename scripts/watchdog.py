@@ -95,6 +95,12 @@ class Journal:
               " ".join(f"{k}={v}" for k, v in fields.items()), flush=True)
 
 
+#: Per-file (mtime, size) -> (clean, errored), so an unchanged log is not re-parsed. The tree holds
+#: 400+ episode files and the poll loop runs every 15s; re-reading all of them each time made the
+#: supervisor itself the heaviest process in the run.
+_COUNT_CACHE: dict[Path, tuple[float, int, int, int]] = {}
+
+
 def count_episodes(results_root: Path) -> tuple[int, int]:
     """(clean, api_error) episode counts across every episodes.jsonl under `results_root`.
 
@@ -104,6 +110,13 @@ def count_episodes(results_root: Path) -> tuple[int, int]:
     clean = errored = 0
     for f in results_root.rglob("episodes.jsonl"):
         try:
+            st = f.stat()
+            hit = _COUNT_CACHE.get(f)
+            if hit and hit[0] == st.st_mtime and hit[1] == st.st_size:
+                clean += hit[2]
+                errored += hit[3]
+                continue
+            c = e = 0
             for line in f.read_text(encoding="utf-8", errors="ignore").splitlines():
                 line = line.strip()
                 if not line:
@@ -113,9 +126,12 @@ def count_episodes(results_root: Path) -> tuple[int, int]:
                 except json.JSONDecodeError:
                     continue              # partial trailing line; the run skips it too
                 if d.get("api_error"):
-                    errored += 1
+                    e += 1
                 else:
-                    clean += 1
+                    c += 1
+            _COUNT_CACHE[f] = (st.st_mtime, st.st_size, c, e)
+            clean += c
+            errored += e
         except OSError:
             continue
     return clean, errored
@@ -192,6 +208,8 @@ def main(argv: list[str]) -> int:
     ap.add_argument("--fallback", default="",
                     help="comma-separated models to try, in order, when one is exhausted")
     ap.add_argument("--poll", type=int, default=15)
+    ap.add_argument("--heartbeat", type=int, default=180,
+                    help="seconds between liveness entries in the journal (default 180)")
     ap.add_argument("--journal", default=str(ROOT / "logs" / "watchdog.json"))
     ap.add_argument("--results", default=str(ROOT / "results"))
     ap.add_argument("rest", nargs=argparse.REMAINDER,
@@ -231,9 +249,20 @@ def main(argv: list[str]) -> int:
         last_clean, last_err = count_episodes(results)
         streak = 0
         reason = None
+        last_beat = 0.0
 
         while True:
             time.sleep(a.poll)
+
+            # A heartbeat every few minutes, so a stale journal distinguishes "supervisor is dead"
+            # from "episode is slow". Without it the two look identical from outside, and today
+            # they were confused for an hour.
+            if time.time() - last_beat > a.heartbeat:
+                last_beat = time.time()
+                c, e = count_episodes(results)
+                journal.add("heartbeat", clean=c, api_error=e,
+                            child_idle_s=int(child.idle_seconds()), streak=streak)
+
             rc = child.proc.poll() if child.proc else None
 
             if rc is not None:
@@ -289,5 +318,53 @@ def main(argv: list[str]) -> int:
         journal.add("restarting", after=reason, restarts=restarts)
 
 
+def _guarded(argv: list[str]) -> int:
+    """Run `main`, but never die without saying why.
+
+    The supervisor's first outing ended with its journal stopping at `launched` and nothing after:
+    child gone, supervisor gone, no restart, no record. A supervisor that cannot outlive its child
+    is not a supervisor, and one that dies without a note is worse than none, because the silence
+    is indistinguishable from a healthy long episode.
+
+    So: every exit path journals. An unhandled exception is recorded with its traceback before it
+    propagates, and a signal is recorded before the process goes. Neither prevents the death --
+    an OOM kill or a SIGKILL still cannot be caught -- but a `.pid` file plus a heartbeat means
+    the next look can tell "supervisor died at 17:50" from "episode is just slow", which is the
+    distinction that cost an hour today.
+    """
+    import atexit
+    import traceback
+
+    journal = Journal(Path(ROOT / "logs" / "watchdog.json"))
+    pid_file = ROOT / "logs" / "watchdog.pid"
+    pid_file.write_text(f"{os.getpid()}\n{now()}\n", encoding="utf-8")
+
+    def farewell(kind: str, **fields) -> None:
+        try:
+            journal.add(kind, **fields)
+        except Exception:                      # journalling must never mask the real cause
+            pass
+
+    atexit.register(lambda: pid_file.unlink(missing_ok=True))
+
+    for signame in ("SIGTERM", "SIGINT", "SIGBREAK"):
+        sig = getattr(signal, signame, None)
+        if sig is None:
+            continue
+        try:
+            signal.signal(sig, lambda s, _f: (farewell("supervisor-signalled", signal=s),
+                                              sys.exit(130)))
+        except (ValueError, OSError):
+            pass                                # not all signals are settable on every platform
+
+    try:
+        return main(argv)
+    except Exception:
+        farewell("supervisor-crashed", traceback=traceback.format_exc()[-1500:])
+        raise
+    finally:
+        farewell("supervisor-exiting", pid=os.getpid())
+
+
 if __name__ == "__main__":
-    raise SystemExit(main(sys.argv[1:]))
+    raise SystemExit(_guarded(sys.argv[1:]))
