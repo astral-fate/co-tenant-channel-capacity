@@ -216,11 +216,19 @@ def main(argv: list[str]) -> int:
             print("\ncheck failed -- the tree is inconsistent; nothing downstream is trustworthy")
             return 1
 
+    # A stage's manifest entry says a stage passed; it does not say which MODEL it passed for, and
+    # the manifest is keyed by stage alone. Recording the model in the note and checking it here
+    # keeps "gate ok" from meaning "some other model's gate was ok" -- the same defect that let a
+    # qwen3-32b run inherit a groq checkpoint's probe budget.
+    def gate_ok_for(model: str) -> bool:
+        e = man.get("gate", {})
+        return e.get("status") == "ok" and e.get("note", "").endswith(model)
+
     # ---- gate ----------------------------------------------------------------------------
     if "gate" in wanted:
         r = StageResult("gate", log=str(LOGS / "gate.log"))
-        if done("gate"):
-            r.status, r.note = "skipped", "already ok in manifest"
+        if done("gate") and gate_ok_for(a.model):
+            r.status, r.note = "skipped", f"already ok for {a.model}"
         else:
             t0 = time.time()
             r.started = time.strftime("%Y-%m-%dT%H:%M:%S")
@@ -231,6 +239,7 @@ def main(argv: list[str]) -> int:
                                "--min-passes", str(cfg["min_passes"])], Path(r.log))
             r.seconds = round(time.time() - t0, 1)
             r.status = "ok" if r.exit_code == 0 else "failed"
+            r.note = f"passed for {a.model}" if r.status == "ok" else f"failed for {a.model}"
         order.append(r)
         man[r.name] = asdict(r)
         save_manifest(man)
@@ -244,6 +253,22 @@ def main(argv: list[str]) -> int:
 
     if "calibrate" in wanted:
         r = StageResult("calibrate", log=str(LOGS / "calibrate.log"))
+        # The docstring calls these stages "in dependency order", and matrix already refuses to run
+        # without calibrate. Calibrate had no matching guard, so the CHEAP filter could be skipped
+        # while the expensive stage it protects went ahead: a qwen3-32b sweep spent 18 episodes and
+        # two hours reaching a floor after `--stages calibrate,matrix` had quietly omitted a gate
+        # costing seconds. Model-scoped, because a gate pass belongs to a model, not the pipeline.
+        if "gate" not in force and "all" not in force and not gate_ok_for(a.model):
+            r.status = "failed"
+            r.note = (f"no passing gate for {a.model}; run --stages gate first "
+                      f"(or --force gate to override)")
+            order.append(r)
+            man[r.name] = asdict(r)
+            save_manifest(man)
+            print(f"\nCALIBRATION NOT RUN: {r.note}\n"
+                  f"The gate is three samples and seconds; a calibration sweep is ~18 episodes "
+                  f"and hours. Screening first is the cheaper order.")
+            return 1
         if done("calibrate") and max_probes:
             r.status, r.note = "skipped", f"max_probes={max_probes}"
         else:
