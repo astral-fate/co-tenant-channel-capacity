@@ -347,7 +347,12 @@ def _guarded(argv: list[str]) -> int:
 
     atexit.register(lambda: pid_file.unlink(missing_ok=True))
 
-    for signame in ("SIGTERM", "SIGINT", "SIGBREAK"):
+    # SIGTERM and SIGINT only. NOT SIGBREAK: a process started with `Start-Process -WindowStyle
+    # Hidden` receives one immediately on Windows, and the first version of this handler dutifully
+    # exited on it -- the supervisor killed itself within seconds of launch, journalling
+    # "supervisor-signalled signal=21" as its own cause of death. The instrumentation was right and
+    # the handler was the bug. A spurious console-control event is not a shutdown request.
+    for signame in ("SIGTERM", "SIGINT"):
         sig = getattr(signal, signame, None)
         if sig is None:
             continue
@@ -356,6 +361,15 @@ def _guarded(argv: list[str]) -> int:
                                               sys.exit(130)))
         except (ValueError, OSError):
             pass                                # not all signals are settable on every platform
+
+    # Recorded, never obeyed -- so a stray console event is visible in the journal without ending
+    # the run.
+    sigbreak = getattr(signal, "SIGBREAK", None)
+    if sigbreak is not None:
+        try:
+            signal.signal(sigbreak, lambda s, _f: farewell("sigbreak-ignored", signal=s))
+        except (ValueError, OSError):
+            pass
 
     try:
         return main(argv)
