@@ -318,15 +318,86 @@ class GroqProvider(OpenAIProvider):
 
     family = "groq"
 
-    def __init__(self, model: str = "openai/gpt-oss-20b", max_tokens: int = 2048):
-        from openai import OpenAI
+    #: Substrings meaning "this key's budget is spent", as distinct from "slow down". A per-minute
+    #: rate limit is transient and `_retry` absorbs it; these do not clear by waiting inside an
+    #: episode, and the only useful response is a different key. Keep this list narrow: treating a
+    #: transient 429 as exhaustion would burn every spare key in the first minute of a run.
+    QUOTA_MARKERS = (
+        "tokens per day", "tpd", "requests per day", "rpd",
+        "quota exceeded", "insufficient_quota", "daily limit",
+        "billing", "payment required", "out of credits",
+    )
 
-        key = os.environ.get("GROQ_API_KEY")
-        if not key:
-            raise RuntimeError("GROQ_API_KEY is not set")
-        self.client = OpenAI(api_key=key, base_url="https://api.groq.com/openai/v1")
+    def __init__(self, model: str = "openai/gpt-oss-20b", max_tokens: int = 2048):
+        keys = self._collect_keys()
+        if not keys:
+            raise RuntimeError("no Groq key set (GROQ_API_KEYS, GROQ_API_KEY, GROQ_API_KEY_2, ...)")
+        self._keys = keys
+        self._key_index = 0
         self.model = model
         self.max_tokens = max_tokens
+        self._connect()
+
+    @staticmethod
+    def _collect_keys() -> list[str]:
+        """Keys in priority order, de-duplicated.
+
+        `GROQ_API_KEYS` (comma-separated) wins if set; otherwise the numbered forms are read in
+        order. Numbered variables rather than repeated `GROQ_API_KEY=` lines because `load_env`
+        routes by key PREFIX and uses `setdefault`, so a second `gsk_` line would be silently
+        dropped -- a failure that looks like the fallback simply never firing.
+        """
+        joined = os.environ.get("GROQ_API_KEYS", "")
+        raw = [k.strip() for k in joined.split(",")] if joined else []
+        if not raw:
+            raw = [os.environ.get("GROQ_API_KEY", "")]
+            i = 2
+            while os.environ.get(f"GROQ_API_KEY_{i}"):
+                raw.append(os.environ[f"GROQ_API_KEY_{i}"])
+                i += 1
+        seen, out = set(), []
+        for k in raw:
+            if k and k not in seen:
+                seen.add(k)
+                out.append(k)
+        return out
+
+    def _connect(self) -> None:
+        from openai import OpenAI
+        self.client = OpenAI(api_key=self._keys[self._key_index],
+                             base_url="https://api.groq.com/openai/v1")
+
+    def _advance_key(self) -> bool:
+        """Move to the next key. False when there is none left."""
+        if self._key_index + 1 >= len(self._keys):
+            return False
+        self._key_index += 1
+        self._connect()
+        # Identify by position and last four characters only; a key never reaches a log or a
+        # transcript in this project.
+        print(f"[groq] primary key exhausted; rotating to key {self._key_index + 1}"
+              f"/{len(self._keys)} (...{self._keys[self._key_index][-4:]})", flush=True)
+        return True
+
+    def _is_quota(self, exc: Exception) -> bool:
+        msg = str(exc).lower()
+        return any(m in msg for m in self.QUOTA_MARKERS)
+
+    def step(self, system, messages, tools):
+        """Delegate to the OpenAI-compatible step, rotating keys on exhaustion.
+
+        Rotation sits here rather than inside `_retry` because the two handle different failures.
+        `_retry` waits out a transient fault on one key; this swaps the key when waiting cannot
+        help. A run therefore continues across a spent daily budget without restarting, and the
+        rotation is announced so the record shows which key produced which episodes.
+        """
+        while True:
+            try:
+                return super().step(system, messages, tools)
+            except Exception as exc:  # noqa: BLE001 - provider SDKs raise heterogeneous types
+                if self._is_quota(exc) and self._advance_key():
+                    continue
+                raise
 
 
 class NvidiaProvider(OpenAIProvider):
