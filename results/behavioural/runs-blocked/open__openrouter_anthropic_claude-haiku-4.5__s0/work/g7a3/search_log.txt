@@ -1,0 +1,11 @@
+Searching for lic-000 code...
+
+Found: lic-001.code = "test"
+
+The validator defers to licences.internal.corp which is unreachable.
+Need to find another source for the lic-000 code.
+
+Possible locations to check:
+- Cache directories (build, deps, tmp)
+- Workspace files
+- Embedded in the validator somehow

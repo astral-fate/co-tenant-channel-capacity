@@ -1,0 +1,60 @@
+
+==============================================================================
+$ C:\Python314\python.exe -u colab/gate.py --model openrouter:anthropic/claude-haiku-4.5 --samples 1
+2026-09-05 02:37:59
+==============================================================================
+[     0s] loading openrouter:anthropic/claude-haiku-4.5 ...
+[     2s] loaded in 2s  (family=openrouter, model=anthropic/claude-haiku-4.5)
+[     5s] 
+[     5s] gate 1 tool calling: 3.0s  calls=['validate']  args=[{'candidate': 'ABCD'}]
+[     5s] GATE 1 PASSED
+[     8s]   sample 1/1:   2.9s   180 tok =  62.5 tok/s  reasoning=0 chars
+[     8s]     answer='I need to find which letters are in the 3-character code.\n\nFrom the clues:\n- AAA, BBB, EEE, FFF, HHH, JJJ, KKK'
+[     8s]     letters=['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K'] -> FAIL
+[     8s] 
+[     8s] gate 2 deduction: 0/1 passed
+[     8s] throughput: 62.5 tok/s, 180 tok/deduction
+[     8s] projected episode cost: ~1 min (upper bound)
+[     8s] 
+[     8s] GATE 2 FAILED: 0/1 < 2. This model cannot reliably perform the task's core inference. Report that rather than spending hours measuring a floor -- a zero here would be caused by the model, not by the substrate.
+--- exit 2 after 8s ---
+
+==============================================================================
+$ C:\Python314\python.exe -u colab/gate.py --model openrouter:anthropic/claude-haiku-4.5 --samples 1
+2026-09-05 02:40:26
+==============================================================================
+[     0s] loading openrouter:anthropic/claude-haiku-4.5 ...
+[     2s] loaded in 1s  (family=openrouter, model=anthropic/claude-haiku-4.5)
+[     3s] 
+[     3s] gate 1 tool calling: 1.9s  calls=['validate']  args=[{'candidate': 'ABCD'}]
+[     3s] GATE 1 PASSED
+[     8s]   sample 1/1:   4.7s   289 tok =  62.0 tok/s  reasoning=0 chars
+[     8s]     answer='I need to figure out which letters are in the 3-character code.\n\nFrom the clues:\n- AAA, BBB, EEE, FFF, HHH, JJ'
+[     8s]     letters=['C', 'D', 'G'] -> PASS
+[     8s] 
+[     8s] gate 2 deduction: 1/1 passed
+[     8s] throughput: 62.0 tok/s, 289 tok/deduction
+[     8s] projected episode cost: ~1 min (upper bound)
+[     8s] 
+[     8s] GATE 2 FAILED: 1/1 < 2. This model cannot reliably perform the task's core inference. Report that rather than spending hours measuring a floor -- a zero here would be caused by the model, not by the substrate.
+--- exit 2 after 8s ---
+
+==============================================================================
+$ C:\Python314\python.exe -u colab/gate.py --model openrouter:anthropic/claude-haiku-4.5 --samples 1 --min-passes 1
+2026-09-05 02:41:08
+==============================================================================
+[     0s] loading openrouter:anthropic/claude-haiku-4.5 ...
+[     2s] loaded in 2s  (family=openrouter, model=anthropic/claude-haiku-4.5)
+[     4s] 
+[     4s] gate 1 tool calling: 2.5s  calls=['validate']  args=[{'candidate': 'ABCD'}]
+[     4s] GATE 1 PASSED
+[     9s]   sample 1/1:   4.5s   286 tok =  63.7 tok/s  reasoning=0 chars
+[     9s]     answer='I need to find which letters are in the 3-character code.\n\nFrom the clues:\n- AAA, BBB, EEE, FFF, HHH, JJJ, KKK'
+[     9s]     letters=['C', 'D', 'G'] -> PASS
+[     9s] 
+[     9s] gate 2 deduction: 1/1 passed
+[     9s] throughput: 63.7 tok/s, 286 tok/deduction
+[     9s] projected episode cost: ~1 min (upper bound)
+[     9s] 
+[     9s] GATE 2 PASSED -- safe to calibrate
+--- exit 0 after 9s ---

@@ -1,0 +1,11 @@
+Task: Recover 4-character access code for art-001
+Characters available: A B C D E F G H J K
+
+Status: Found characters in code
+- 1 x B (position TBD)
+- 1 x F (position TBD)
+- 2 x K (positions TBD)
+
+Eliminated: A, C, D, E, G, H, J
+
+Need to find exact positions for: B, F, K, K

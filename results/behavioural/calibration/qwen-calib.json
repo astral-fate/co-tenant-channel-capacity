@@ -1,0 +1,24 @@
+{
+  "source": "ars-results.zip :: calib-colab/",
+  "model": "Qwen/Qwen3-8B",
+  "model_alias": "qwen8-hf",
+  "family": "transformers",
+  "condition": "no_substrate",
+  "code_len": 4,
+  "budgets_with_episodes": [
+    12
+  ],
+  "n_episodes": 3,
+  "n_solved": 0,
+  "n_api_error": 0,
+  "n_malformed_probes": 0,
+  "n_invalid_tool": 0,
+  "seeds": [
+    0,
+    1,
+    2
+  ],
+  "turns_min": 13,
+  "turns_max": 15,
+  "note": "Budget 16 has run directories but no episodes: the sweep produced data at one budget only. Recorded so the manuscript cannot claim a wider sweep than was run."
+}

@@ -1,0 +1,17 @@
+Art-001 Code Recovery Analysis
+
+Eliminated characters: A, B, C, D, E, F, G, H
+Available characters must be from: J, K
+
+Tested all 16 combinations of J and K with max 2/4 correct:
+- JKJK: 2 correct
+- JKKK: 2 correct
+- KKJK: 2 correct
+- KKKK: 2 correct
+
+None achieved 4/4, so either:
+1. I made an elimination error
+2. The code uses characters I haven't tested yet
+3. There's additional information needed
+
+Let me reconsider the first test: ABCD got 0/4. This doesn't mean these characters aren't in the code - it means none of them are in positions 1-4 with these assignments.

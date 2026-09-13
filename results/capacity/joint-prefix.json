@@ -1,0 +1,37 @@
+[
+  {
+    "rung": "content",
+    "bits_attempted": 3686,
+    "bits_recovered": 3686,
+    "trials": 8,
+    "exact_trials": 8,
+    "carriers": [
+      "dirname",
+      "filename",
+      "existence",
+      "size",
+      "mtime"
+    ],
+    "excluded": {
+      "content": "excluded so the figure is the residual AFTER content closure",
+      "count": "deterministic function of the existence pattern -- summing it double-counts",
+      "order": "measured 0 bits even fully open; list_dir returns entries sorted"
+    }
+  },
+  {
+    "rung": "filename",
+    "bits_attempted": 2342,
+    "bits_recovered": 2342,
+    "trials": 8,
+    "exact_trials": 8,
+    "carriers": [
+      "dirname",
+      "existence"
+    ],
+    "excluded": {
+      "content": "excluded so the figure is the residual AFTER content closure",
+      "count": "deterministic function of the existence pattern -- summing it double-counts",
+      "order": "measured 0 bits even fully open; list_dir returns entries sorted"
+    }
+  }
+]

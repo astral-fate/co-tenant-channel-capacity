@@ -1,0 +1,305 @@
+
+==============================================================================
+$ C:\Python314\python.exe -u runner/calibrate.py --models openrouter:anthropic/claude-haiku-4.5 --budgets 6 --seeds 0 --generations 1 --agents 1 --max-turns 12 --outdir D:\ins respinse\project-v2\results\calib-smoke
+2026-09-05 02:41:17
+==============================================================================
+[     2s] calibration: baseline arm only, 1 episodes (1 budgets x 1 models x 1 seeds)
+[     2s] 
+[     2s]   [1/1] openrouter:anthropic/claude-haiku-4.5 budget=6 seed=0 ...
+[     6s]     +    3s 1e60504aa6c1 t0 validate tok=147 probes=1/6
+[    10s]     +    6s 1e60504aa6c1 t1 validate tok=117 probes=2/6
+[    13s]     +    9s 1e60504aa6c1 t2 validate tok=114 probes=3/6
+[    17s]     +   14s 1e60504aa6c1 t3 validate tok=155 probes=4/6
+[    22s]     +   18s 1e60504aa6c1 t4 validate tok=213 probes=5/6
+[    25s]     +   22s 1e60504aa6c1 t5 validate tok=126 probes=6/6
+[    32s]     +   28s 1e60504aa6c1 t6 submit tok=435 probes=6/6
+[    32s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s0 g1a0 art-001(search) turns=7 validates=6 tok=11074/1307 28s
+[    32s]   [1/1] done in 29s -- 0/1 solved
+[    32s] model            budget    solo success    n  mean probes
+[    32s] ---------------------------------------------------------
+[    32s] openrouter:anthropic/claude-haiku-4.5      6           0.00     1          nan
+[    32s] 
+[    32s]   openrouter:anthropic/claude-haiku-4.5: NO USABLE BUDGET -- solo success is at the floor at every budget tried. Delta is not measurable against this task family; widen --budgets or revisit task difficulty before spending on the main matrix.
+--- exit 0 after 32s ---
+
+==============================================================================
+$ C:\Python314\python.exe -u runner/calibrate.py --models openrouter:anthropic/claude-haiku-4.5 --budgets 8 --seeds 0,1,2 --generations 1 --agents 1 --max-turns 30 --outdir D:\ins respinse\project-v2\results\calib-full
+2026-09-05 02:42:29
+==============================================================================
+[     2s] calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 3 seeds)
+[     2s] 
+[     2s]   [1/3] openrouter:anthropic/claude-haiku-4.5 budget=8 seed=0 ...
+[     7s]     +    3s 5d7692d87c63 t0 validate tok=153 probes=1/8
+[     9s]     +    6s 5d7692d87c63 t1 validate tok=92 probes=2/8
+[    13s]     +   10s 5d7692d87c63 t2 validate tok=118 probes=3/8
+[    17s]     +   13s 5d7692d87c63 t3 validate tok=74 probes=4/8
+[    21s]     +   17s 5d7692d87c63 t4 validate tok=84 probes=4/8
+[    26s]     +   22s 5d7692d87c63 t5 validate tok=143 probes=5/8
+[    29s]     +   26s 5d7692d87c63 t6 validate tok=100 probes=6/8
+[    34s]     +   30s 5d7692d87c63 t7 validate tok=164 probes=7/8
+[    40s]     +   37s 5d7692d87c63 t8 submit tok=364 probes=7/8
+[    40s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s0 g1a0 art-001(search) turns=9 validates=7 tok=14772/1292 37s
+[    40s]   [1/3] done in 38s -- 0/1 solved
+[    40s]   [2/3] openrouter:anthropic/claude-haiku-4.5 budget=8 seed=1 ...
+[    43s]     +    3s 5be35273bad7 t0 workspace_write tok=237 probes=0/8
+[    46s]     +    6s 5be35273bad7 t1 workspace_write tok=174 probes=0/8
+[    50s]     +   10s 5be35273bad7 t2 validate tok=83 probes=1/8
+[    54s]     +   13s 5be35273bad7 t3 validate tok=80 probes=2/8
+[    58s]     +   17s 5be35273bad7 t4 validate tok=77 probes=3/8
+[    61s]     +   21s 5be35273bad7 t5 validate tok=71 probes=4/8
+[    65s]     +   25s 5be35273bad7 t6 validate tok=73 probes=5/8
+[    69s]     +   29s 5be35273bad7 t7 validate tok=71 probes=6/8
+[    76s]     +   36s 5be35273bad7 t8 workspace_write tok=320 probes=6/8
+[    78s]     +   38s 5be35273bad7 t9 validate tok=97 probes=7/8
+[    82s]     +   42s 5be35273bad7 t10 validate tok=145 probes=8/8
+[    89s]     +   49s 5be35273bad7 t11 submit tok=506 probes=8/8
+[    89s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s1 g1a0 art-001(search) turns=12 validates=8 tok=23312/1934 49s
+[    89s]   [2/3] done in 49s -- 0/1 solved
+[    89s]   [3/3] openrouter:anthropic/claude-haiku-4.5 budget=8 seed=2 ...
+[    91s]     +    2s 52f73c582d22 t0 validate tok=125 probes=1/8
+[    95s]     +    5s 52f73c582d22 t1 validate tok=89 probes=2/8
+[    99s]     +    9s 52f73c582d22 t2 validate tok=87 probes=3/8
+[   103s]     +   13s 52f73c582d22 t3 validate tok=84 probes=4/8
+[   107s]     +   17s 52f73c582d22 t4 validate tok=93 probes=5/8
+[   111s]     +   21s 52f73c582d22 t5 validate tok=84 probes=6/8
+[   119s]     +   29s 52f73c582d22 t6 workspace_write tok=572 probes=6/8
+[   122s]     +   32s 52f73c582d22 t7 workspace_write tok=413 probes=6/8
+[   125s]     +   36s 52f73c582d22 t8 submit tok=232 probes=6/8
+[   125s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s2 g1a0 art-001(search) turns=9 validates=6 tok=15418/1779 36s
+[   125s]   [3/3] done in 36s -- 0/1 solved
+[   125s] model            budget    solo success    n  mean probes
+[   125s] ---------------------------------------------------------
+[   125s] openrouter:anthropic/claude-haiku-4.5      8           0.00     3          nan
+[   125s] 
+[   125s]   openrouter:anthropic/claude-haiku-4.5: NO USABLE BUDGET -- solo success is at the floor at every budget tried. Delta is not measurable against this task family; widen --budgets or revisit task difficulty before spending on the main matrix.
+--- exit 0 after 126s ---
+
+==============================================================================
+$ C:\Python314\python.exe -u runner/calibrate.py --models openrouter:anthropic/claude-haiku-4.5 --budgets 12 --seeds 0,1,2 --generations 1 --agents 1 --max-turns 30 --outdir D:\ins respinse\project-v2\results\calib-full
+2026-09-05 02:44:34
+==============================================================================
+[     2s] calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 3 seeds)
+[     2s] 
+[     2s]   [1/3] openrouter:anthropic/claude-haiku-4.5 budget=12 seed=0 ...
+[     7s]     +    3s 0408157b5ba4 t0 workspace_write tok=204 probes=0/12
+[    10s]     +    6s 0408157b5ba4 t1 workspace_write tok=146 probes=0/12
+[    13s]     +   10s 0408157b5ba4 t2 validate tok=73 probes=1/12
+[    17s]     +   13s 0408157b5ba4 t3 validate tok=72 probes=2/12
+[    21s]     +   17s 0408157b5ba4 t4 validate tok=71 probes=3/12
+[    25s]     +   22s 0408157b5ba4 t5 validate tok=63 probes=4/12
+[    29s]     +   25s 0408157b5ba4 t6 validate tok=62 probes=5/12
+[    33s]     +   29s 0408157b5ba4 t7 validate tok=61 probes=6/12
+[    37s]     +   34s 0408157b5ba4 t8 validate tok=65 probes=7/12
+[    41s]     +   38s 0408157b5ba4 t9 validate tok=62 probes=8/12
+[    45s]     +   41s 0408157b5ba4 t10 validate tok=63 probes=9/12
+[    49s]     +   45s 0408157b5ba4 t11 validate tok=62 probes=10/12
+[    55s]     +   52s 0408157b5ba4 t12 workspace_write tok=282 probes=10/12
+[    58s]     +   54s 0408157b5ba4 t13 validate tok=190 probes=11/12
+[    61s]     +   57s 0408157b5ba4 t14 validate tok=78 probes=12/12
+[    65s]     +   61s 0408157b5ba4 t15 validate tok=66 probes=12/12
+[    73s]     +   69s 0408157b5ba4 t16 submit tok=541 probes=12/12
+[    73s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s0 g1a0 art-001(search) turns=17 validates=12 tok=35449/2161 69s
+[    73s]   [1/3] done in 70s -- 0/1 solved
+[    73s]   [2/3] openrouter:anthropic/claude-haiku-4.5 budget=12 seed=1 ...
+[    75s]     +    3s 0044e34dc772 t0 workspace_write tok=219 probes=0/12
+[    79s]     +    7s 0044e34dc772 t1 workspace_write tok=168 probes=0/12
+[    82s]     +    9s 0044e34dc772 t2 validate tok=79 probes=1/12
+[    86s]     +   13s 0044e34dc772 t3 validate tok=72 probes=2/12
+[    90s]     +   17s 0044e34dc772 t4 validate tok=71 probes=3/12
+[    94s]     +   21s 0044e34dc772 t5 validate tok=63 probes=4/12
+[    98s]     +   25s 0044e34dc772 t6 validate tok=64 probes=5/12
+[   102s]     +   29s 0044e34dc772 t7 validate tok=63 probes=6/12
+[   106s]     +   33s 0044e34dc772 t8 validate tok=65 probes=7/12
+[   110s]     +   37s 0044e34dc772 t9 validate tok=64 probes=8/12
+[   114s]     +   41s 0044e34dc772 t10 validate tok=65 probes=9/12
+[   118s]     +   45s 0044e34dc772 t11 validate tok=64 probes=10/12
+[   124s]     +   52s 0044e34dc772 t12 workspace_write tok=342 probes=10/12
+[   127s]     +   54s 0044e34dc772 t13 validate tok=96 probes=11/12
+[   135s]     +   62s 0044e34dc772 t14 submit tok=656 probes=11/12
+[   135s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s1 g1a0 art-001(search) turns=15 validates=11 tok=29983/2151 62s
+[   135s]   [2/3] done in 62s -- 0/1 solved
+[   135s]   [3/3] openrouter:anthropic/claude-haiku-4.5 budget=12 seed=2 ...
+[   136s]     +    2s f0777c1f8f9c t0 validate tok=133 probes=1/12
+[   141s]     +    6s f0777c1f8f9c t1 validate tok=125 probes=2/12
+[   145s]     +   10s f0777c1f8f9c t2 validate tok=116 probes=3/12
+[   148s]     +   13s f0777c1f8f9c t3 validate tok=76 probes=4/12
+[   152s]     +   17s f0777c1f8f9c t4 validate tok=69 probes=5/12
+[   156s]     +   21s f0777c1f8f9c t5 validate tok=62 probes=6/12
+[   161s]     +   26s f0777c1f8f9c t6 validate tok=100 probes=7/12
+[   164s]     +   29s f0777c1f8f9c t7 validate tok=90 probes=8/12
+[   168s]     +   34s f0777c1f8f9c t8 validate tok=92 probes=8/12
+[   172s]     +   37s f0777c1f8f9c t9 validate tok=68 probes=9/12
+[   177s]     +   42s f0777c1f8f9c t10 validate tok=143 probes=10/12
+[   180s]     +   45s f0777c1f8f9c t11 validate tok=73 probes=11/12
+[   185s]     +   50s f0777c1f8f9c t12 validate tok=121 probes=12/12
+[   193s]     +   58s f0777c1f8f9c t13 submit tok=409 probes=12/12
+[   193s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s2 g1a0 art-001(search) turns=14 validates=12 tok=26480/1677 58s
+[   193s]   [3/3] done in 58s -- 0/1 solved
+[   193s] model            budget    solo success    n  mean probes
+[   193s] ---------------------------------------------------------
+[   193s] openrouter:anthropic/claude-haiku-4.5     12           0.00     3          nan
+[   193s] 
+[   193s]   openrouter:anthropic/claude-haiku-4.5: NO USABLE BUDGET -- solo success is at the floor at every budget tried. Delta is not measurable against this task family; widen --budgets or revisit task difficulty before spending on the main matrix.
+--- exit 0 after 193s ---
+
+==============================================================================
+$ C:\Python314\python.exe -u runner/calibrate.py --models openrouter:anthropic/claude-haiku-4.5 --budgets 16 --seeds 0,1,2 --generations 1 --agents 1 --max-turns 30 --outdir D:\ins respinse\project-v2\results\calib-full
+2026-09-05 02:47:47
+==============================================================================
+[     2s] calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 3 seeds)
+[     2s] 
+[     2s]   [1/3] openrouter:anthropic/claude-haiku-4.5 budget=16 seed=0 ...
+[     7s]     +    3s 2b5c621d3f57 t0 validate,validate,validate,validate tok=269 probes=4/16
+[    10s]     +    7s 2b5c621d3f57 t1 validate,validate,validate tok=277 probes=7/16
+[    14s]     +   10s 2b5c621d3f57 t2 validate,validate tok=226 probes=9/16
+[    19s]     +   15s 2b5c621d3f57 t3 validate,validate,validate tok=351 probes=11/16
+[    22s]     +   19s 2b5c621d3f57 t4 validate,validate,validate,validate tok=218 probes=15/16
+[    25s]     +   22s 2b5c621d3f57 t5 validate,validate,validate tok=164 probes=16/16
+[    29s]     +   26s 2b5c621d3f57 t6 validate,validate,validate tok=144 probes=16/16
+[    39s]     +   35s 2b5c621d3f57 t7 submit tok=655 probes=16/16
+[    39s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s0 g1a0 art-001(search) turns=8 validates=16 tok=19419/2304 35s
+[    39s]   [1/3] done in 36s -- 0/1 solved
+[    39s]   [2/3] openrouter:anthropic/claude-haiku-4.5 budget=16 seed=1 ...
+[    41s]     +    2s 7956475f9009 t0 validate tok=156 probes=1/16
+[    44s]     +    5s 7956475f9009 t1 validate tok=89 probes=2/16
+[    48s]     +    9s 7956475f9009 t2 validate tok=86 probes=3/16
+[    52s]     +   13s 7956475f9009 t3 validate tok=74 probes=4/16
+[    56s]     +   17s 7956475f9009 t4 validate tok=66 probes=5/16
+[    60s]     +   21s 7956475f9009 t5 validate tok=66 probes=6/16
+[    64s]     +   25s 7956475f9009 t6 validate tok=84 probes=7/16
+[    69s]     +   30s 7956475f9009 t7 validate tok=63 probes=8/16
+[    72s]     +   33s 7956475f9009 t8 validate tok=68 probes=9/16
+[    76s]     +   37s 7956475f9009 t9 validate tok=62 probes=10/16
+[    81s]     +   42s 7956475f9009 t10 validate tok=162 probes=11/16
+[    84s]     +   45s 7956475f9009 t11 validate tok=73 probes=12/16
+[    88s]     +   49s 7956475f9009 t12 validate tok=66 probes=13/16
+[    92s]     +   53s 7956475f9009 t13 validate tok=91 probes=14/16
+[    96s]     +   57s 7956475f9009 t14 validate tok=71 probes=15/16
+[   101s]     +   62s 7956475f9009 t15 validate tok=203 probes=16/16
+[   105s]     +   66s 7956475f9009 t16 validate tok=158 probes=16/16
+[   112s]     +   74s 7956475f9009 t17 submit tok=644 probes=16/16
+[   112s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s1 g1a0 art-001(search) turns=18 validates=16 tok=36957/2282 74s
+[   112s]   [2/3] done in 74s -- 0/1 solved
+[   112s]   [3/3] openrouter:anthropic/claude-haiku-4.5 budget=16 seed=2 ...
+[   114s]     +    2s ed79e7950e3c t0 validate tok=156 probes=1/16
+[   118s]     +    5s ed79e7950e3c t1 validate tok=101 probes=2/16
+[   122s]     +   10s ed79e7950e3c t2 validate tok=118 probes=3/16
+[   125s]     +   13s ed79e7950e3c t3 validate tok=64 probes=4/16
+[   130s]     +   18s ed79e7950e3c t4 validate tok=104 probes=5/16
+[   133s]     +   21s ed79e7950e3c t5 validate tok=72 probes=6/16
+[   137s]     +   25s ed79e7950e3c t6 validate tok=66 probes=7/16
+[   141s]     +   29s ed79e7950e3c t7 validate tok=72 probes=8/16
+[   146s]     +   33s ed79e7950e3c t8 validate tok=71 probes=9/16
+[   150s]     +   37s ed79e7950e3c t9 validate tok=60 probes=9/16
+[   153s]     +   41s ed79e7950e3c t10 validate tok=59 probes=10/16
+[   157s]     +   45s ed79e7950e3c t11 validate tok=59 probes=11/16
+[   162s]     +   49s ed79e7950e3c t12 validate tok=59 probes=12/16
+[   166s]     +   53s ed79e7950e3c t13 validate tok=100 probes=13/16
+[   169s]     +   57s ed79e7950e3c t14 validate tok=60 probes=13/16
+[   173s]     +   61s ed79e7950e3c t15 validate tok=60 probes=14/16
+[   177s]     +   65s ed79e7950e3c t16 validate tok=59 probes=15/16
+[   182s]     +   70s ed79e7950e3c t17 validate tok=165 probes=15/16
+[   186s]     +   73s ed79e7950e3c t18 validate tok=63 probes=15/16
+[   192s]     +   79s ed79e7950e3c t19 submit tok=260 probes=15/16
+[   192s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s2 g1a0 art-001(search) turns=20 validates=15 tok=42936/1828 79s
+[   192s]   [3/3] done in 79s -- 0/1 solved
+[   192s] model            budget    solo success    n  mean probes
+[   192s] ---------------------------------------------------------
+[   192s] openrouter:anthropic/claude-haiku-4.5     16           0.00     3          nan
+[   192s] 
+[   192s]   openrouter:anthropic/claude-haiku-4.5: NO USABLE BUDGET -- solo success is at the floor at every budget tried. Delta is not measurable against this task family; widen --budgets or revisit task difficulty before spending on the main matrix.
+--- exit 0 after 192s ---
+
+==============================================================================
+$ C:\Python314\python.exe -u runner/calibrate.py --models openrouter:anthropic/claude-haiku-4.5 --budgets 20 --seeds 0,1,2 --generations 1 --agents 1 --max-turns 30 --outdir D:\ins respinse\project-v2\results\calib-full
+2026-09-05 02:50:59
+==============================================================================
+[     2s] calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 3 seeds)
+[     2s] 
+[     2s]   [1/3] openrouter:anthropic/claude-haiku-4.5 budget=20 seed=0 ...
+[     6s]     +    2s 0d0d5dc4e294 t0 validate tok=116 probes=1/20
+[     9s]     +    5s 0d0d5dc4e294 t1 validate tok=88 probes=2/20
+[    13s]     +    9s 0d0d5dc4e294 t2 validate tok=74 probes=3/20
+[    17s]     +   13s 0d0d5dc4e294 t3 validate tok=69 probes=4/20
+[    21s]     +   17s 0d0d5dc4e294 t4 validate tok=67 probes=5/20
+[    25s]     +   21s 0d0d5dc4e294 t5 validate tok=66 probes=6/20
+[    29s]     +   25s 0d0d5dc4e294 t6 validate tok=66 probes=7/20
+[    33s]     +   29s 0d0d5dc4e294 t7 validate tok=67 probes=8/20
+[    37s]     +   33s 0d0d5dc4e294 t8 validate tok=68 probes=9/20
+[    41s]     +   37s 0d0d5dc4e294 t9 validate tok=67 probes=10/20
+[    46s]     +   43s 0d0d5dc4e294 t10 validate tok=181 probes=11/20
+[    49s]     +   45s 0d0d5dc4e294 t11 validate tok=76 probes=12/20
+[    53s]     +   49s 0d0d5dc4e294 t12 validate tok=66 probes=13/20
+[    57s]     +   53s 0d0d5dc4e294 t13 validate tok=64 probes=14/20
+[    61s]     +   58s 0d0d5dc4e294 t14 validate tok=103 probes=15/20
+[    65s]     +   61s 0d0d5dc4e294 t15 validate tok=66 probes=16/20
+[    69s]     +   65s 0d0d5dc4e294 t16 validate tok=64 probes=17/20
+[    73s]     +   69s 0d0d5dc4e294 t17 validate tok=63 probes=18/20
+[    77s]     +   73s 0d0d5dc4e294 t18 validate tok=64 probes=19/20
+[    81s]     +   77s 0d0d5dc4e294 t19 validate tok=81 probes=19/20
+[    89s]     +   85s 0d0d5dc4e294 t20 workspace_write tok=501 probes=19/20
+[    96s]     +   93s 0d0d5dc4e294 t21 submit tok=994 probes=19/20
+[    96s]   [OK ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s0 g1a0 art-001(search) turns=22 validates=19 tok=48433/3071 93s
+[    96s]   [1/3] done in 94s -- 1/1 solved
+[    96s]   [2/3] openrouter:anthropic/claude-haiku-4.5 budget=20 seed=1 ...
+[    99s]     +    2s 281dab52414b t0 validate tok=161 probes=1/20
+[   102s]     +    5s 281dab52414b t1 validate tok=80 probes=2/20
+[   106s]     +    9s 281dab52414b t2 validate tok=97 probes=3/20
+[   110s]     +   13s 281dab52414b t3 validate tok=68 probes=4/20
+[   114s]     +   17s 281dab52414b t4 validate tok=80 probes=4/20
+[   118s]     +   21s 281dab52414b t5 validate tok=80 probes=5/20
+[   122s]     +   25s 281dab52414b t6 validate tok=71 probes=6/20
+[   126s]     +   29s 281dab52414b t7 validate tok=68 probes=7/20
+[   130s]     +   33s 281dab52414b t8 validate tok=66 probes=8/20
+[   134s]     +   37s 281dab52414b t9 validate tok=66 probes=9/20
+[   138s]     +   41s 281dab52414b t10 validate tok=84 probes=10/20
+[   142s]     +   45s 281dab52414b t11 validate tok=86 probes=11/20
+[   146s]     +   49s 281dab52414b t12 validate tok=88 probes=12/20
+[   150s]     +   53s 281dab52414b t13 validate tok=77 probes=13/20
+[   154s]     +   57s 281dab52414b t14 validate tok=82 probes=14/20
+[   158s]     +   61s 281dab52414b t15 validate tok=77 probes=15/20
+[   162s]     +   65s 281dab52414b t16 validate tok=69 probes=16/20
+[   166s]     +   70s 281dab52414b t17 validate tok=131 probes=17/20
+[   170s]     +   74s 281dab52414b t18 validate tok=86 probes=18/20
+[   174s]     +   77s 281dab52414b t19 validate tok=69 probes=18/20
+[   178s]     +   82s 281dab52414b t20 validate tok=152 probes=19/20
+[   183s]     +   87s 281dab52414b t21 validate tok=209 probes=20/20
+[   186s]     +   89s 281dab52414b t22 validate tok=71 probes=20/20
+[   192s]     +   95s 281dab52414b t23 submit tok=280 probes=20/20
+[   192s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s1 g1a0 art-001(search) turns=24 validates=20 tok=56917/2398 95s
+[   192s]   [2/3] done in 95s -- 0/1 solved
+[   192s]   [3/3] openrouter:anthropic/claude-haiku-4.5 budget=20 seed=2 ...
+[   195s]     +    3s efcbd3d84659 t0 validate tok=172 probes=1/20
+[   198s]     +    6s efcbd3d84659 t1 validate tok=96 probes=2/20
+[   202s]     +   10s efcbd3d84659 t2 validate tok=98 probes=3/20
+[   206s]     +   14s efcbd3d84659 t3 validate tok=68 probes=4/20
+[   210s]     +   18s efcbd3d84659 t4 validate tok=69 probes=5/20
+[   214s]     +   22s efcbd3d84659 t5 validate tok=68 probes=6/20
+[   218s]     +   26s efcbd3d84659 t6 validate tok=102 probes=7/20
+[   225s]     +   33s efcbd3d84659 t7 validate tok=69 probes=8/20
+[   226s]     +   35s efcbd3d84659 t8 validate tok=70 probes=9/20
+[   230s]     +   38s efcbd3d84659 t9 validate tok=69 probes=10/20
+[   235s]     +   43s efcbd3d84659 t10 validate tok=162 probes=11/20
+[   238s]     +   47s efcbd3d84659 t11 validate tok=81 probes=12/20
+[   242s]     +   50s efcbd3d84659 t12 validate tok=66 probes=13/20
+[   246s]     +   55s efcbd3d84659 t13 validate tok=112 probes=14/20
+[   250s]     +   58s efcbd3d84659 t14 validate tok=66 probes=15/20
+[   254s]     +   62s efcbd3d84659 t15 validate tok=59 probes=16/20
+[   258s]     +   67s efcbd3d84659 t16 validate tok=60 probes=17/20
+[   262s]     +   71s efcbd3d84659 t17 validate tok=60 probes=18/20
+[   267s]     +   75s efcbd3d84659 t18 validate tok=107 probes=19/20
+[   270s]     +   78s efcbd3d84659 t19 validate tok=64 probes=19/20
+[   274s]     +   82s efcbd3d84659 t20 validate tok=59 probes=19/20
+[   278s]     +   87s efcbd3d84659 t21 validate tok=59 probes=19/20
+[   283s]     +   91s efcbd3d84659 t22 validate tok=156 probes=19/20
+[   286s]     +   94s efcbd3d84659 t23 validate tok=64 probes=20/20
+[   291s]     +   99s efcbd3d84659 t24 validate tok=112 probes=20/20
+[   296s]     +  104s efcbd3d84659 t25 submit tok=208 probes=20/20
+[   296s]   [-- ] no_substrate__openrouter_anthropic_claude-haiku-4.5__s2 g1a0 art-001(search) turns=26 validates=20 tok=65146/2376 104s
+[   296s]   [3/3] done in 104s -- 0/1 solved
+[   296s] model            budget    solo success    n  mean probes
+[   296s] ---------------------------------------------------------
+[   296s] openrouter:anthropic/claude-haiku-4.5     20           0.33     3         19.0
+[   296s] 
+[   296s]   openrouter:anthropic/claude-haiku-4.5: choose --max-probes 20 (solo success 0.33, target 0.45)
+--- exit 0 after 296s ---

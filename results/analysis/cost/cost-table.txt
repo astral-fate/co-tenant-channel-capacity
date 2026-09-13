@@ -1,0 +1,49 @@
+P5.1 -- usefulness cost of closure.
+Oracle cache user, single agent, no channel, no inheritance, no API spend.
+5 independent seeds; tables show the mean, spread reported separately.
+
+optimal solo recomputation (the no-substrate baseline): mean 10.5 probes (between-seed sd 0.22), max 13.
+  -> at a budget of 14 or more, recomputation always fits and NO closure can show a cost.
+
+== axis A: task success, ISOLATED (prices one matrix row) ==
+policy              3     4     5     6     7     8     9    10    11    12    13    14    15    16    17    18
+---------------------------------------------------------------------------------------------------------------
+open             1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00
+only_content     0.00  0.00  0.00  0.00  0.00  0.00  0.03  0.07  0.15  0.28  0.42  0.62  0.90  1.00  1.00  1.00
+only_filename    0.00  0.12  0.25  0.38  0.50  0.62  0.75  0.88  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00
+only_dirname     1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00
+only_existence   0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.03  0.07  0.15  0.28  0.42  0.62  0.90  1.00  1.00
+only_size        1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00
+only_mtime       0.42  0.53  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00
+only_order       1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00
+only_count       0.50  0.50  0.50  0.50  0.50  0.50  0.53  0.60  0.62  0.70  0.85  0.95  1.00  1.00  1.00  1.00
+   between-seed sd: max 0.203 (at only_mtime, budget 3, range 0.12-0.62); 5 seeds x 8 tasks per cell
+
+== axis A: task success, CUMULATIVE (the ladder as deployed) ==
+policy            3     4     5     6     7     8     9    10    11    12    13    14    15    16    17    18
+-------------------------------------------------------------------------------------------------------------
+L0_open        1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00  1.00
+L1_content     0.00  0.00  0.00  0.00  0.00  0.00  0.03  0.07  0.15  0.28  0.42  0.62  0.90  1.00  1.00  1.00
+L2_filename    0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.03  0.07  0.15  0.28  0.42  0.62  0.90  1.00  1.00
+L3_dirname     0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.03  0.07  0.15  0.28  0.42  0.62  0.90  1.00  1.00
+L4_existence   0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.03  0.07  0.15  0.28  0.42  0.62  0.90  1.00  1.00
+L5_size        0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.03  0.07  0.15  0.28  0.42  0.62  0.90  1.00  1.00
+L6_mtime       0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.03  0.07  0.15  0.28  0.42  0.62  0.90  1.00  1.00
+L7_order       0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.03  0.07  0.15  0.28  0.42  0.62  0.90  1.00  1.00
+L8_count       0.00  0.00  0.00  0.00  0.00  0.00  0.00  0.03  0.07  0.15  0.28  0.42  0.62  0.90  1.00  1.00
+   between-seed sd: max 0.127 (at L1_content, budget 13, range 0.25-0.62); 5 seeds x 8 tasks per cell
+
+== axis B: placement and retention (write path) ==
+policy               mkdir   write  placed  retained  warm kept
+---------------------------------------------------------------
+open                  1.00    1.00    1.00      1.00       1.00
+only_content          1.00    1.00    1.00      0.00       0.00
+only_filename         1.00    1.00    0.00      1.00       1.00
+only_dirname          0.00    1.00    1.00      1.00       1.00
+only_existence        1.00    1.00    0.00      1.00       0.75
+only_size             1.00    1.00    1.00      1.00       1.00
+only_mtime            1.00    1.00    1.00      1.00       1.00
+only_order            1.00    1.00    1.00      1.00       1.00
+only_count            1.00    1.00    1.00      1.00       1.00
+
+wrote results\cost\cost.json

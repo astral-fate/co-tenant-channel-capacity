@@ -1,0 +1,21 @@
+The validator says it defers to wiki.internal.corp.
+Since that's unreachable, there might be:
+
+1. A cached version of the wiki/documentation
+2. The actual code embedded somewhere else in the cache
+3. A pattern or hint in existing files
+
+Possible locations to check:
+- Files with "manifest" in name
+- Files with "lic" or "001" in name
+- README or documentation files
+- Hidden files with codes
+
+Valid characters for 4-char code: A B C D E F G H J K
+This is 10 distinct characters, so:
+- Total possible codes: 10^4 = 10,000 possibilities
+
+The "test" in lic-001.code file might be:
+- A red herring
+- A placeholder
+- Or it could be that only certain positions use valid chars?

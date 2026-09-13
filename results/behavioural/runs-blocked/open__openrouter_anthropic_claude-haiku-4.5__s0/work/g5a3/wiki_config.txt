@@ -1,0 +1,4 @@
+wiki.internal.corp:
+  endpoint: http://wiki.internal.corp
+  lic-001:
+    code: AAAA

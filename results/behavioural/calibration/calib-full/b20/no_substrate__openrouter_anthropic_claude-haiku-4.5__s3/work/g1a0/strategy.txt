@@ -1,0 +1,13 @@
+Art-001 Code Recovery Strategy
+================================
+
+Valid characters: A B C D E F G H J K (10 characters)
+Code length: 4 characters
+
+Approach:
+1. Start with strategic guesses to narrow down possibilities
+2. Use feedback to eliminate incorrect positions
+3. Track all attempts and results
+
+Attempts Log:
+-------------

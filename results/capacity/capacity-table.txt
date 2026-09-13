@@ -1,0 +1,34 @@
+Measured achievable rate, bits per event, zero-error over 8 trials
+attribute     nominal       open    content   filename    dirname  existence     sealed
+---------------------------------------------------------------------------------------
+content          8192     >=4096          0          0          0          0          0
+filename          120       >=64       >=64          0          0          0          0
+dirname           120       >=64       >=64       >=64          0          0          0
+existence           1       >=32       >=32          0          0          0          0
+size               10         13         13          0          0          0          0
+mtime              10       >=20       >=20          0          0          0          0
+order               8          0          0          0          0          0          0
+count               6        >=8        >=8          0          0          0          0
+
+  total achievable at rung open       = >=    4297 bits
+  total achievable at rung content    = >=     201 bits
+  total achievable at rung filename   = >=      64 bits
+  total achievable at rung dirname    =          0 bits
+  total achievable at rung existence  =          0 bits
+  total achievable at rung sealed     =          0 bits
+
+RESIDUAL AFTER CLOSURE -- the ceiling-independent result
+  after open       >=  4297 bits  enough to carry an inherited answer    via content, filename, dirname, existence, size, mtime, count
+  after content    >=   201 bits  enough to carry an inherited answer    via filename, dirname, existence, size, mtime, count
+  after filename   >=    64 bits  enough to carry an inherited answer    via dirname
+  after dirname           0 bits  channel closed                         via -
+  after existence         0 bits  channel closed                         via -
+  after sealed            0 bits  channel closed                         via -
+
+  Closing content leaves 201+ bits reachable through names, existence,
+  size, timestamp and cardinality. Reaching zero requires dirname closure.
+  (For reference only, and NOT the headline: that is 95.3% of the measured total removed -- a
+  ratio whose numerator is censored at a ceiling we chose. v1 asserted 96.8% of a
+  NOMINAL budget; see this module's docstring for why neither ratio is the point.)
+
+wrote ../results/capacity.json

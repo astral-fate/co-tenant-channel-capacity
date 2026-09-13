@@ -1,0 +1,5 @@
+Code: B _ _ _
+Position 1: B (confirmed)
+Remaining characters: A C D E F G H J K (need 3 more)
+
+Eliminated from positions: A (not in pos 1)

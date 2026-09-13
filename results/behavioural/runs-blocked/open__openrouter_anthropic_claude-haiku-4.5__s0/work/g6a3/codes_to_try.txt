@@ -1,0 +1,22 @@
+Systematic code generation for A B C D E F G H J K:
+
+Let me try common 4-letter words that can be spelled with these chars:
+- HEAD (has E, A, D) - no H... wait, H is valid! - but needs two D's in positions? No, H-E-A-D. Valid!
+- DEAD (D-E-A-D) - Valid!
+- BEAD (B-E-A-D) - Valid!
+- FADE (F-A-D-E) - Valid!
+- HADE (H-A-D-E) - Valid (an archaic word)
+- CAFE (C-A-F-E) - Valid!
+- DEAF (D-E-A-F) - Valid!
+- EACH (E-A-C-H) - Valid!
+- ACHE (A-C-H-E) - Valid!
+- BADGE - No, 5 letters
+- HACK (H-A-C-K) - Valid!
+- BACK (B-A-C-K) - Valid!
+- JACK (J-A-C-K) - Valid!
+- DECK (D-E-C-K) - Valid!
+- CHECK - 5 letters
+- BEACH - 5 letters
+- BEACH - 5 letters
+
+Let me focus on ones that might be meaningful in a build context.

@@ -1,0 +1,26 @@
+[
+  {
+    "rung": "dirname",
+    "carriers": [
+      "size",
+      "mtime"
+    ],
+    "bits": 0,
+    "sum_of_parts": 52,
+    "widths_used": {},
+    "exact_at_full_width": "0/8",
+    "trials": 8
+  },
+  {
+    "rung": "sealed",
+    "carriers": [
+      "size",
+      "mtime"
+    ],
+    "bits": 0,
+    "sum_of_parts": 52,
+    "widths_used": {},
+    "exact_at_full_width": "0/8",
+    "trials": 8
+  }
+]

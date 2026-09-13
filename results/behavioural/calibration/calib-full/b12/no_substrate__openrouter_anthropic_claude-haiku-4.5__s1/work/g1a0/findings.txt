@@ -1,0 +1,23 @@
+Characters in the code:
+- B: 1 occurrence
+- F: 1 occurrence
+- K: 2 occurrences
+Total: 4 characters (complete code found!)
+
+The code is some arrangement of: B, F, K, K
+
+Possible arrangements (4! / 2! = 12):
+1. BFKK
+2. BKKF
+3. FBKK
+4. FKBK
+5. FKKB
+6. KBFK
+7. KBKF
+8. KFBK
+9. KFKB
+10. KKBF
+11. KKFB
+12. KFKB (duplicate)
+
+Need to narrow down which position each character occupies.

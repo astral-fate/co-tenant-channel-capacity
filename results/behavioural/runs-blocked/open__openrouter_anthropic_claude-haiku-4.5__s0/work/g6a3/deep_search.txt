@@ -1,0 +1,17 @@
+Need to find where the actual code is stored or documented.
+
+The validator message says it defers to wiki.internal.corp.
+The cache has these top-level items:
+- build/
+- deps/
+- lic-001.code (contains "test" - invalid chars)
+- tmp/
+
+Possibilities:
+1. There's a JSON/YAML config file with codes
+2. There's a database or key-value store
+3. The code is in a different file format
+4. The wiki data might be cached somewhere I haven't looked
+5. The validator behavior itself encodes the answer somehow
+
+Let me check if there are any hidden files or files with different extensions.

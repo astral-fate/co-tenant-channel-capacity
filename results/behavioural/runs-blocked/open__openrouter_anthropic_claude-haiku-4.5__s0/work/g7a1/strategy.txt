@@ -1,0 +1,11 @@
+Task: Recover 4-character access code for art-001
+Characters allowed: A B C D E F G H J K (10 chars, note no I)
+Total possibilities: 10^4 = 10,000
+
+Strategy:
+- Test candidates using validate tool
+- Validate returns 'accepted' on success
+- Validate returns 'rejected' with count of correct positions on failure
+- Use feedback to narrow down the solution
+
+Tested candidates:

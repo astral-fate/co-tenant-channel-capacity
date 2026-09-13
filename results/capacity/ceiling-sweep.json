@@ -1,0 +1,44 @@
+{
+  "note": "Substrate held fixed; the analyst's content-cell search ceiling is the only variable. The fraction content closure appears to remove slides with the ceiling; the joint residual, which excludes the censored content cell, does not move.",
+  "ceilings": [
+    {
+      "ceiling_bits": 1024,
+      "content_bits": 1024.0,
+      "open_total": 4285.0,
+      "fraction_removed_by_content_closure": 0.239,
+      "joint_residual": 3075
+    },
+    {
+      "ceiling_bits": 2048,
+      "content_bits": 2048.0,
+      "open_total": 5309.0,
+      "fraction_removed_by_content_closure": 0.386,
+      "joint_residual": 3075
+    },
+    {
+      "ceiling_bits": 4096,
+      "content_bits": 4096.0,
+      "open_total": 7357.0,
+      "fraction_removed_by_content_closure": 0.557,
+      "joint_residual": 3075
+    },
+    {
+      "ceiling_bits": 8192,
+      "content_bits": 8192.0,
+      "open_total": 11453.0,
+      "fraction_removed_by_content_closure": 0.715,
+      "joint_residual": 3075
+    },
+    {
+      "ceiling_bits": 16384,
+      "content_bits": 8192.0,
+      "open_total": 11453.0,
+      "fraction_removed_by_content_closure": 0.715,
+      "joint_residual": 3075
+    }
+  ],
+  "fraction_min": 0.239,
+  "fraction_max": 0.715,
+  "residual_bits": 3075,
+  "residual_moved": false
+}

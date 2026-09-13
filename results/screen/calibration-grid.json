@@ -1,0 +1,487 @@
+{
+  "note": "Solo success in the no_substrate arm, per model per probe budget. Rates exclude API-error episodes; the errored column reports how many were excluded. Routes are reported because the same weights served by two providers are two rows.",
+  "budgets": [
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    28
+  ],
+  "n_models": 6,
+  "n_rows": 6,
+  "rows": [
+    {
+      "model": "claude-haiku-4.5",
+      "route": "OpenRouter",
+      "source": "calib-full",
+      "budgets": {
+        "8": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "12": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "16": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "20": {
+          "solved": 1,
+          "n": 6,
+          "errored": 0,
+          "rate": 0.167,
+          "ci": [
+            0.03,
+            0.56
+          ],
+          "verdict": "window"
+        },
+        "24": {
+          "solved": 4,
+          "n": 8,
+          "errored": 0,
+          "rate": 0.5,
+          "ci": [
+            0.22,
+            0.78
+          ],
+          "verdict": "window"
+        },
+        "28": {
+          "solved": 5,
+          "n": 8,
+          "errored": 0,
+          "rate": 0.625,
+          "ci": [
+            0.31,
+            0.86
+          ],
+          "verdict": "window"
+        }
+      },
+      "windows": [
+        20,
+        24,
+        28
+      ],
+      "floors": [
+        8,
+        12,
+        16
+      ],
+      "clean_total": 31,
+      "errored_total": 0
+    },
+    {
+      "model": "gpt-oss-120b",
+      "route": "Bedrock",
+      "source": "oss-120b-bedrock",
+      "budgets": {
+        "4": {
+          "solved": 0,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.3
+          ],
+          "verdict": "floor"
+        },
+        "8": {
+          "solved": 0,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.3
+          ],
+          "verdict": "floor"
+        },
+        "12": {
+          "solved": 0,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.3
+          ],
+          "verdict": "floor"
+        },
+        "16": {
+          "solved": 6,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.667,
+          "ci": [
+            0.35,
+            0.88
+          ],
+          "verdict": "window"
+        },
+        "20": {
+          "solved": 5,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.556,
+          "ci": [
+            0.27,
+            0.81
+          ],
+          "verdict": "window"
+        },
+        "24": {
+          "solved": 5,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.556,
+          "ci": [
+            0.27,
+            0.81
+          ],
+          "verdict": "window"
+        }
+      },
+      "windows": [
+        16,
+        20,
+        24
+      ],
+      "floors": [
+        4,
+        8,
+        12
+      ],
+      "clean_total": 54,
+      "errored_total": 0
+    },
+    {
+      "model": "amazon-nova-lite",
+      "route": "Bedrock",
+      "source": "nova-lite",
+      "budgets": {
+        "4": {
+          "solved": 0,
+          "n": 2,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.66
+          ],
+          "verdict": "floor"
+        },
+        "12": {
+          "solved": 0,
+          "n": 2,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.66
+          ],
+          "verdict": "floor"
+        },
+        "24": {
+          "solved": 0,
+          "n": 2,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.66
+          ],
+          "verdict": "floor"
+        }
+      },
+      "windows": [],
+      "floors": [
+        4,
+        12,
+        24
+      ],
+      "clean_total": 6,
+      "errored_total": 0
+    },
+    {
+      "model": "amazon-nova-pro",
+      "route": "Bedrock",
+      "source": "nova-pro",
+      "budgets": {
+        "4": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "8": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "12": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "16": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "20": {
+          "solved": 0,
+          "n": 2,
+          "errored": 1,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.66
+          ],
+          "verdict": "floor"
+        },
+        "24": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        }
+      },
+      "windows": [],
+      "floors": [
+        4,
+        8,
+        12,
+        16,
+        20,
+        24
+      ],
+      "clean_total": 17,
+      "errored_total": 1
+    },
+    {
+      "model": "kimi-k2.5",
+      "route": "Bedrock",
+      "source": "moonshotai-kimi-k2-5",
+      "budgets": {
+        "4": {
+          "solved": 0,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.3
+          ],
+          "verdict": "floor"
+        },
+        "8": {
+          "solved": 0,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.3
+          ],
+          "verdict": "floor"
+        },
+        "12": {
+          "solved": 4,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.444,
+          "ci": [
+            0.19,
+            0.73
+          ],
+          "verdict": "window"
+        },
+        "16": {
+          "solved": 6,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.667,
+          "ci": [
+            0.35,
+            0.88
+          ],
+          "verdict": "window"
+        },
+        "20": {
+          "solved": 5,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.556,
+          "ci": [
+            0.27,
+            0.81
+          ],
+          "verdict": "window"
+        },
+        "24": {
+          "solved": 8,
+          "n": 9,
+          "errored": 0,
+          "rate": 0.889,
+          "ci": [
+            0.56,
+            0.98
+          ],
+          "verdict": "window"
+        }
+      },
+      "windows": [
+        12,
+        16,
+        20,
+        24
+      ],
+      "floors": [
+        4,
+        8
+      ],
+      "clean_total": 54,
+      "errored_total": 0
+    },
+    {
+      "model": "qwen3-32b",
+      "route": "Bedrock",
+      "source": "qwen-qwen3-32b-v1-0",
+      "budgets": {
+        "4": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "8": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "12": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "16": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "20": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        },
+        "24": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0,
+          "rate": 0.0,
+          "ci": [
+            0.0,
+            0.56
+          ],
+          "verdict": "floor"
+        }
+      },
+      "windows": [],
+      "floors": [
+        4,
+        8,
+        12,
+        16,
+        20,
+        24
+      ],
+      "clean_total": 18,
+      "errored_total": 0
+    }
+  ]
+}

@@ -1,0 +1,31 @@
+Test Results Summary
+====================
+
+Ruled out completely: A B C D E G H J
+Still possible: F K (and possibly others I haven't tested thoroughly)
+
+Key findings:
+- KKKK: 2 correct (exactly 2 K's in the code)
+- KKFK: 3 correct
+- KKFF: 2 correct
+- KFKF: 0 correct
+- FKKK: 2 correct
+- KFKK: 1 correct
+- KKKF: 1 correct
+- FKKF: 1 correct
+
+Observations:
+- The code must contain exactly 2 K's (from KKKK = 2)
+- KKFK has 3 correct, meaning either:
+  a) Positions 1,2,3 are correct and position 4 is wrong, OR
+  b) Some other arrangement
+
+If code is K K F ?: 
+- KKFK would have 3 correct only if position 4 (K) is wrong
+- So 4th char is something other than K or F
+- But I've ruled out A B C D E G H J
+- That leaves only F and K!
+
+Unless... wait. Let me reconsider my early tests. When I tested ABCD and got 0 correct, that's right. But when I tested EFGH, I should double-check if there's an issue.
+
+Actually, I wonder if there are characters I haven't tested yet from the original set. Let me make sure I test all valid characters systematically with position awareness.

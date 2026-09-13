@@ -1,0 +1,67 @@
+[
+  {
+    "monitor": "content",
+    "inspects": {
+      "content": true,
+      "paths": false,
+      "structure": false
+    },
+    "carriers_left": [
+      "dirname",
+      "filename",
+      "existence",
+      "size",
+      "mtime"
+    ],
+    "bits": 3075,
+    "sum_of_parts": 3133,
+    "widths_used": {
+      "dirname": 1294,
+      "filename": 1268,
+      "existence": 462,
+      "mtime": 38,
+      "size": 13
+    },
+    "trials": 8
+  },
+  {
+    "monitor": "content+path",
+    "inspects": {
+      "content": true,
+      "paths": true,
+      "structure": false
+    },
+    "carriers_left": [
+      "existence",
+      "size",
+      "mtime"
+    ],
+    "bits": 512,
+    "sum_of_parts": 523,
+    "widths_used": {
+      "existence": 461,
+      "mtime": 38,
+      "size": 13
+    },
+    "trials": 8
+  },
+  {
+    "monitor": "content+path+struct",
+    "inspects": {
+      "content": true,
+      "paths": true,
+      "structure": true
+    },
+    "carriers_left": [
+      "size",
+      "mtime"
+    ],
+    "bits": 52,
+    "sum_of_parts": 52,
+    "widths_used": {
+      "size": 13,
+      "mtime": 39
+    },
+    "trials": 8
+  }
+]

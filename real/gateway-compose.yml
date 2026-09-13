@@ -1,0 +1,15 @@
+# Self-hosted FreeLLMAPI gateway: one OpenAI-compatible endpoint fronting our provider keys, with
+# automatic failover when a provider rate-limits. This lets the Tier 3 behavioural arm survive the
+# 429 a single free provider returns on the first call. Provider keys are supplied via env_file
+# (gateway.env carries ENCRYPTION_KEY, PORT, and FREEAPI_CONFIG_JSON) rather than a bind mount,
+# because Docker Desktop cannot mount a Windows path containing a space.
+services:
+  freellm:
+    image: ghcr.io/tashfeenahmed/freellmapi:latest
+    env_file: [freellm/gateway.env]
+    volumes:
+      - freellm-data:/app/server/data
+    ports:
+      - "127.0.0.1:3001:3001"
+volumes:
+  freellm-data:

@@ -1,0 +1,439 @@
+{
+  "trials": 8,
+  "alphabet": "abcdefghijklmnopqrstuvwxyz0123456789",
+  "max_entries": 256,
+  "measurements": [
+    {
+      "attribute": "content",
+      "rung": "open",
+      "bits_achieved": 8192.0,
+      "bits_nominal": 8192.0,
+      "trials": 8,
+      "note": "",
+      "censored": false
+    },
+    {
+      "attribute": "filename",
+      "rung": "open",
+      "bits_achieved": 1292.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "",
+      "censored": false
+    },
+    {
+      "attribute": "dirname",
+      "rung": "open",
+      "bits_achieved": 1318.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "",
+      "censored": false
+    },
+    {
+      "attribute": "existence",
+      "rung": "open",
+      "bits_achieved": 1024.0,
+      "bits_nominal": 1.0,
+      "trials": 8,
+      "note": "censored at search ceiling",
+      "censored": true
+    },
+    {
+      "attribute": "size",
+      "rung": "open",
+      "bits_achieved": 13.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "",
+      "censored": false
+    },
+    {
+      "attribute": "mtime",
+      "rung": "open",
+      "bits_achieved": 39.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "",
+      "censored": false
+    },
+    {
+      "attribute": "order",
+      "rung": "open",
+      "bits_achieved": 0.0,
+      "bits_nominal": 1684.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "count",
+      "rung": "open",
+      "bits_achieved": 128.0,
+      "bits_nominal": 8.0,
+      "trials": 8,
+      "note": "censored at search ceiling",
+      "censored": true
+    },
+    {
+      "attribute": "content",
+      "rung": "content",
+      "bits_achieved": 0.0,
+      "bits_nominal": 8192.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "filename",
+      "rung": "content",
+      "bits_achieved": 1292.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "",
+      "censored": false
+    },
+    {
+      "attribute": "dirname",
+      "rung": "content",
+      "bits_achieved": 1318.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "",
+      "censored": false
+    },
+    {
+      "attribute": "existence",
+      "rung": "content",
+      "bits_achieved": 1024.0,
+      "bits_nominal": 1.0,
+      "trials": 8,
+      "note": "censored at search ceiling",
+      "censored": true
+    },
+    {
+      "attribute": "size",
+      "rung": "content",
+      "bits_achieved": 13.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "",
+      "censored": false
+    },
+    {
+      "attribute": "mtime",
+      "rung": "content",
+      "bits_achieved": 39.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "",
+      "censored": false
+    },
+    {
+      "attribute": "order",
+      "rung": "content",
+      "bits_achieved": 0.0,
+      "bits_nominal": 1684.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "count",
+      "rung": "content",
+      "bits_achieved": 128.0,
+      "bits_nominal": 8.0,
+      "trials": 8,
+      "note": "censored at search ceiling",
+      "censored": true
+    },
+    {
+      "attribute": "content",
+      "rung": "filename",
+      "bits_achieved": 0.0,
+      "bits_nominal": 8192.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "filename",
+      "rung": "filename",
+      "bits_achieved": 0.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "dirname",
+      "rung": "filename",
+      "bits_achieved": 1318.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "",
+      "censored": false
+    },
+    {
+      "attribute": "existence",
+      "rung": "filename",
+      "bits_achieved": 1024.0,
+      "bits_nominal": 1.0,
+      "trials": 8,
+      "note": "censored at search ceiling",
+      "censored": true
+    },
+    {
+      "attribute": "size",
+      "rung": "filename",
+      "bits_achieved": 0.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "mtime",
+      "rung": "filename",
+      "bits_achieved": 0.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "order",
+      "rung": "filename",
+      "bits_achieved": 0.0,
+      "bits_nominal": 1684.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "count",
+      "rung": "filename",
+      "bits_achieved": 0.0,
+      "bits_nominal": 8.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "content",
+      "rung": "dirname",
+      "bits_achieved": 0.0,
+      "bits_nominal": 8192.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "filename",
+      "rung": "dirname",
+      "bits_achieved": 0.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "dirname",
+      "rung": "dirname",
+      "bits_achieved": 0.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "existence",
+      "rung": "dirname",
+      "bits_achieved": 0.0,
+      "bits_nominal": 1.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "size",
+      "rung": "dirname",
+      "bits_achieved": 0.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "mtime",
+      "rung": "dirname",
+      "bits_achieved": 0.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "order",
+      "rung": "dirname",
+      "bits_achieved": 0.0,
+      "bits_nominal": 1684.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "count",
+      "rung": "dirname",
+      "bits_achieved": 0.0,
+      "bits_nominal": 8.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "content",
+      "rung": "existence",
+      "bits_achieved": 0.0,
+      "bits_nominal": 8192.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "filename",
+      "rung": "existence",
+      "bits_achieved": 0.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "dirname",
+      "rung": "existence",
+      "bits_achieved": 0.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "existence",
+      "rung": "existence",
+      "bits_achieved": 0.0,
+      "bits_nominal": 1.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "size",
+      "rung": "existence",
+      "bits_achieved": 0.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "mtime",
+      "rung": "existence",
+      "bits_achieved": 0.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "order",
+      "rung": "existence",
+      "bits_achieved": 0.0,
+      "bits_nominal": 1684.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "count",
+      "rung": "existence",
+      "bits_achieved": 0.0,
+      "bits_nominal": 8.0,
+      "trials": 8,
+      "note": "open, but nothing recovered -- channel does not work here",
+      "censored": false
+    },
+    {
+      "attribute": "content",
+      "rung": "sealed",
+      "bits_achieved": 0.0,
+      "bits_nominal": 8192.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "filename",
+      "rung": "sealed",
+      "bits_achieved": 0.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "dirname",
+      "rung": "sealed",
+      "bits_achieved": 0.0,
+      "bits_nominal": 120.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "existence",
+      "rung": "sealed",
+      "bits_achieved": 0.0,
+      "bits_nominal": 1.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "size",
+      "rung": "sealed",
+      "bits_achieved": 0.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "mtime",
+      "rung": "sealed",
+      "bits_achieved": 0.0,
+      "bits_nominal": 10.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "order",
+      "rung": "sealed",
+      "bits_achieved": 0.0,
+      "bits_nominal": 1684.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    },
+    {
+      "attribute": "count",
+      "rung": "sealed",
+      "bits_achieved": 0.0,
+      "bits_nominal": 8.0,
+      "trials": 8,
+      "note": "closed by policy",
+      "censored": false
+    }
+  ]
+}

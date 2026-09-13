@@ -1,0 +1,43 @@
+{
+  "note": "Payload sizes fixed by third-party specifications, used so the residual is not compared only against a quantity this study defined. Not a claim about what the July 2026 incident actually transmitted.",
+  "payloads": [
+    {
+      "name": "IPv4 address and port",
+      "bits": 48,
+      "derivation": "32-bit address plus a 16-bit port number.",
+      "authority": "RFC 791; RFC 793"
+    },
+    {
+      "name": "AWS access key ID",
+      "bits": 80.0,
+      "derivation": "20 characters, of which a fixed 4-character prefix ('AKIA') is not information; the remaining 16 are base32.",
+      "authority": "AWS IAM identifier format"
+    },
+    {
+      "name": "UUID version 4",
+      "bits": 122,
+      "derivation": "128 bits less 4 version bits and 2 variant bits, which are fixed by the standard.",
+      "authority": "RFC 4122 section 4.4"
+    },
+    {
+      "name": "GitHub personal access token",
+      "bits": 214.3510671739275,
+      "derivation": "36 base62 characters following a fixed 'ghp_' prefix that carries no information.",
+      "authority": "GitHub token format"
+    },
+    {
+      "name": "Ed25519 public key",
+      "bits": 256,
+      "derivation": "A 32-byte group element.",
+      "authority": "RFC 8032"
+    }
+  ],
+  "smallest": {
+    "name": "IPv4 address and port",
+    "bits": 48
+  },
+  "largest": {
+    "name": "Ed25519 public key",
+    "bits": 256
+  }
+}

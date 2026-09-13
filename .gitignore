@@ -1,0 +1,39 @@
+# ---------------------------------------------------------------------------
+# Secrets. Never commit. `.env.example` IS committed -- it holds key *prefixes*
+# for validation, no live values.
+# ---------------------------------------------------------------------------
+.env
+.env.*
+!.env.example
+*.key
+*credential*
+*secret*
+real/freellm/config.json
+real/freellm/gateway.env
+real/freellm/gateway.env.bak
+real/freellm/unified.key
+
+# ---------------------------------------------------------------------------
+# Manuscript. Excluded from this repository by choice; the artifacts every
+# figure is built from are all present under results/.
+# ---------------------------------------------------------------------------
+paper/
+
+# ---------------------------------------------------------------------------
+# Python
+# ---------------------------------------------------------------------------
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.venv/
+venv/
+.ipynb_checkpoints/
+
+# ---------------------------------------------------------------------------
+# Local tooling and OS noise
+# ---------------------------------------------------------------------------
+.omc/
+.DS_Store
+Thumbs.db
+*.swp

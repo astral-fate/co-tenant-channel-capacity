@@ -1,0 +1,35 @@
+Art-001 Code Recovery
+
+Known facts:
+- Total length: 4 characters
+- Valid characters: A B C D E F G H J K
+
+Test results:
+1. AAAA: 0 correct - NO 'A'
+2. BBBB: 1 correct - ONE 'B' 
+3. CCCC: 0 correct - NO 'C'
+4. DDDD: 0 correct - NO 'D'
+5. EEEE: 0 correct - NO 'E'
+6. FFFF: 1 correct - ONE 'F'
+
+Remaining valid characters: B, F, G, H, J, K
+
+Code must contain:
+- Exactly 1 'B'
+- Exactly 1 'F'
+- 2 more characters from G, H, J, K (could repeat)
+
+Most likely scenarios:
+1. B, F, G, H
+2. B, F, G, J
+3. B, F, G, K
+4. B, F, H, J
+5. B, F, H, K
+6. B, F, J, K
+7. B, F, G, G
+8. B, F, H, H
+9. B, F, J, J
+10. B, F, K, K
+
+Since I've used all 8 validates, I need to make intelligent guesses.
+Let me try common patterns or logical orderings.

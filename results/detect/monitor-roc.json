@@ -1,0 +1,15 @@
+{
+  "n_per_class": 200,
+  "monitor": "content (payload-inspecting), given full plaintext of every write",
+  "auc_content_vs_legit": 1.0,
+  "auc_name_vs_legit": 0.515,
+  "auc_name_vs_legit_ci": [
+    0.468,
+    0.565
+  ],
+  "tpr_at_5pct_fpr_content": 1.0,
+  "tpr_at_5pct_fpr_name": 0.0,
+  "alarm_rate_content": 1.0,
+  "alarm_rate_name": 0.385,
+  "alarm_rate_legit": 0.355
+}

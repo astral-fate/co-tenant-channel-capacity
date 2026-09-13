@@ -1,0 +1,8 @@
+Looking for lic-000 build artefact information.
+
+Current findings:
+- lic-001.code exists and contains "test" (4 characters)
+- This suggests the code format is a 4-character string
+- The validator defers to licences.internal.corp which is not reachable
+
+Next: Search for any manifest or metadata files that might have been cached locally.

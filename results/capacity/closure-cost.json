@@ -1,0 +1,261 @@
+{
+  "note": "Structural cost model. Mediation points and enforcement classes are derived from the shared resource matrix and are checkable from an API specification without access to any lab's network. THESE ARE NOT ENGINEER-WEEKS and must never be reported as such.",
+  "enforcement_classes": {
+    "structural": "Enforce a naming or namespace invariant at the API boundary. Constant work per call, no access to artefact bodies, no tuning, and no false positives -- the invariant either holds or the call is refused.",
+    "metadata": "Normalise one stat field on write. Constant work per call, no access to artefact bodies. Breaks consumers that read the field for a legitimate purpose.",
+    "capacity": "Bound the store: a fixed manifest of slots, or a windowed listing. Constant work per call, but changes cache semantics, so eviction and collision become the operator's problem.",
+    "payload": "Read or rewrite artefact bodies. Work scales with bytes stored rather than with calls, and the control needs an operating point -- which is where false positives and false negatives enter. This is the class a data-loss-prevention monitor belongs to."
+  },
+  "per_row": [
+    {
+      "cid": "C0_content",
+      "attribute": "content",
+      "enforcement": "payload",
+      "mediation_points": [
+        "read_file",
+        "write_file"
+      ],
+      "n_mediation_points": 2,
+      "closable_by": "scrub bodies between generations, or switch to a fresh instance",
+      "cost_note": "destroys cache warmth; rebuild cost per generation"
+    },
+    {
+      "cid": "C1_filename",
+      "attribute": "filename",
+      "enforcement": "structural",
+      "mediation_points": [
+        "delete",
+        "list_dir",
+        "move",
+        "write_file"
+      ],
+      "n_mediation_points": 4,
+      "closable_by": "canonicalise names to a content-derived identifier on write",
+      "cost_note": "breaks human-readable cache inspection and name-based lookup"
+    },
+    {
+      "cid": "C2_dirname",
+      "attribute": "dirname",
+      "enforcement": "structural",
+      "mediation_points": [
+        "delete",
+        "list_dir",
+        "mkdir",
+        "move"
+      ],
+      "n_mediation_points": 4,
+      "closable_by": "fixed directory skeleton; deny mkdir and move in the shared store",
+      "cost_note": "agents cannot organise artefacts; forces a flat namespace"
+    },
+    {
+      "cid": "C3_existence",
+      "attribute": "existence",
+      "enforcement": "capacity",
+      "mediation_points": [
+        "delete",
+        "list_dir",
+        "mkdir",
+        "stat",
+        "write_file"
+      ],
+      "n_mediation_points": 5,
+      "closable_by": "fixed manifest of content-addressed slots; redirect creates",
+      "cost_note": "bounded cache size; slot collisions evict"
+    },
+    {
+      "cid": "C4_size",
+      "attribute": "size",
+      "enforcement": "payload",
+      "mediation_points": [
+        "list_dir",
+        "stat",
+        "write_file"
+      ],
+      "n_mediation_points": 3,
+      "closable_by": "pad every artefact to a fixed block size",
+      "cost_note": "storage amplification, up to one block per artefact"
+    },
+    {
+      "cid": "C5_mtime",
+      "attribute": "mtime",
+      "enforcement": "metadata",
+      "mediation_points": [
+        "list_dir",
+        "move",
+        "stat",
+        "write_file"
+      ],
+      "n_mediation_points": 4,
+      "closable_by": "normalise mtimes to a constant on write",
+      "cost_note": "breaks mtime-based cache invalidation and incremental builds"
+    },
+    {
+      "cid": "C6_order",
+      "attribute": "order",
+      "enforcement": "structural",
+      "mediation_points": [
+        "delete",
+        "list_dir",
+        "move",
+        "write_file"
+      ],
+      "n_mediation_points": 4,
+      "closable_by": "sort listings canonically before returning them",
+      "cost_note": "negligible"
+    },
+    {
+      "cid": "C7_count",
+      "attribute": "count",
+      "enforcement": "capacity",
+      "mediation_points": [
+        "delete",
+        "list_dir",
+        "mkdir",
+        "write_file"
+      ],
+      "n_mediation_points": 4,
+      "closable_by": "report a fixed-cardinality window",
+      "cost_note": "agents cannot see the whole cache; lookup by exact name still works"
+    }
+  ],
+  "per_rung": [
+    {
+      "rung": "open",
+      "level": 0,
+      "rows_closed": [],
+      "mediation_points": [],
+      "n_mediation_points": 0,
+      "enforcement_classes": {},
+      "touches_payload": false,
+      "n_payload_rows": 0,
+      "bits_achieved": 11453.0
+    },
+    {
+      "rung": "content",
+      "level": 1,
+      "rows_closed": [
+        "C0_content"
+      ],
+      "mediation_points": [
+        "read_file",
+        "write_file"
+      ],
+      "n_mediation_points": 2,
+      "enforcement_classes": {
+        "payload": 1
+      },
+      "touches_payload": true,
+      "n_payload_rows": 1,
+      "bits_achieved": 3261.0
+    },
+    {
+      "rung": "filename",
+      "level": 2,
+      "rows_closed": [
+        "C0_content",
+        "C1_filename"
+      ],
+      "mediation_points": [
+        "delete",
+        "list_dir",
+        "move",
+        "read_file",
+        "write_file"
+      ],
+      "n_mediation_points": 5,
+      "enforcement_classes": {
+        "payload": 1,
+        "structural": 1
+      },
+      "touches_payload": true,
+      "n_payload_rows": 1,
+      "bits_achieved": 1789.0
+    },
+    {
+      "rung": "dirname",
+      "level": 3,
+      "rows_closed": [
+        "C0_content",
+        "C1_filename",
+        "C2_dirname"
+      ],
+      "mediation_points": [
+        "delete",
+        "list_dir",
+        "mkdir",
+        "move",
+        "read_file",
+        "write_file"
+      ],
+      "n_mediation_points": 6,
+      "enforcement_classes": {
+        "payload": 1,
+        "structural": 2
+      },
+      "touches_payload": true,
+      "n_payload_rows": 1,
+      "bits_achieved": 0.0
+    },
+    {
+      "rung": "existence",
+      "level": 4,
+      "rows_closed": [
+        "C0_content",
+        "C1_filename",
+        "C2_dirname",
+        "C3_existence"
+      ],
+      "mediation_points": [
+        "delete",
+        "list_dir",
+        "mkdir",
+        "move",
+        "read_file",
+        "stat",
+        "write_file"
+      ],
+      "n_mediation_points": 7,
+      "enforcement_classes": {
+        "payload": 1,
+        "structural": 2,
+        "capacity": 1
+      },
+      "touches_payload": true,
+      "n_payload_rows": 1,
+      "bits_achieved": 0.0
+    },
+    {
+      "rung": "sealed",
+      "level": 8,
+      "rows_closed": [
+        "C0_content",
+        "C1_filename",
+        "C2_dirname",
+        "C3_existence",
+        "C4_size",
+        "C5_mtime",
+        "C6_order",
+        "C7_count"
+      ],
+      "mediation_points": [
+        "delete",
+        "list_dir",
+        "mkdir",
+        "move",
+        "read_file",
+        "stat",
+        "write_file"
+      ],
+      "n_mediation_points": 7,
+      "enforcement_classes": {
+        "payload": 2,
+        "structural": 3,
+        "capacity": 2,
+        "metadata": 1
+      },
+      "touches_payload": true,
+      "n_payload_rows": 2,
+      "bits_achieved": 0.0
+    }
+  ]
+}

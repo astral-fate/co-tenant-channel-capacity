@@ -1,0 +1,48 @@
+
+===== 07:31:06 budget 16 pace 19s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=16 seed=0 ...
+  resuming no_substrate__oss-120b__s0: 2 episode(s) already on disk, skipping them
+
+===== 07:38:41 budget 16 pace 19s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=16 seed=0 ...
+  resuming no_substrate__oss-120b__s0: 2 episode(s) already on disk, skipping them
+
+===== 07:46:18 budget 16 pace 19s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=16 seed=0 ...
+  resuming no_substrate__oss-120b__s0: 2 episode(s) already on disk, skipping them
+
+===== 07:53:54 budget 16 pace 19s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=16 seed=0 ...
+  resuming no_substrate__oss-120b__s0: 2 episode(s) already on disk, skipping them
+    +  244s bc462fb58842 t0 workspace_write tok=910 probes=0/16
+    +  622s bc462fb58842 t1 validate tok=615 probes=1/16
+
+===== 15:51:31 budget 16 pace 19s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=16 seed=0 ...
+  resuming no_substrate__oss-120b__s0: 2 episode(s) already on disk, skipping them
+    +   39s 32ddd10c9f34 t2 validate tok=215 probes=1/16
+    +   59s 32ddd10c9f34 t3 validate tok=364 probes=1/16
+    +   78s 32ddd10c9f34 t4 validate tok=183 probes=2/16
+    +   96s 32ddd10c9f34 t5 validate tok=260 probes=3/16
+    +  116s 32ddd10c9f34 t6 validate tok=596 probes=4/16
+    +  136s 32ddd10c9f34 t7 validate tok=933 probes=5/16
+    +  155s 32ddd10c9f34 t8 validate tok=1082 probes=6/16
+    +  193s 32ddd10c9f34 t10 validate tok=1342 probes=7/16
+    +  214s 32ddd10c9f34 t11 validate tok=1900 probes=8/16
+  [OK ] no_substrate__oss-120b__s0 g1a2 art-002(search) turns=15 validates=8 tok=10303/13191 267s
+  [1/1] done in 269s -- 1/1 solved
+model            budget    solo success    n  mean probes
+---------------------------------------------------------
+oss-120b             16           1.00     1          8.0
+
+  oss-120b: NO USABLE BUDGET -- solo success is at the ceiling at every budget tried. Delta is not measurable against this task family; widen --budgets or revisit task difficulty before spending on the main matrix.

@@ -1,0 +1,84 @@
+{
+  "note": "Assembled from run artifacts by analyze/model_screen.py. API-error episodes are counted separately and never enter a success rate.",
+  "n_models": 3,
+  "n_reported": 1,
+  "models": [
+    {
+      "alias": "qwen8-hf",
+      "model": "Qwen/Qwen3-8B",
+      "route": "local (transformers)",
+      "role": "screened out",
+      "arm": "no_substrate",
+      "budgets": {
+        "12": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0
+        }
+      },
+      "clean_n": 3,
+      "clean_solved": 0,
+      "capability": "passed",
+      "verdict": "floor",
+      "why": "Solved nothing solo at the one budget swept, while emitting no malformed probe and no invalid tool call. A difficulty result, not an inability to act."
+    },
+    {
+      "alias": "claude-haiku-4.5",
+      "model": "anthropic/claude-haiku-4.5",
+      "route": "OpenRouter",
+      "role": "reported",
+      "arm": "no_substrate",
+      "budgets": {
+        "12": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0
+        },
+        "16": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0
+        },
+        "20": {
+          "solved": 1,
+          "n": 6,
+          "errored": 0
+        },
+        "24": {
+          "solved": 4,
+          "n": 8,
+          "errored": 0
+        },
+        "28": {
+          "solved": 5,
+          "n": 8,
+          "errored": 0
+        },
+        "8": {
+          "solved": 0,
+          "n": 3,
+          "errored": 0
+        }
+      },
+      "clean_n": 31,
+      "clean_solved": 10,
+      "capability": "passed",
+      "verdict": "gate passed",
+      "why": "The only model whose solo success fell strictly inside (0, 1); the operating point is the budget nearest the pre-registered target."
+    },
+    {
+      "alias": "gemini-2.5",
+      "model": "gemini-2.5-flash",
+      "route": "Gemini Developer API",
+      "role": "screened out",
+      "arm": "no_substrate, open",
+      "budgets": {},
+      "clean_n": 1,
+      "clean_solved": 1,
+      "errored": 4,
+      "capability": "passed",
+      "verdict": "undetermined",
+      "why": "Cleared both capability probes, then exhausted a per-model free-tier request cap. One episode completed; the remainder ended in quota errors and are excluded from any rate."
+    }
+  ]
+}

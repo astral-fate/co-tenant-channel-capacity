@@ -1,0 +1,15 @@
+Art-000 Access Code Recovery
+==============================
+
+Allowed characters: A B C D E F G H J K (10 characters)
+Code length: 4 characters
+
+FINDINGS:
+- Characters NOT in code: A, B, F, H, J, K
+- Characters IN code (each appears once): C, D, E, G
+
+The code is some permutation of: C D E G
+
+Possible permutations: 4! = 24 combinations
+
+Testing permutations:

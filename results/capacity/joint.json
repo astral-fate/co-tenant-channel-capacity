@@ -1,0 +1,56 @@
+[
+  {
+    "rung": "content",
+    "bits_attempted": 3133,
+    "bits_recovered": 3075,
+    "trials": 8,
+    "exact_trials": 8,
+    "carriers": [
+      "dirname",
+      "filename",
+      "existence",
+      "mtime",
+      "size"
+    ],
+    "excluded": {
+      "content": "excluded so the figure is the residual AFTER content closure",
+      "count": "deterministic function of the existence pattern -- summing it double-counts",
+      "order": "measured 0 bits even fully open; list_dir returns entries sorted"
+    },
+    "note": ""
+  },
+  {
+    "rung": "filename",
+    "bits_attempted": 1802,
+    "bits_recovered": 1802,
+    "trials": 8,
+    "exact_trials": 8,
+    "carriers": [
+      "dirname",
+      "existence",
+      "size"
+    ],
+    "excluded": {
+      "content": "excluded so the figure is the residual AFTER content closure",
+      "count": "deterministic function of the existence pattern -- summing it double-counts",
+      "order": "measured 0 bits even fully open; list_dir returns entries sorted"
+    },
+    "note": ""
+  },
+  {
+    "rung": "dirname",
+    "bits_attempted": 13,
+    "bits_recovered": 0,
+    "trials": 8,
+    "exact_trials": 0,
+    "carriers": [
+      "size"
+    ],
+    "excluded": {
+      "content": "excluded so the figure is the residual AFTER content closure",
+      "count": "deterministic function of the existence pattern -- summing it double-counts",
+      "order": "measured 0 bits even fully open; list_dir returns entries sorted"
+    },
+    "note": "joint coder inapplicable at this rung: it addresses carriers by sender-chosen name, which dirname closure canonicalises. Not channel closure -- see capacity.json (13 bits, name-independent listing read) and the _code_size docstring. A joint figure here requires a listing-addressed encoder."
+  }
+]

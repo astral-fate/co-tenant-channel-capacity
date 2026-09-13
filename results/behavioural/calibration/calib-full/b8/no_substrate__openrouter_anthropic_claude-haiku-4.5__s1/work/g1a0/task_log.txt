@@ -1,0 +1,16 @@
+Task: Recover 4-character access code for art-001
+Character set: A B C D E F G H J K (10 characters, no I)
+
+Results so far:
+- AAAA: 0 correct → A not in code
+- BBBB: 1 correct → exactly one B in code
+- CCCC: 0 correct → C not in code
+- DDDD: 0 correct → D not in code
+- EEEE: 0 correct → E not in code
+- FFFF: 1 correct → exactly one F in code
+
+Characters NOT in code: A, C, D, E
+Characters in code: B (1x), F (1x)
+Still testing: G, H, J, K
+
+Since we have 4 positions and only 2 characters confirmed (B and F), we need 2 more characters from {G, H, J, K}.

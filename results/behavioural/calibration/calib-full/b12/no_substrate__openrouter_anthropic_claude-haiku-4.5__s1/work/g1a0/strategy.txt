@@ -1,0 +1,10 @@
+Task: Recover 4-character access code for art-001
+Characters available: A B C D E F G H J K (10 characters)
+Total possible combinations: 10^4 = 10,000
+
+Strategy:
+1. Test systematic guesses to get feedback on character positions
+2. Use feedback to narrow down possibilities
+3. Validate when confident
+
+Validation limit: 12 attempts

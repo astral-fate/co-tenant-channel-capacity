@@ -1,0 +1,17 @@
+Task: Recover 4-character access code for art-001
+Allowed characters: A B C D E F G H J K (10 chars, no I)
+
+Results:
+- AAAA: 0 correct (A not in code)
+- BBBB: 1 correct (B appears 1x)
+- CCCC: 0 correct (C not in code)
+- DDDD: 0 correct (D not in code)
+- EEEE: 0 correct (E not in code)
+- FFFF: 1 correct (F appears 1x)
+- GGGG: 0 correct (G not in code)
+- HHHH: 0 correct (H not in code)
+- JJJJ: 0 correct (J not in code)
+- KKKK: 2 correct (K appears 2x)
+
+Code composition: 1 x B, 1 x F, 2 x K
+Need to find positions. Testing arrangements now...

@@ -1,0 +1,56 @@
+{
+  "analyse": {
+    "artifacts": [],
+    "exit_code": 0,
+    "log": "D:\\ins respinse\\project-v2\\logs\\analyse.log",
+    "name": "analyse",
+    "note": "",
+    "seconds": 0.5,
+    "started": "2026-09-05T21:56:20",
+    "status": "ok"
+  },
+  "calibrate": {
+    "artifacts": [
+      "D:\\ins respinse\\project-v2\\results\\calib-full"
+    ],
+    "exit_code": 0,
+    "log": "D:\\ins respinse\\project-v2\\logs\\calibrate.log",
+    "name": "calibrate",
+    "note": "max_probes=24",
+    "seconds": 806.5,
+    "started": "2026-09-05T02:42:29",
+    "status": "ok"
+  },
+  "check": {
+    "artifacts": [],
+    "exit_code": null,
+    "log": "D:\\ins respinse\\project-v2\\logs\\check.log",
+    "name": "check",
+    "note": "already ok in manifest",
+    "seconds": 0.0,
+    "started": "",
+    "status": "skipped"
+  },
+  "gate": {
+    "artifacts": [],
+    "exit_code": 0,
+    "log": "D:\\ins respinse\\project-v2\\logs\\gate.log",
+    "name": "gate",
+    "note": "",
+    "seconds": 8.9,
+    "started": "2026-09-05T02:41:08",
+    "status": "ok"
+  },
+  "matrix": {
+    "artifacts": [
+      "D:\\ins respinse\\project-v2\\results\\runs-full"
+    ],
+    "exit_code": 0,
+    "log": "D:\\ins respinse\\project-v2\\logs\\matrix.log",
+    "name": "matrix",
+    "note": "40 episode(s) on disk (+40 this run)",
+    "seconds": 4019.5,
+    "started": "2026-09-05T03:31:47",
+    "status": "ok"
+  }
+}

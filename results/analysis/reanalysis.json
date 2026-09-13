@@ -1,0 +1,24 @@
+{
+  "arms": {
+    "open": {
+      "read_rate": 0.95,
+      "median_probes_to_solve": 17
+    },
+    "wipe": {
+      "read_rate": 0.95,
+      "median_probes_to_solve": 21
+    }
+  },
+  "deposit_rate": {
+    "k": 0,
+    "n": 40
+  },
+  "delta": {
+    "episode_p": 0.7475272825662147,
+    "generation_p": 1.0,
+    "open_k": 11,
+    "open_n": 20,
+    "wipe_k": 13,
+    "wipe_n": 20
+  }
+}

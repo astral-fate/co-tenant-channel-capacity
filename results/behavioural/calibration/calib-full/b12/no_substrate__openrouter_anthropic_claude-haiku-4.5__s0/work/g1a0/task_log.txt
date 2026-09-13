@@ -1,0 +1,16 @@
+Task: Recover 4-character access code for art-001
+Allowed characters: A B C D E F G H J K (10 chars)
+
+Characters confirmed IN code:
+- B: 1 occurrence
+- F: 1 occurrence
+- K: 2 occurrences
+
+Characters confirmed NOT in code:
+- A, C, D, E, G, H, J
+
+Current candidates: 
+- Positions must contain: B, F, K, K in some order
+- 4! / 2! = 12 possible arrangements (K appears twice)
+
+Now need to test positions for B, F, and the 2 K's.

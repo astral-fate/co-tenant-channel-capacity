@@ -1,0 +1,57 @@
+{
+  "store": "oci-registry",
+  "base": "http://registry:5000",
+  "attributes": {
+    "dirname": {
+      "sender_can_choose": true,
+      "receiver_can_observe": true,
+      "carries": true,
+      "bits_per_name": 330.9,
+      "evidence": "pushed repository ujzde8gxd6ncf10e... and found it in /v2/_catalog"
+    },
+    "filename": {
+      "sender_can_choose": false,
+      "receiver_can_observe": true,
+      "carries": false,
+      "bits_per_name": 0,
+      "evidence": "blob identifier is its own sha256 (sha256:40c1fcca7ab33fdf...); the store derives it from content and rejects a mismatch, so it is content-addressed by default"
+    },
+    "existence": {
+      "sender_can_choose": true,
+      "receiver_can_observe": true,
+      "carries": true,
+      "bits_per_state": 16,
+      "evidence": "16/16 agreed slots recovered exactly from the catalog"
+    },
+    "content": {
+      "sender_can_choose": true,
+      "receiver_can_observe": true,
+      "carries": true,
+      "evidence": "512-byte blob round-tripped: True"
+    },
+    "size": {
+      "receiver_can_observe": true,
+      "carries": true,
+      "evidence": "Content-Length header present: True"
+    },
+    "mtime": {
+      "receiver_can_observe": true,
+      "carries": false,
+      "evidence": "Last-Modified header present: False"
+    }
+  },
+  "reachable": true,
+  "classification": {
+    "native_rung": "open",
+    "carries": {
+      "content": true,
+      "filename": false,
+      "dirname": true,
+      "existence": true,
+      "size": true,
+      "mtime": false
+    },
+    "note": "A store is credited with a rung only when EVERY attribute at or before it is closed. A store that closes filename but leaves dirname open sits at no rung of this ladder -- which is the finding, not a gap in the classification."
+  },
+  "probed_at": "2026-09-05T22:03:21Z"
+}

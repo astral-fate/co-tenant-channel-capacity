@@ -1,0 +1,115 @@
+# Tier 1: two co-tenant agents sharing one real cache volume.
+#
+# This is the minimum change that retires the "synthetic substrate" limitation. The containers
+# are ordinary, the volume is ordinary, and the filesystem underneath is whatever the Docker
+# engine actually uses (overlayfs over ext4 here). Nothing in this file declares a limit --
+# `probe_limits.py` discovers them.
+#
+#   docker compose -f real/docker-compose.yml run --rm probe
+#   docker compose -f real/docker-compose.yml run --rm sender
+#   docker compose -f real/docker-compose.yml run --rm receiver
+#
+# The two agent services exist to make the co-tenancy real rather than simulated: `sender` and
+# `receiver` are separate containers with separate PID and mount namespaces and no shared memory,
+# which is the isolation an evaluation harness claims to provide. The only thing they share is
+# /cache -- exactly the arrangement that failed in July 2026.
+
+services:
+  # Discovers the real store's limits. Run this first; everything else is calibrated by it.
+  probe:
+    build:
+      context: ..
+      dockerfile: real/Dockerfile
+    volumes:
+      # No host bind mount: Docker Desktop cannot map a Windows path containing a space through
+      # its WSL translation layer. The report is written into the shared volume and read back out
+      # with a second one-shot container, which also keeps the probe's view identical to an
+      # agent's.
+      - shared-cache:/cache
+    command: ["python", "real/probe_limits.py", "/cache"]
+
+  # Generation g. Writes into the shared cache and exits, leaving only substrate state behind.
+  sender:
+    build:
+      context: ..
+      dockerfile: real/Dockerfile
+    volumes:
+      - shared-cache:/cache
+    environment:
+      ROLE: sender
+      # Gemini via the free Gemini Developer API (GEMINI_API_KEY, baked in from .env). Clears
+      # both calibration gates (tool calling; 3/3 deduction), unlike the Kimi default whose
+      # gate status was never established.
+      MODEL_ALIAS: gemini-flash
+      # The receiver inherits the substrate, never the transcript. Nothing is passed here.
+    command: ["python", "real/tier3_agent.py", "sender", "/cache"]
+
+  # Generation g+1. Reads the shared cache. Started AFTER sender has exited, so the only channel
+  # between them is the volume.
+  receiver:
+    build:
+      context: ..
+      dockerfile: real/Dockerfile
+    volumes:
+      - shared-cache:/cache
+    environment:
+      ROLE: receiver
+      MODEL_ALIAS: gemini-flash
+    command: ["python", "real/tier3_agent.py", "receiver", "/cache"]
+
+  # ---- The behavioural matrix, containerised ----
+  #
+  # Runs the pre-registered matrix against a real model through the self-hosted gateway. The
+  # gateway is a container in this same compose project, so it is addressed by service name:
+  # inside a container `localhost` is the container itself, and pointing at localhost:3001 here
+  # would reach nothing. Results go to a named volume because `--rm` deletes /work.
+  matrix:
+    build:
+      context: ..
+      dockerfile: real/Dockerfile
+    volumes:
+      - matrix-results:/work/results
+    environment:
+      FREELLM_BASE: http://freellm:3001/v1
+      FREELLM_KEY: ${FREELLM_KEY}
+      ARS_PACE_SECONDS: ${ARS_PACE_SECONDS:-4}
+    networks: [default]
+    command: ["python", "-u", "runner/run.py",
+              "--conditions", "${MATRIX_CONDITIONS:-open,wipe}",
+              "--models", "${MATRIX_MODEL:-gw-kimi}",
+              "--seeds", "${MATRIX_SEEDS:-0}",
+              "--generations", "${MATRIX_GENS:-10}",
+              "--agents", "${MATRIX_AGENTS:-2}",
+              "--max-turns", "18",
+              "--outdir", "/work/results/runs"]
+
+  # ---- Tier 2: real artifact stores as the substrate ----
+  #
+  # An OCI distribution registry. Chosen because it is the most widely deployed artifact store
+  # there is, and because it is content-addressed BY DEFAULT: a blob's identifier is its own
+  # sha256. That is filename closure shipped as a product decision rather than a security control
+  # -- while the repository name above it stays entirely sender-chosen.
+  registry:
+    image: registry:2
+    environment:
+      REGISTRY_STORAGE_DELETE_ENABLED: "true"
+    expose:
+      - "5000"
+
+  # Probes a running store and classifies which rung it natively sits at.
+  probe-store:
+    build:
+      context: ..
+      dockerfile: real/Dockerfile
+    depends_on:
+      - registry
+    volumes:
+      - shared-cache:/cache
+    command: ["python", "real/probe_store.py", "registry", "http://registry:5000"]
+
+volumes:
+  matrix-results:
+  # A named volume, not a bind mount: bind mounts inherit the host filesystem's semantics, and on
+  # Windows that means the measurement would report NTFS-through-a-translation-layer rather than
+  # the Linux filesystem a real evaluation harness runs on.
+  shared-cache:

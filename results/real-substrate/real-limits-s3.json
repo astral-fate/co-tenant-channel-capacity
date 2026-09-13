@@ -1,0 +1,36 @@
+{
+  "target": "s3://covert-channel-substrate-212626318772",
+  "region": "eu-north-1",
+  "probed_at": "2026-09-06T13:51:13Z",
+  "name_max": 1018,
+  "name_max_censored": false,
+  "key_max_segments_probed": 1024,
+  "key_max_censored": true,
+  "max_object_bytes": 8388608,
+  "max_object_bytes_censored": true,
+  "entries_written": 1200,
+  "entries_listed": 1200,
+  "max_entries_censored": true,
+  "mtime": {
+    "settable_by_sender": false,
+    "observed_resolution": "second",
+    "changed_on_copy": false,
+    "note": "S3 assigns LastModified itself; there is no API by which a sender chooses the value a reader observes. The mtime carrier is dead here by construction, not by measurement noise."
+  },
+  "case_sensitive": true,
+  "order_created": [
+    "zz",
+    "mm",
+    "aa"
+  ],
+  "order_listed": [
+    "aa",
+    "mm",
+    "zz"
+  ],
+  "order_preserved": false,
+  "directories_are_objects": false,
+  "directories_are_prefixes": true,
+  "dirname_separable_from_filename": false,
+  "note": "Measured against a real object store through its ordinary API. Two carriers the synthetic filesystem model treats as live are absent here by construction: a sender cannot set the timestamp a reader observes, and `dirname` is not separable from `filename` because a directory is a prefix of the key rather than an object. This bounds which rungs of the ladder are expressible on an object store; it does not re-measure the ladder itself."
+}

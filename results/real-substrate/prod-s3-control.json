@@ -1,0 +1,12 @@
+{
+  "store": "s3://covert-channel-substrate-212626318772",
+  "region": "eu-north-1",
+  "control": "name canonicalisation (content-addressed write path)",
+  "trials": 20,
+  "name_channel_recovered_baseline": 20,
+  "name_channel_recovered_control": 0,
+  "legit_reuse_hits_under_control": 20,
+  "enforcement_points": 1,
+  "engineer_weeks": null,
+  "engineer_weeks_note": "Not estimated. Human integration effort is not a quantity this measurement can produce; inventing one is the error 5.9 warns of."
+}

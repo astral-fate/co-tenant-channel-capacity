@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Permitted Operations - Covert Channels in Shared Agent Infrastructure</title>
+<style>
+  :root {
+    --bg:#06070d; --bg-2:#0d1020; --fg:#e9ecf3; --muted:#8c93a8;
+    --accent:#22d3ee; --accent-2:#818cf8;
+    --good:#4ade80; --warn:#fbbf24; --bad:#f87171;
+    --line:rgba(255,255,255,0.10); --code-bg:#0a0d1c;
+    --grid:rgba(34,211,238,0.05);
+    --shadow:0 30px 80px -20px rgba(34,211,238,0.18);
+  }
+  * { box-sizing:border-box; }
+  html, body { margin:0; padding:0; background:var(--bg); color:var(--fg);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",system-ui,sans-serif;
+    -webkit-font-smoothing:antialiased; scroll-behavior:smooth; }
+  .slide { position:relative; width:100%; min-height:100vh; display:flex;
+    flex-direction:column; justify-content:center; padding:86px 96px 92px;
+    background:radial-gradient(ellipse at top,#0e1430 0%,var(--bg) 60%);
+    overflow:hidden; page-break-after:always; break-after:page;
+    border-bottom:1px solid rgba(255,255,255,0.06); }
+  .slide::before { content:""; position:absolute; inset:0; pointer-events:none; z-index:0;
+    background-image:linear-gradient(var(--grid) 1px,transparent 1px),
+                     linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+    background-size:60px 60px;
+    mask-image:radial-gradient(ellipse at center,black 30%,transparent 80%); }
+  .slide > * { position:relative; z-index:1; }
+  .slide-brand { position:absolute; left:96px; top:30px; z-index:2; font-size:11px;
+    letter-spacing:.25em; text-transform:uppercase; color:var(--muted); }
+  .slide-brand b { color:var(--fg); font-weight:600; }
+  .slide-num { position:absolute; right:96px; top:30px; z-index:2;
+    font-family:ui-monospace,monospace; font-size:12px; color:var(--muted); }
+  .slide-foot { position:absolute; left:96px; bottom:28px; z-index:2; font-size:10.5px;
+    letter-spacing:.18em; text-transform:uppercase; color:rgba(140,147,168,.65); }
+  .eyebrow { display:inline-block; align-self:flex-start; font-size:11px;
+    letter-spacing:.25em; text-transform:uppercase; color:var(--accent);
+    padding:5px 10px; border:1px solid rgba(34,211,238,0.3); border-radius:999px;
+    margin-bottom:22px; background:rgba(34,211,238,0.05); }
+  h1,h2,h3 { margin:0; font-weight:600; letter-spacing:-.01em; }
+  h1 { font-size:clamp(40px,5.8vw,78px); line-height:1.04;
+    background:linear-gradient(135deg,#fff 0%,#a4b1d9 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  h2 { font-size:clamp(26px,3vw,42px); line-height:1.15; margin-bottom:22px; }
+  h3 { font-size:clamp(16px,1.5vw,20px); color:var(--muted); font-weight:500; }
+  p { font-size:clamp(15px,1.22vw,18.5px); line-height:1.55; color:#cdd3e3; }
+  p.lede { font-size:clamp(17px,1.5vw,23px); color:#dde2f0; max-width:900px; }
+  ul.bullets { list-style:none; padding:0; margin:20px 0 0; }
+  ul.bullets li { font-size:clamp(15px,1.22vw,18.5px); line-height:1.55; color:#cdd3e3;
+    padding:8px 0 8px 28px; position:relative; }
+  ul.bullets li::before { content:""; position:absolute; left:0; top:18px; width:10px;
+    height:10px; border:2px solid var(--accent); border-radius:50%;
+    box-shadow:0 0 12px rgba(34,211,238,0.35); }
+  ul.bullets li b { color:#fff; font-weight:600; }
+  .columns { display:grid; grid-template-columns:1fr 1fr; gap:52px; align-items:start; }
+  .columns.three { grid-template-columns:1fr 1fr 1fr; gap:32px; }
+  pre.code { margin:0; padding:18px 22px; background:var(--code-bg);
+    border:1px solid var(--line); border-radius:12px;
+    font-family:"JetBrains Mono",ui-monospace,Menlo,monospace;
+    font-size:clamp(12px,1vw,14px); line-height:1.55; color:#d6dcec;
+    overflow:hidden; white-space:pre; }
+  .code .k{color:#c084fc}.code .s{color:#86efac}.code .n{color:#fcd34d}
+  .code .c{color:#64748b;font-style:italic}.code .b{color:#f87171;font-weight:600}
+  .code .ok{color:var(--good);font-weight:600}
+  .tile { border:1px solid var(--line); border-radius:14px; padding:22px;
+    background:linear-gradient(160deg,rgba(255,255,255,0.02),rgba(255,255,255,0)); }
+  .tile h3 { color:var(--accent); font-size:13.5px; letter-spacing:.12em;
+    text-transform:uppercase; margin-bottom:10px; }
+  .tile p { font-size:15px; }
+  .tile.good{border-color:rgba(74,222,128,.4);background:rgba(74,222,128,.04)}
+  .tile.good h3{color:var(--good)}
+  .tile.warn{border-color:rgba(251,191,36,.4);background:rgba(251,191,36,.04)}
+  .tile.warn h3{color:var(--warn)}
+  .tile.bad{border-color:rgba(248,113,113,.4);background:rgba(248,113,113,.04)}
+  .tile.bad h3{color:var(--bad)}
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:22px; margin-top:28px; }
+  .stats.three { grid-template-columns:repeat(3,1fr); }
+  .stat { padding:22px; border:1px solid var(--line); border-radius:14px;
+    background:linear-gradient(180deg,rgba(34,211,238,.06),rgba(34,211,238,0)); }
+  .stat .v { font-size:clamp(32px,3.8vw,54px); font-weight:700; line-height:1;
+    letter-spacing:-.02em; background:linear-gradient(135deg,#22d3ee,#818cf8);
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .stat .l { color:var(--muted); font-size:12.5px; text-transform:uppercase;
+    letter-spacing:.12em; margin-top:9px; }
+  table.cmp { border-collapse:collapse; width:100%; margin-top:22px; font-size:14px; }
+  table.cmp th, table.cmp td { text-align:left; padding:11px 14px;
+    border-bottom:1px solid var(--line); }
+  table.cmp th { color:var(--muted); font-weight:500; font-size:11.5px;
+    letter-spacing:.12em; text-transform:uppercase; }
+  table.cmp td.deny{color:var(--bad);font-weight:600}
+  table.cmp td.allow{color:var(--good);font-weight:600}
+  table.cmp td.warn{color:var(--warn);font-weight:600}
+  table.cmp code { font-family:ui-monospace,monospace; color:var(--accent); font-size:13px; }
+  .ladder { margin-top:22px; }
+  .rung { margin-bottom:15px; }
+  .rung .rl { display:flex; justify-content:space-between; align-items:baseline;
+    font-size:14px; margin-bottom:6px; }
+  .rung .rn { font-family:ui-monospace,monospace; color:var(--muted); }
+  .rung .rv { font-weight:700; font-variant-numeric:tabular-nums; font-size:16px; color:var(--fg); }
+  .track { height:16px; background:rgba(255,255,255,.04); border-radius:4px;
+    overflow:hidden; border:1px solid var(--line); }
+  .fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#22d3ee,#818cf8); }
+  .fill.zero { background:var(--bad); width:4px !important; }
+  .rung.dead .rv { color:var(--bad); }
+  .askq { font-size:clamp(24px,3.3vw,44px); line-height:1.3; color:#dde2f0;
+    font-weight:600; max-width:1020px; }
+  .askq .hi { background:linear-gradient(135deg,#22d3ee,#818cf8);
+    -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .hook { font-size:clamp(15px,1.3vw,19px); color:var(--muted); max-width:920px;
+    border-left:2px solid var(--accent); padding-left:18px; margin-top:24px; }
+  .center { text-align:center; align-items:center; justify-content:center; }
+  .center > * { align-self:center; }
+  .center .hook { border-left:none; border-top:2px solid var(--accent);
+    padding-left:0; padding-top:18px; text-align:center; }
+  .signature { display:flex; gap:22px; align-items:center; margin-top:34px;
+    color:var(--muted); justify-content:center; flex-wrap:wrap; }
+  .signature .dot { width:8px; height:8px; background:var(--accent); border-radius:50%;
+    box-shadow:0 0 16px var(--accent); }
+  @media (max-width:1100px){
+    .slide{padding:60px 50px 78px}
+    .slide-brand,.slide-foot{left:50px}.slide-num{right:50px}
+    .columns,.columns.three{grid-template-columns:1fr;gap:26px}
+    .stats,.stats.three{grid-template-columns:1fr 1fr}
+  }
+  @page { size:A4 landscape; margin:0; }
+  @media print {
+    html,body{background:#0a0d1c}
+    .slide{page-break-after:always;break-after:page;min-height:100vh;height:100vh;
+      box-shadow:none;border-bottom:none;
+      -webkit-print-color-adjust:exact;print-color-adjust:exact}
+    .slide:last-child{page-break-after:auto}
+  }
+</style>
+</head>
+<body>
+<section class="slide center">
+  <div class="slide-brand"><b>Permitted Operations</b></div>
+  <div class="slide-num">01 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Apart Research &times; CeSIA &mdash; AI Incident Response Sprint &middot; Track 1</div>
+  <h1>Permitted Operations</h1>
+  <h3 style="margin-top:18px;max-width:940px;">
+    Every operation was authorized. Every audit check passed.
+    The channel formed anyway &mdash; and we measured it.
+  </h3>
+  <div class="signature">
+    <span class="dot"></span>
+    <span><b style="color:#e9ecf3;">Fatimah Emad Eldin</b> &nbsp;&middot;&nbsp; Independent AI Researcher</span>
+    <span class="dot"></span>
+  </div>
+</section>
+
+<section class="slide center">
+  <div class="slide-brand"><b>The question</b></div>
+  <div class="slide-num">02 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">The question</div>
+  <p class="askq">
+    If one of your evaluation agents left a message for the next one &mdash;
+    inside a cache it was <span class="hi">fully authorized to use</span> &mdash;
+    which of your controls would fire?
+  </p>
+  <div class="hook">
+    In July 2026 the answer was none of them. Not because a control failed,
+    but because every control was checking a different boundary.
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>Context</b></div>
+  <div class="slide-num">03 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Context</div>
+  <h2>1,200 agents. Five days. One cache that outlived them all.</h2>
+  <p class="lede">
+    OpenAI evaluation agents shared a package cache. Each agent was a fresh
+    instance with no memory of the last &mdash; but the cache persisted between them.
+  </p>
+  <ul class="bullets" style="margin-top:24px;">
+    <li><b>Nobody built a channel.</b> It emerged from ordinary operations: write a file, list a directory, rename an entry.</li>
+    <li><b>Nothing was exploited.</b> Same tenant, same lab, same evaluation run. No boundary crossed, no permission exceeded.</li>
+    <li><b>It was found by accident</b> &mdash; not by a monitor, and not by an audit.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>The cost</b></div>
+  <div class="slide-num">04 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">What the remediation taught us</div>
+  <h2>The wipe worked. The channel moved to filenames.</h2>
+  <div class="columns">
+    <div>
+      <p class="lede">Emptying file contents removed the payload and left the
+      structure intact &mdash; so the message simply changed carrier.</p>
+      <div class="hook">
+        This is the fact that motivates the study: the obvious control addresses
+        the obvious carrier, and the channel is not obliged to use it.
+      </div>
+    </div>
+    <div class="tile bad">
+      <h3>The open question it leaves</h3>
+      <p>If contents are not the channel, <b>how much</b> can the remaining
+      attributes carry &mdash; names, directories, existence, sizes, timestamps &mdash;
+      and <b>which</b> control actually reaches zero?</p>
+      <p style="margin-top:14px;">Nobody had measured it. That is the gap this work fills.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>The gap</b></div>
+  <div class="slide-num">05 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Why existing controls miss it</div>
+  <h2>Every published control checks the wrong boundary.</h2>
+  <div class="columns">
+    <div>
+      <div class="tile"><h3>CSA AICM AIS-11</h3>
+        <p>&ldquo;&hellip;regulating <b>inter-agent message passing and memory sharing</b>
+        to prevent <b>lateral movement</b> risks.&rdquo;</p></div>
+      <div class="tile" style="margin-top:16px;"><h3>CSA AICM AIS-14</h3>
+        <p>&ldquo;&hellip;how <b>shared cache infrastructure</b> is secured to prevent
+        <b>cross-tenant</b> data leakage.&rdquo;</p></div>
+    </div>
+    <div>
+      <div class="tile bad"><h3>The incident is the opposite case</h3>
+        <p><b>Same tenant. All authorized. Only permitted operations.</b></p>
+        <p style="margin-top:14px;">Every AIS-11 and AIS-14 audit check as written
+        would <b>pass</b> while the board was in active use.</p></div>
+      <div class="hook">
+        These govern flow <i>across</i> principals. None governs flow
+        <i>between co-tenant agents authorized to use the same resource.</i>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide center">
+  <div class="slide-brand"><b>Insight</b></div>
+  <div class="slide-num">06 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Insight</div>
+  <h1 style="max-width:1150px;">Authorization cannot see a channel
+    <span style="background:linear-gradient(135deg,#22d3ee,#818cf8);-webkit-background-clip:text;background-clip:text;color:transparent;">built from permitted operations.</span></h1>
+  <p class="lede" style="margin-top:24px;max-width:880px;">
+    A covert channel in the classical sense &mdash; the known residual that access
+    control never covered. It is why TCSEC required covert-channel analysis
+    <i>separately from</i> its access-control requirements.
+  </p>
+  <div class="hook">
+    AIS-11 states the requirement as policy and attaches <b>no method for verifying it.</b>
+    We supply the method.
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>The approach</b></div>
+  <div class="slide-num">07 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">The approach</div>
+  <h2>Two questions that need two different experiments.</h2>
+  <div class="columns">
+    <div class="tile"><h3>Arm 1 &mdash; Capacity &middot; how much CAN flow</h3>
+      <p>Information-theoretic. <b>Needs no model and no network.</b> A sender encodes
+      a random payload into one observable attribute; a receiver decodes it.</p>
+      <p style="margin-top:12px;">Reproducible from a clean checkout in minutes.</p></div>
+    <div class="tile"><h3>Arm 2 &mdash; Genesis &middot; will agents DO it</h3>
+      <p>Behavioural. Needs real agents. Generation <i>g+1</i> inherits the
+      <b>substrate</b> but never the <b>transcript</b>.</p>
+      <p style="margin-top:12px;">Fresh context, no memory of its predecessor &mdash;
+      so the cache is the only path between them.</p></div>
+  </div>
+  <div class="hook">
+    They answer different questions and are allowed to disagree. Keeping them
+    separate is what lets a null in one arm coexist with a large number in the other.
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>How it works</b></div>
+  <div class="slide-num">08 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">How it works &mdash; the measurement rule</div>
+  <h2>A cell counts only if it is recovered exactly, eight times out of eight.</h2>
+  <div class="columns">
+    <div>
+      <pre class="code"><span class="c"># for each (attribute, rung)</span>
+payload = random_bits(<span class="n">k</span>)
+sender.encode(payload)     <span class="c"># into ONE attribute</span>
+guess = receiver.decode()
+
+count_it_only_if guess == payload
+  <span class="ok">for all 8 trials</span>          <span class="c"># zero-error</span></pre>
+    </div>
+    <div>
+      <ul class="bullets" style="margin-top:0;">
+        <li><b>An achievable rate, not a declared width.</b> We exhibit a working encoder and decoder &mdash; never sum the nominal size of a field.</li>
+        <li><b>Zero errors, or the cell is zero.</b> No partial credit, no averaging across trials.</li>
+        <li><b>The difference is not cosmetic.</b> Creation <code style="color:var(--accent)">order</code> has a nominal budget of 1,684 bits and carries <b>0</b> &mdash; <code style="color:var(--accent)">list_dir</code> returns sorted, so the sender&rsquo;s sequence is never observable.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>How it works</b></div>
+  <div class="slide-num">09 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">How it works &mdash; the closure ladder</div>
+  <h2>Close attributes in the order a defender would actually adopt them.</h2>
+  <p class="lede">Closure is <b>cumulative</b>. Each rung disables one further
+  observable attribute, and everything remaining is re-measured from scratch.</p>
+  <pre class="code" style="margin-top:26px;"><span class="c">rung 0</span>  open        <span class="c">- nothing closed</span>
+<span class="c">rung 1</span>  content     <span class="c">- redact bodies       &lt;- what a payload monitor does</span>
+<span class="c">rung 2</span>  + filename  <span class="c">- normalise names</span>
+<span class="c">rung 3</span>  + dirname   <span class="c">- normalise directories</span>
+<span class="c">rung 4</span>  + existence <span class="c">- hide presence</span>
+<span class="c">rung 5</span>  sealed      <span class="c">- control: all closed, must read 0</span></pre>
+  <div class="hook">
+    Content closure is <b>redaction, not refusal</b> &mdash; a cache that stops serving
+    bytes stops being a cache. The control has to be compatible with the substrate
+    continuing to do its job.
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>Measured result</b></div>
+  <div class="slide-num">10 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Measured result</div>
+  <h2>Closing content is the control most operators run. It is not enough.</h2>
+  <div class="ladder">
+    <div class="rung"><div class="rl"><span class="rn">nothing closed</span><span class="rv">&ge; 11,453 bits</span></div>
+      <div class="track"><div class="fill" style="width:100%"></div></div></div>
+    <div class="rung"><div class="rl"><span class="rn">content closed &nbsp;&mdash; the payload monitor</span><span class="rv">&ge; 3,261 bits</span></div>
+      <div class="track"><div class="fill" style="width:28.5%"></div></div></div>
+    <div class="rung"><div class="rl"><span class="rn">+ filename closed</span><span class="rv">1,789 bits</span></div>
+      <div class="track"><div class="fill" style="width:15.6%"></div></div></div>
+    <div class="rung dead"><div class="rl"><span class="rn">+ dirname closed</span><span class="rv">0 bits &mdash; channel dead</span></div>
+      <div class="track"><div class="fill zero"></div></div></div>
+  </div>
+  <div class="hook">
+    At the dirname rung <b>five attributes are still fully open</b> &mdash; existence,
+    size, mtime, order, count &mdash; and recover <b>zero</b> bits over 8 trials.
+    Without directory names there is no shared coordinate system to decode against.
+    The carriers are alive and useless.
+  </div>
+</section>
+
+<section class="slide center">
+  <div class="slide-brand"><b>Headline</b></div>
+  <div class="slide-num">11 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">The number to quote</div>
+  <h1 style="font-size:clamp(56px,9vw,130px);">3,075 bits</h1>
+  <p class="lede" style="margin-top:18px;max-width:840px;">
+    One encoder, one payload, recovered <b>exactly on 8 of 8 trials</b>,
+    <i>after</i> the content of every file has been closed.
+  </p>
+  <div class="stats three" style="max-width:920px;">
+    <div class="stat"><div class="v">20.7</div><div class="l">bits a successor needs</div></div>
+    <div class="stat"><div class="v">148.7&times;</div><div class="l">more than enough</div></div>
+    <div class="stat"><div class="v">8 / 8</div><div class="l">zero-error trials</div></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>Rigour</b></div>
+  <div class="slide-num">12 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Rigour &mdash; why not the bigger number</div>
+  <h2>A sum of cells is an upper bound, never a residual.</h2>
+  <div class="columns">
+    <div>
+      <pre class="code"><span class="c"># cells at the content rung</span>
+filename  <span class="n">1292</span>    dirname  <span class="n">1318</span>
+existence  <span class="n">471</span>    size       <span class="n">13</span>
+mtime       <span class="n">39</span>    order       <span class="n">0</span>
+count      <span class="b">128</span>  <span class="c">&lt;- censored, dependent</span>
+                  ---------
+SUM                  <span class="n">3261</span>
+JOINT <span class="c">(one encoder)</span>  <span class="ok">3075</span>
+                  ---------
+gap                   <span class="b">186</span></pre>
+    </div>
+    <div>
+      <ul class="bullets" style="margin-top:0;">
+        <li><b>186 = 128 + 58.</b> The count row is excluded by construction &mdash; an existence pattern determines the entry count, so including it double-counts. The rest is measured encoder loss.</li>
+        <li><b>The sum inherits censoring.</b> Two rungs contain a cell that stopped at a search ceiling; the joint figure contains none.</li>
+        <li><b>The build enforces it.</b> <code style="color:var(--accent)">render.py</code> fails if any sentence calls a per-attribute sum a &ldquo;residual&rdquo;.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>Cost</b></div>
+  <div class="slide-num">13 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Cost to the defender</div>
+  <h2>The control that works costs four more mediation points.</h2>
+  <table class="cmp">
+    <thead><tr><th>Closure</th><th>Residual</th><th>Mediation points</th><th>Class</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td><code>content</code></td><td>&ge; 3,261 bits</td><td>2</td><td>payload</td><td class="deny">insufficient</td></tr>
+      <tr><td><code>+ filename</code></td><td>1,789 bits</td><td>&mdash;</td><td>structural</td><td class="warn">still open</td></tr>
+      <tr><td><code>+ dirname</code></td><td><b>0 bits</b></td><td>6</td><td>structural</td><td class="allow">channel closed</td></tr>
+    </tbody>
+  </table>
+  <div class="hook">
+    <b>+4 points, all structural.</b> Payload inspection is the control operators
+    already run, and it is the one the measurement rules out. What works is mediating
+    the cache&rsquo;s <i>interface</i> &mdash; which every legitimate consumer uses too.
+    That is the real cost, and we state it rather than hide it.
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>Validity</b></div>
+  <div class="slide-num">14 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Answering &ldquo;your substrate is synthetic&rdquo;</div>
+  <h2>Probed on infrastructure nobody in this study configured.</h2>
+  <div class="columns three">
+    <div class="tile good"><h3>Tier 1 &mdash; real mount</h3>
+      <p>Body limit <b>67,108,864 bytes</b> &mdash; <b>8,192&times;</b> the modelled limit.
+      Timestamps survive at <b>1 ns, exact</b>.</p></div>
+    <div class="tile good"><h3>Tier 2 &mdash; OCI registry</h3>
+      <p>Content-addressed by default, so it closes <b>filename only</b> and sits at
+      <b>no rung</b>. <b>16/16</b> repository names recovered from the catalog with
+      <b>no payload written at all</b>.</p></div>
+    <div class="tile good"><h3>Tier 3 &mdash; two containers</h3>
+      <p>Separate PID and mount namespaces, no shared memory, no shared transcript.
+      The volume is the only path between generations.</p></div>
+  </div>
+  <div class="hook">
+    The store most likely to be found under an evaluation harness &mdash; an OCI
+    registry &mdash; sits at <b>no rung of the ladder at all</b>.
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>Behaviour</b></div>
+  <div class="slide-num">15 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">The behavioural arm</div>
+  <h2>Agents read the store 38 times. They wrote to it zero times.</h2>
+  <div class="stats">
+    <div class="stat"><div class="v">0 / 40</div><div class="l">episodes deposited</div></div>
+    <div class="stat"><div class="v">38 / 40</div><div class="l">episodes read</div></div>
+    <div class="stat"><div class="v">0 / 20</div><div class="l">generation cells</div></div>
+    <div class="stat"><div class="v">1 / 35</div><div class="l">wrote, under pressure</div></div>
+  </div>
+  <ul class="bullets" style="margin-top:24px;">
+    <li><b>The asymmetry is the finding.</b> Agents treat the cache as a resource to read, not a channel to use &mdash; a claim the capacity arm cannot produce.</li>
+    <li><b>It bears on containment:</b> a control that prevents <i>writing</i> addresses a behaviour these agents did not exhibit.</li>
+    <li><b>The prompt was maximally favourable</b> &mdash; it described the store as persisting across runs and as shared infrastructure. This is not agents who did not know.</li>
+  </ul>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>Negative result</b></div>
+  <div class="slide-num">16 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">What we refuse to claim</div>
+  <h2>&Delta; is undefined for this configuration &mdash; not small.</h2>
+  <div class="columns">
+    <div>
+      <pre class="code"><span class="c"># the conjunction that must hold</span>
+deposit -&gt; discovery -&gt; use -&gt; success
+<span class="b">   X                                </span>
+<span class="c"># only the last term was measured</span>
+
+open generations solved : <span class="n">8</span>/<span class="n">10</span>
+wipe generations solved : <span class="n">8</span>/<span class="n">10</span>
+Fisher exact p          : <span class="n">1.0000</span></pre>
+      <div class="hook">
+        With zero deposits an inheriting agent finds only what the harness seeded.
+        <b>open and wipe are the same condition run twice.</b>
+      </div>
+    </div>
+    <div>
+      <div class="tile bad"><h3>The treatment never appeared</h3>
+        <p>An agent gets an unsolvable task only when
+        <code style="color:var(--bad)">i mod 4 == 3</code>. The matrix ran <b>2</b> agents
+        per generation, so that branch was unreachable: <b>0</b> blocked tasks in 40 episodes.</p></div>
+      <div class="tile good" style="margin-top:16px;"><h3>The follow-up fixed it</h3>
+        <p>Raised to <b>4</b> agents. <b>8</b> unsolvable tasks drawn. Under that pressure
+        exactly <b>one</b> episode wrote &mdash; offered as a hypothesis about what the
+        design lacks, not as evidence for it.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>Instrumentation</b></div>
+  <div class="slide-num">17 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Instrumentation</div>
+  <h2>A null from an incompetent model looks identical to a null from an absent channel.</h2>
+  <div class="columns">
+    <div class="tile"><h3>Gate 1 &mdash; capability</h3>
+      <p><i>Can the model act at all?</i> Emit a well-formed tool call, and perform the
+      elimination inference the task is built on &mdash; sampled more than once, because
+      one pass is not evidence.</p></div>
+    <div class="tile"><h3>Gate 2 &mdash; calibration</h3>
+      <p><i>Is the task at the right difficulty?</i> Solo success must be
+      <b>strictly between 0 and 1</b>. At the ceiling everyone succeeds unaided; at the
+      floor nothing is ever deposited. Either way &Delta; = 0 by construction.</p></div>
+  </div>
+  <div class="hook">
+    This is the behavioural twin of the broken-encoder argument: a broken encoder is
+    indistinguishable from a closed channel unless you test the encoder separately.
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>The screen</b></div>
+  <div class="slide-num">18 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Model selection, disclosed</div>
+  <h2>Five models run. One reported. Here is every one.</h2>
+  <table class="cmp">
+    <thead><tr><th>Model</th><th>Route</th><th>Solo</th><th>Verdict</th></tr></thead>
+    <tbody>
+      <tr><td><code>qwen3-8b</code></td><td>local</td><td>0 / 3</td><td class="deny">floor &mdash; a difficulty finding</td></tr>
+      <tr><td><code>claude-haiku-4.5</code></td><td>OpenRouter</td><td>10 / 31</td><td class="allow">gate passed &rarr; reported</td></tr>
+      <tr><td><code>kimi-k3</code></td><td>gateway &rarr; HF</td><td>3 / 3</td><td class="warn">undetermined &mdash; provider limit</td></tr>
+      <tr><td><code>gemini-2.5-flash</code></td><td>Gemini API</td><td>1 / 1</td><td class="warn">undetermined &mdash; quota cap</td></tr>
+      <tr><td><code>gpt-oss-120b</code></td><td>Groq</td><td>1 / 6</td><td class="warn">window located, not measured</td></tr>
+    </tbody>
+  </table>
+  <div class="hook">
+    Qwen <b>passed</b> capability &mdash; zero malformed probes &mdash; and floored on
+    difficulty. A single gate could not have told those apart. Three of the four
+    exclusions are <b>properties of providers, not of models</b>, and are recorded as
+    undetermined rather than as failures.
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>Limits</b></div>
+  <div class="slide-num">19 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Owning the failure modes</div>
+  <h2>What this does not establish.</h2>
+  <div class="columns three">
+    <div class="tile warn"><h3>Lower bounds only</h3>
+      <p>Achievable rates understate capacity by an unknown margin, and two rungs
+      contain a cell that stopped at a ceiling we chose.</p></div>
+    <div class="tile warn"><h3>The null is small</h3>
+      <p>One model, one prompt, one task family. The incident involved ~1,200 agents
+      over five days &mdash; three orders of magnitude more interaction.</p></div>
+    <div class="tile warn"><h3>Selection disclosed</h3>
+      <p>Both the probe budget <b>and the model</b> were chosen after seeing outcomes,
+      on a criterion measured in the arm that cannot express the effect.</p></div>
+  </div>
+  <div class="columns" style="margin-top:22px;">
+    <div class="tile bad"><h3>Three conditions specified, not run</h3>
+      <p><code style="color:var(--bad)">scrub</code> &mdash; the behavioural analogue of
+      content closure. <code style="color:var(--bad)">open_lowsalience</code> &mdash; the
+      salience control. <code style="color:var(--bad)">legit</code> &mdash; the
+      detector&rsquo;s false-positive baseline.</p></div>
+    <div class="tile bad"><h3>Consistency is not correctness</h3>
+      <p>The build guarantees the manuscript matches its artifacts. It cannot detect an
+      inappropriate measure &mdash; a headline computed from constants we chose would pass
+      every check <i>because</i> it is consistent with them.</p></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>The ask</b></div>
+  <div class="slide-num">20 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">What a lab should adopt</div>
+  <h2>An AIS-11 amendment with a measurement attached.</h2>
+  <ul class="bullets">
+    <li><b>Do not rely on payload inspection.</b> Two mediation points, and it leaves &ge; 3,261 bits &mdash; 148&times; what a successor needs.</li>
+    <li><b>Mediate the namespace, not the bytes.</b> Only directory-name closure reaches zero, at six mediation points, all structural.</li>
+    <li><b>Audit co-tenant flow, not just cross-tenant.</b> AIS-11 and AIS-14 pass while the channel is in active use.</li>
+    <li><b>Run the ladder as an acceptance test.</b> A script and a substrate &mdash; not a proof obligation. It is the verification method AIS-11 states as policy and does not supply.</li>
+  </ul>
+  <div class="hook">
+    The contribution is not &ldquo;this control does not exist.&rdquo; It is
+    <b>&ldquo;this control exists as a policy aspiration with no measurement attached
+    &mdash; and here is the measurement.&rdquo;</b>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="slide-brand"><b>Next</b></div>
+  <div class="slide-num">21 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Next step</div>
+  <h2>From a measured ladder to a deployed gate.</h2>
+  <div class="columns">
+    <div>
+      <ul class="bullets" style="margin-top:0;">
+        <li><b>Re-measure against the real mount.</b> The ladder is synthetic; Tier 1 shows the real substrate is 8,192&times; larger. A bounded, model-free win.</li>
+        <li><b>Run the three cut conditions</b> &mdash; <code style="color:var(--accent)">scrub</code> first, since it is the behavioural test of the headline claim.</li>
+        <li><b>Self-host the behavioural arm.</b> Three providers throttled this study; a local model removes the quota from the experiment entirely.</li>
+      </ul>
+    </div>
+    <div class="tile">
+      <h3>Reproduce it today</h3>
+      <pre class="code" style="margin-top:8px;">make capacity   <span class="c"># the ladder, no model</span>
+make joint      <span class="c"># the 3,075-bit encoder</span>
+make paper      <span class="c"># rebuild every number</span></pre>
+      <p style="margin-top:14px;">The capacity arm needs <b>no model, no network and no
+      key</b> &mdash; it reproduces from a clean checkout.</p>
+    </div>
+  </div>
+</section>
+
+<section class="slide center">
+  <div class="slide-brand"><b>Thank you</b></div>
+  <div class="slide-num">22 / 22</div>
+  <div class="slide-foot">Permitted Operations &middot; AI Incident Response Sprint 2026</div>
+  <div class="eyebrow">Thank you</div>
+  <h1 style="max-width:1150px;">Every operation was permitted.</h1>
+  <p class="lede" style="margin-top:22px;max-width:860px;">
+    The channel carries <b>3,075 bits</b> after the control most operators run.
+    A successor needs <b>20.7</b>. Closing it costs four more mediation points &mdash;
+    and nothing less reaches zero.
+  </p>
+  <div class="signature">
+    <span class="dot"></span>
+    <span><b style="color:#e9ecf3;">Fatimah Emad Eldin</b> &nbsp;&middot;&nbsp; Track 1 &middot; Containment</span>
+    <span class="dot"></span>
+  </div>
+</section>
+
+</body>
+</html>

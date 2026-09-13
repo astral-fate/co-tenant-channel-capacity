@@ -1,0 +1,20 @@
+Art-001 Access Code Analysis
+
+Characters in code: B (1), F (1), K (2)
+
+Arrangements tested:
+- BFKK: 2 correct
+- KBFK: 2 correct
+- KKFB: 2 correct
+- BKKF: 2 correct
+- FBKK: 1 correct
+- KKBF: 1 correct
+- KFKB: 0 correct
+- KBKF: 0 correct
+- FKKB: 1 correct
+- KFBK: 2 correct
+- FKBK: 2 correct
+
+Arrangements with 2 correct: BFKK, KBFK, KKFB, BKKF, KFBK, FKBK
+
+Need to test more permutations to narrow down the correct positions.

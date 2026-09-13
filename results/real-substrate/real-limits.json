@@ -1,0 +1,17 @@
+{
+  "target": "/cache",
+  "probed_at": "2026-09-05T22:03:03Z",
+  "name_max": 255,
+  "max_file_bytes": 67108864,
+  "max_entries": 200000,
+  "max_entries_censored": true,
+  "mtime": {
+    "requested_ns": 1000000123456789,
+    "observed_ns": 1000000123456789,
+    "exact": true,
+    "resolution_ns": 1
+  },
+  "case_sensitive": true,
+  "order_preserved": false,
+  "note": "Measured against a real mount through ordinary file operations. Registry-level API limits are stricter and are not measured here."
+}

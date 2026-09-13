@@ -1,0 +1,35 @@
+[
+  {
+    "task": "art-000",
+    "kind": "search",
+    "success": true,
+    "turns": 3,
+    "in": 8089,
+    "out": 3901,
+    "total": 11990,
+    "sec": 206.0,
+    "api_error": ""
+  },
+  {
+    "task": "art-001",
+    "kind": "search",
+    "success": true,
+    "turns": 4,
+    "in": 11114,
+    "out": 4334,
+    "total": 15448,
+    "sec": 68.0,
+    "api_error": ""
+  },
+  {
+    "task": "art-002",
+    "kind": "search",
+    "success": true,
+    "turns": 3,
+    "in": 6475,
+    "out": 2104,
+    "total": 8579,
+    "sec": 25.0,
+    "api_error": ""
+  }
+]

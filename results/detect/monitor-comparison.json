@@ -1,0 +1,31 @@
+{
+  "n_per_class": 120,
+  "baseline_effort": 13,
+  "monitors": {
+    "permission": {
+      "auc_deposit_vs_legit": 0.5,
+      "tpr_at_5pct_fpr": 0.0,
+      "fires_on_deposit": 0.0,
+      "fires_on_legit": 0.0
+    },
+    "content": {
+      "auc_deposit_vs_legit": 0.5,
+      "tpr_at_5pct_fpr": 0.0,
+      "fires_on_deposit": 0.0,
+      "fires_on_legit": 0.0
+    },
+    "content_x5": {
+      "auc_deposit_vs_legit": 0.5,
+      "tpr_at_5pct_fpr": 0.0,
+      "fires_on_deposit": 0.0,
+      "fires_on_legit": 0.0
+    },
+    "structural": {
+      "auc_deposit_vs_legit": 0.989,
+      "tpr_at_5pct_fpr": 0.85,
+      "fires_on_deposit": 1.0,
+      "fires_on_legit": 0.15
+    }
+  },
+  "structural_detects_at_action": 2.0
+}

@@ -1,0 +1,34 @@
+Summary of test results:
+- AAAA: 0 correct -> A not in code
+- BBBB: 1 correct -> B appears once
+- CCCC: 0 correct -> C not in code
+- DDDD: 0 correct -> D not in code
+- EEEE: 0 correct -> E not in code
+- FFFF: 1 correct -> F appears once
+- GGGG: 0 correct -> G not in code
+- HHHH: 0 correct -> H not in code
+- JJJJ: 0 correct -> J not in code
+- BFJK: 2 correct
+
+Available characters: B, F, K (and possibly J was ruled out)
+
+From BFJK with 2 correct:
+- If B is in position 0 and F is in position 1: that's 2 correct
+- Or B is at 0 and K at 3, etc.
+
+Remaining to test: KKKK
+
+If code uses B, F, K and need 4th character, but G,H,J,C,D,E,A ruled out... wait we have 4 characters to fill: positions 0,1,2,3.
+
+With JJJJ showing 0, J is not in code.
+
+So the characters in the code are from: B, F, K... but that's only 3 characters for 4 positions. This is a problem.
+
+Let me recheck - did I miss something? Characters available: A B C D E F G H J K. That's 10 characters.
+Ruled out: A, C, D, E, G, H, J. Remaining: B, F, K.
+
+Wait, that's only 3. But the code is 4 characters...
+
+Maybe I need to recheck. Or maybe one of the ruled out characters is actually double?
+
+Let me try KKKK to confirm K behavior.

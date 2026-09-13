@@ -1,0 +1,73 @@
+
+===== 08:47:06 budget 12 pace 19s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=12 seed=0 ...
+    +  127s cdf5aa740849 t0 workspace_write tok=846 probes=0/12
+
+===== 08:56:52 budget 12 pace 19s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=12 seed=0 ...
+
+===== 09:04:29 budget 12 pace 19s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=12 seed=0 ...
+
+===== 09:12:05 budget 12 pace 19s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=12 seed=0 ...
+
+===== 17:07:33 budget 12 pace 19s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=12 seed=0 ...
+  [ERR] no_substrate__oss-120b__s0 g1a0 art-001(search) turns=1 validates=0 tok=493/2048 983s err=RateLimitError: Error code: 429 - {'error': {'message': 'Rat
+    +  823s 475c8b465f67 t1 workspace_write tok=1062 probes=0/12
+  [ERR] no_substrate__oss-120b__s0 g1a1 art-000(search) turns=2 validates=0 tok=998/3110 1681s err=RateLimitError: Error code: 429 - {'error': {'message': 'Rat
+    +  243s 13ae3e208e01 t0 workspace_write tok=1450 probes=0/12
+    + 1227s 13ae3e208e01 t2 validate tok=1326 probes=1/12
+
+===== 18:39:05 budget 12 pace 35s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=12 seed=0 ...
+    + 1001s 1e0de4894969 t1 validate tok=1127 probes=1/12
+    + 1877s 1e0de4894969 t2 validate tok=573 probes=2/12
+    + 2152s 1e0de4894969 t3 validate tok=404 probes=3/12
+
+===== 19:41:36 budget 12 pace 64s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=12 seed=0 ...
+  [-- ] no_substrate__oss-120b__s0 g1a0 art-001(search) turns=3 validates=0 tok=1515/6144 1344s
+    + 1331s d33eb22f4e9a t1 validate tok=861 probes=1/12
+  [ERR] no_substrate__oss-120b__s0 g1a1 art-000(search) turns=2 validates=1 tok=998/2909 2201s err=RateLimitError: Error code: 429 - {'error': {'message': 'Rat
+    +  740s 00e8798d8e55 t1 validate tok=1118 probes=1/12
+    + 1283s 00e8798d8e55 t2 validate tok=298 probes=2/12
+    + 1467s 00e8798d8e55 t3 validate tok=249 probes=3/12
+    + 2015s 00e8798d8e55 t4 validate tok=1354 probes=4/12
+    + 2680s 00e8798d8e55 t5 validate tok=719 probes=5/12
+
+===== 21:51:59 budget 12 pace 116s =====
+calibration: baseline arm only, 3 episodes (1 budgets x 1 models x 1 seeds)
+
+  [1/1] oss-120b budget=12 seed=0 ...
+  resuming no_substrate__oss-120b__s0: 1 episode(s) already on disk, skipping them
+    + 1196s 0167cceaea88 t1 validate tok=1731 probes=1/12
+    + 1670s 0167cceaea88 t2 validate tok=218 probes=2/12
+    + 2504s 0167cceaea88 t3 validate tok=347 probes=3/12
+    + 2741s 0167cceaea88 t4 validate tok=224 probes=4/12
+    + 2856s 0167cceaea88 t5 validate tok=269 probes=5/12
+    + 3012s 0167cceaea88 t6 validate tok=339 probes=6/12
+  [ERR] no_substrate__oss-120b__s0 g1a1 art-000(search) turns=7 validates=6 tok=4043/5176 3945s err=RateLimitError: Error code: 429 - {'error': {'message': 'Rat
+    +  120s 9db505b49215 t0 workspace_write tok=1949 probes=0/12
+  [ERR] no_substrate__oss-120b__s0 g1a2 art-002(search) turns=1 validates=0 tok=493/1949 1073s err=RateLimitError: Error code: 429 - {'error': {'message': 'Rat
+  [1/1] done in 5021s -- 0/0 solved, 2 API-error episode(s) excluded
+model            budget    solo success    n  mean probes
+---------------------------------------------------------
+oss-120b             12           0.00     0          nan
+
+  oss-120b: NO USABLE BUDGET -- solo success is at the floor at every budget tried. Delta is not measurable against this task family; widen --budgets or revisit task difficulty before spending on the main matrix.

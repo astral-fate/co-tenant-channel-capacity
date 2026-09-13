@@ -1,0 +1,6 @@
+Code composition: 1B, 1F, 2K
+Characters ruled out: A, C, D, E, G, H, J
+
+Now need to find positions of B, F, K, K
+
+Testing position variations...
