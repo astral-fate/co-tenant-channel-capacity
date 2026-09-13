@@ -37,6 +37,11 @@ SUITES: list[tuple[str, list[str]]] = [
     ("pipeline", ["analyze/test_pipeline.py"]),
     ("claims", ["analyze/verify.py"]),
     ("scorecard", ["analyze/scorecard.py"]),
+    # The figure is generated from the same claim table as the manuscript, so it can go stale the
+    # moment an artifact changes. Checking it here gives it the property the paper already has:
+    # a number in the figure cannot disagree with `results/`, because the build fails first. Three
+    # slide figures drifted within a week for want of exactly this.
+    ("figure", ["paper/figures/make_arch_svg.py", "--check"]),
 ]
 
 

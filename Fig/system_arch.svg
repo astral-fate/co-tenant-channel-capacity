@@ -1,0 +1,159 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1180" height="1560" viewBox="0 0 1180 1560">
+<defs><marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10 z" fill="#3A6EA5"/></marker></defs>
+<rect width="1180" height="1560" fill="#FFFFFF"/>
+<text x="40.0" y="70.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="20" fill="#8A8A8A" text-anchor="start" font-weight="700" opacity="1.0">A</text>
+<text x="70.0" y="70.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="21" fill="#2B2B2B" text-anchor="start" font-weight="700" opacity="1.0">One tenant, many agents</text>
+<rect x="66.0" y="92.0" width="300.0" height="250.0" rx="10" fill="none" stroke="#8A8A8A" stroke-width="1.5" stroke-dasharray="6 5" opacity="1.0"/>
+<text x="80.0" y="114.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#8A8A8A" text-anchor="start" font-weight="normal" opacity="1.0">separate sandboxes, one tenant</text>
+<rect x="96.0" y="130.0" width="150.0" height="52.0" rx="10" fill="none" stroke="#3A6EA5" stroke-width="1.5" opacity="1.0"/>
+<circle cx="126" cy="150" r="8" fill="none" stroke="#3A6EA5" stroke-width="1.5"/>
+<path d="M114 172 a12 12 0 0 1 24 0" fill="none" stroke="#3A6EA5" stroke-width="1.5"/>
+<text x="150.0" y="162.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" fill="#3A6EA5" text-anchor="start" font-weight="normal" opacity="1.0">Agent 1</text>
+<rect x="96.0" y="198.0" width="150.0" height="52.0" rx="10" fill="none" stroke="#3A6EA5" stroke-width="1.5" opacity="1.0"/>
+<circle cx="126" cy="218" r="8" fill="none" stroke="#3A6EA5" stroke-width="1.5"/>
+<path d="M114 240 a12 12 0 0 1 24 0" fill="none" stroke="#3A6EA5" stroke-width="1.5"/>
+<text x="150.0" y="230.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" fill="#3A6EA5" text-anchor="start" font-weight="normal" opacity="1.0">Agent 2</text>
+<rect x="96.0" y="266.0" width="150.0" height="52.0" rx="10" fill="none" stroke="#3A6EA5" stroke-width="1.5" opacity="1.0"/>
+<circle cx="126" cy="286" r="8" fill="none" stroke="#3A6EA5" stroke-width="1.5"/>
+<path d="M114 308 a12 12 0 0 1 24 0" fill="none" stroke="#3A6EA5" stroke-width="1.5"/>
+<text x="150.0" y="298.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" fill="#3A6EA5" text-anchor="start" font-weight="normal" opacity="1.0">Agent n</text>
+<rect x="470.0" y="110.0" width="230.0" height="230.0" rx="12" fill="#EFEFEF" stroke="#2B2B2B" stroke-width="1.5" opacity="1.0"/>
+<ellipse cx="585" cy="142" rx="34" ry="12" fill="none" stroke="#2B2B2B" stroke-width="1.5"/>
+<path d="M551 142 v26 a34 12 0 0 0 68 0 v-26" fill="none" stroke="#2B2B2B" stroke-width="1.5"/>
+<text x="585.0" y="210.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#2B2B2B" text-anchor="middle" font-weight="600" opacity="1.0">shared package cache</text>
+<line x1="250.0" y1="162.0" x2="466.0" y2="162.0" stroke="#3A6EA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="358.0" y="154.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#3A6EA5" text-anchor="middle" font-weight="normal" opacity="1.0">write</text>
+<line x1="704.0" y1="280.0" x2="470.0" y2="280.0" stroke="#3A6EA5" stroke-width="1.5" marker-end="url(#arrow)"/>
+<text x="587.0" y="272.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#3A6EA5" text-anchor="middle" font-weight="normal" opacity="1.0">read</text>
+<text x="500.0" y="302.0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" fill="#3A6EA5" text-anchor="start" font-weight="normal" opacity="1.0">list_dir</text>
+<text x="574.0" y="302.0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" fill="#3A6EA5" text-anchor="start" font-weight="normal" opacity="1.0">stat</text>
+<text x="648.0" y="302.0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="12" fill="#3A6EA5" text-anchor="start" font-weight="normal" opacity="1.0">read_file</text>
+<path d="M840 162 l34 12 v30 c0 24 -18 38 -34 44 c-16 -6 -34 -20 -34 -44 v-30 z" fill="none" stroke="#3A6EA5" stroke-width="1.5"/>
+<text x="840.0" y="280.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" fill="#3A6EA5" text-anchor="middle" font-weight="normal" opacity="1.0">authorization control</text>
+<path d="M828 216 l9 9 l18 -20" fill="none" stroke="#4F7942" stroke-width="2.5"/>
+<text x="840.0" y="302.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#4F7942" text-anchor="middle" font-weight="normal" opacity="1.0">every check passes</text>
+<line x1="704.0" y1="200.0" x2="802.0" y2="200.0" stroke="#8A8A8A" stroke-width="1"/>
+<text x="590.0" y="370.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" fill="#8A8A8A" text-anchor="middle" font-weight="normal" opacity="1.0">every operation is one the agents are authorized to perform</text>
+<text x="40.0" y="430.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="20" fill="#8A8A8A" text-anchor="start" font-weight="700" opacity="1.0">B</text>
+<text x="70.0" y="430.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="21" fill="#2B2B2B" text-anchor="start" font-weight="700" opacity="1.0">Eight observable attributes</text>
+<rect x="70.0" y="454.0" width="122.0" height="42.0" rx="21" fill="#EFEFEF" stroke="#B5453C" stroke-width="1.8" opacity="1.0"/>
+<text x="131.0" y="481.0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#B5453C" text-anchor="middle" font-weight="600" opacity="1.0">content</text>
+<rect x="202.0" y="454.0" width="122.0" height="42.0" rx="21" fill="#EFEFEF" stroke="#8A8A8A" stroke-width="1.2" opacity="1.0"/>
+<text x="263.0" y="481.0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#2B2B2B" text-anchor="middle" font-weight="normal" opacity="1.0">filename</text>
+<rect x="334.0" y="454.0" width="122.0" height="42.0" rx="21" fill="#EFEFEF" stroke="#8A8A8A" stroke-width="1.2" opacity="1.0"/>
+<text x="395.0" y="481.0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#2B2B2B" text-anchor="middle" font-weight="normal" opacity="1.0">dirname</text>
+<rect x="466.0" y="454.0" width="122.0" height="42.0" rx="21" fill="#EFEFEF" stroke="#8A8A8A" stroke-width="1.2" opacity="1.0"/>
+<text x="527.0" y="481.0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#2B2B2B" text-anchor="middle" font-weight="normal" opacity="1.0">existence</text>
+<rect x="598.0" y="454.0" width="122.0" height="42.0" rx="21" fill="#EFEFEF" stroke="#8A8A8A" stroke-width="1.2" opacity="1.0"/>
+<text x="659.0" y="481.0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#2B2B2B" text-anchor="middle" font-weight="normal" opacity="1.0">size</text>
+<rect x="730.0" y="454.0" width="122.0" height="42.0" rx="21" fill="#EFEFEF" stroke="#8A8A8A" stroke-width="1.2" opacity="1.0"/>
+<text x="791.0" y="481.0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#2B2B2B" text-anchor="middle" font-weight="normal" opacity="1.0">mtime</text>
+<rect x="862.0" y="454.0" width="122.0" height="42.0" rx="21" fill="#EFEFEF" stroke="#8A8A8A" stroke-width="1.2" opacity="1.0"/>
+<text x="923.0" y="481.0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#2B2B2B" text-anchor="middle" font-weight="normal" opacity="1.0">order</text>
+<rect x="994.0" y="454.0" width="122.0" height="42.0" rx="21" fill="#EFEFEF" stroke="#8A8A8A" stroke-width="1.2" opacity="1.0"/>
+<text x="1055.0" y="481.0" font-family="ui-monospace, SFMono-Regular, Menlo, monospace" font-size="14" fill="#2B2B2B" text-anchor="middle" font-weight="normal" opacity="1.0">count</text>
+<text x="131.0" y="516.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#B5453C" text-anchor="middle" font-weight="normal" opacity="1.0">what a payload monitor reads</text>
+<path d="M70 530 v8 h1046 v-8" fill="none" stroke="#8A8A8A" stroke-width="1.2"/>
+<text x="593.0" y="556.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#8A8A8A" text-anchor="middle" font-weight="normal" opacity="1.0">a sender can vary, a receiver can observe</text>
+<text x="40.0" y="570.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="20" fill="#8A8A8A" text-anchor="start" font-weight="700" opacity="1.0">C</text>
+<text x="70.0" y="570.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="21" fill="#2B2B2B" text-anchor="start" font-weight="700" opacity="1.0">Measured residual after closure</text>
+<text x="238.0" y="630.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" fill="#2B2B2B" text-anchor="end" font-weight="normal" opacity="1.0">open</text>
+<rect x="250.0" y="604.0" width="560.0" height="40.0" rx="4" fill="#3A6EA5" stroke="none" stroke-width="1.5" opacity="0.22"/>
+<rect x="250.0" y="604.0" width="560.0" height="40.0" rx="4" fill="none" stroke="#3A6EA5" stroke-width="1.5" opacity="1.0"/>
+<rect x="216.0" y="622.0" width="16.0" height="12.0" rx="2" fill="none" stroke="#3A6EA5" stroke-width="1.4" opacity="1.0"/>
+<path d="M219 622 v-4 a5 5 0 0 1 10 0" fill="none" stroke="#3A6EA5" stroke-width="1.4"/>
+<text x="822.0" y="630.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#3A6EA5" text-anchor="start" font-weight="700" opacity="1.0">≥ 11453 bits</text>
+<text x="238.0" y="690.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" fill="#2B2B2B" text-anchor="end" font-weight="normal" opacity="1.0">content closed</text>
+<rect x="250.0" y="664.0" width="481.2" height="40.0" rx="4" fill="#D98C2B" stroke="none" stroke-width="1.5" opacity="0.28"/>
+<rect x="250.0" y="664.0" width="481.2" height="40.0" rx="4" fill="none" stroke="#D98C2B" stroke-width="1.5" opacity="1.0"/>
+<rect x="216.0" y="682.0" width="16.0" height="12.0" rx="2" fill="none" stroke="#D98C2B" stroke-width="1.4" opacity="1.0"/>
+<path d="M219 682 v-4 a5 5 0 0 1 10 0" fill="none" stroke="#D98C2B" stroke-width="1.4"/>
+<text x="743.2" y="690.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#D98C2B" text-anchor="start" font-weight="700" opacity="1.0">3075 bits</text>
+<text x="238.0" y="750.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" fill="#2B2B2B" text-anchor="end" font-weight="normal" opacity="1.0">+ filename closed</text>
+<rect x="250.0" y="724.0" width="449.2" height="40.0" rx="4" fill="#D98C2B" stroke="none" stroke-width="1.5" opacity="0.28"/>
+<rect x="250.0" y="724.0" width="449.2" height="40.0" rx="4" fill="none" stroke="#D98C2B" stroke-width="1.5" opacity="1.0"/>
+<rect x="216.0" y="742.0" width="16.0" height="12.0" rx="2" fill="none" stroke="#D98C2B" stroke-width="1.4" opacity="1.0"/>
+<path d="M219 742 v-4 a5 5 0 0 1 10 0" fill="none" stroke="#D98C2B" stroke-width="1.4"/>
+<text x="711.2" y="750.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#D98C2B" text-anchor="start" font-weight="700" opacity="1.0">1802 bits</text>
+<text x="238.0" y="810.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" fill="#2B2B2B" text-anchor="end" font-weight="normal" opacity="1.0">+ dirname closed</text>
+<rect x="250.0" y="784.0" width="158.1" height="40.0" rx="4" fill="#D98C2B" stroke="none" stroke-width="1.5" opacity="0.28"/>
+<rect x="250.0" y="784.0" width="158.1" height="40.0" rx="4" fill="none" stroke="#D98C2B" stroke-width="1.5" opacity="1.0"/>
+<rect x="216.0" y="802.0" width="16.0" height="12.0" rx="2" fill="none" stroke="#D98C2B" stroke-width="1.4" opacity="1.0"/>
+<path d="M219 802 v-4 a5 5 0 0 1 10 0" fill="none" stroke="#D98C2B" stroke-width="1.4"/>
+<text x="420.1" y="810.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#D98C2B" text-anchor="start" font-weight="700" opacity="1.0">13 bits</text>
+<text x="238.0" y="870.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="15" fill="#2B2B2B" text-anchor="end" font-weight="normal" opacity="1.0">+ fixed manifest</text>
+<line x1="250.0" y1="864.0" x2="296.0" y2="864.0" stroke="#B5453C" stroke-width="2.5"/>
+<rect x="216.0" y="862.0" width="16.0" height="12.0" rx="2" fill="none" stroke="#B5453C" stroke-width="1.4" opacity="1.0"/>
+<path d="M219 862 v-4 a5 5 0 0 1 10 0 v4" fill="none" stroke="#B5453C" stroke-width="1.4"/>
+<text x="308.0" y="870.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#B5453C" text-anchor="start" font-weight="700" opacity="1.0">0 bits</text>
+<line x1="210.0" y1="832.0" x2="810.0" y2="832.0" stroke="#2B2B2B" stroke-width="1.2" stroke-dasharray="5 4"/>
+<text x="810.0" y="826.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#2B2B2B" text-anchor="end" font-weight="normal" opacity="1.0">20.7 bits = the passcode a successor needs</text>
+<text x="258.0" y="678.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#D98C2B" text-anchor="start" font-weight="normal" opacity="1.0">the control a payload monitor implements</text>
+<rect x="880.0" y="644.0" width="230.0" height="96.0" rx="10" fill="#D98C2B" stroke="#D98C2B" stroke-width="1.5" opacity="0.14"/>
+<rect x="880.0" y="644.0" width="230.0" height="96.0" rx="10" fill="none" stroke="#D98C2B" stroke-width="1.5" opacity="1.0"/>
+<text x="995.0" y="690.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="30" fill="#D98C2B" text-anchor="middle" font-weight="700" opacity="1.0">3075 bits</text>
+<text x="995.0" y="716.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#2B2B2B" text-anchor="middle" font-weight="normal" opacity="1.0">one encoder, one payload, 8/8 exact</text>
+<text x="40.0" y="960.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="20" fill="#8A8A8A" text-anchor="start" font-weight="700" opacity="1.0">D</text>
+<text x="70.0" y="960.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="21" fill="#2B2B2B" text-anchor="start" font-weight="700" opacity="1.0">Two monitors, one blind</text>
+<text x="90.0" y="1006.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" fill="#2B2B2B" text-anchor="start" font-weight="600" opacity="1.0">content-carried deposit</text>
+<rect x="90.0" y="1020.0" width="420.0" height="20.0" rx="10" fill="#EFEFEF" stroke="#8A8A8A" stroke-width="1" opacity="1.0"/>
+<rect x="90.0" y="1020.0" width="420.0" height="20.0" rx="10" fill="#3A6EA5" stroke="none" stroke-width="1.5" opacity="0.55"/>
+<line x1="90.0" y1="1040.0" x2="90.0" y2="1050.0" stroke="#8A8A8A" stroke-width="1"/>
+<text x="90.0" y="1064.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#8A8A8A" text-anchor="start" font-weight="normal" opacity="1.0">0.50  chance</text>
+<text x="510.0" y="1064.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#8A8A8A" text-anchor="end" font-weight="normal" opacity="1.0">1.00</text>
+<text x="510.0" y="994.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#3A6EA5" text-anchor="middle" font-weight="700" opacity="1.0">AUC 1.00</text>
+<text x="630.0" y="1006.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" fill="#2B2B2B" text-anchor="start" font-weight="600" opacity="1.0">name-carried deposit</text>
+<rect x="630.0" y="1020.0" width="420.0" height="20.0" rx="10" fill="#EFEFEF" stroke="#8A8A8A" stroke-width="1" opacity="1.0"/>
+<rect x="630.0" y="1020.0" width="16.8" height="20.0" rx="10" fill="#B5453C" stroke="none" stroke-width="1.5" opacity="0.55"/>
+<line x1="630.0" y1="1040.0" x2="630.0" y2="1050.0" stroke="#8A8A8A" stroke-width="1"/>
+<text x="630.0" y="1064.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#8A8A8A" text-anchor="start" font-weight="normal" opacity="1.0">0.50  chance</text>
+<text x="1050.0" y="1064.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="11" fill="#8A8A8A" text-anchor="end" font-weight="normal" opacity="1.0">1.00</text>
+<text x="646.8" y="994.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="17" fill="#B5453C" text-anchor="middle" font-weight="700" opacity="1.0">AUC 0.52</text>
+<text x="590.0" y="1092.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" fill="#2B2B2B" text-anchor="middle" font-weight="600" opacity="1.0">content inspection does not discharge a non-interference requirement</text>
+<text x="40.0" y="1130.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="20" fill="#8A8A8A" text-anchor="start" font-weight="700" opacity="1.0">E</text>
+<text x="70.0" y="1130.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="21" fill="#2B2B2B" text-anchor="start" font-weight="700" opacity="1.0">The control this is measured against</text>
+<line x1="590.0" y1="1150.0" x2="590.0" y2="1460.0" stroke="#8A8A8A" stroke-width="1" stroke-dasharray="4 4"/>
+<text x="70.0" y="1178.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#4F7942" text-anchor="start" font-weight="600" opacity="1.0">namespacing closes the channel</text>
+<rect x="80.0" y="1196.0" width="210.0" height="66.0" rx="10" fill="#4F7942" stroke="#4F7942" stroke-width="1.5" opacity="0.1"/>
+<rect x="80.0" y="1196.0" width="210.0" height="66.0" rx="10" fill="none" stroke="#4F7942" stroke-width="1.5" opacity="1.0"/>
+<circle cx="114" cy="1224" r="9" fill="none" stroke="#4F7942" stroke-width="1.5"/>
+<text x="136.0" y="1230.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#4F7942" text-anchor="start" font-weight="normal" opacity="1.0">agent A namespace</text>
+<rect x="330.0" y="1196.0" width="210.0" height="66.0" rx="10" fill="#4F7942" stroke="#4F7942" stroke-width="1.5" opacity="0.1"/>
+<rect x="330.0" y="1196.0" width="210.0" height="66.0" rx="10" fill="none" stroke="#4F7942" stroke-width="1.5" opacity="1.0"/>
+<circle cx="364" cy="1224" r="9" fill="none" stroke="#4F7942" stroke-width="1.5"/>
+<text x="386.0" y="1230.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#4F7942" text-anchor="start" font-weight="normal" opacity="1.0">agent B namespace</text>
+<line x1="292.0" y1="1229.0" x2="328.0" y2="1229.0" stroke="#8A8A8A" stroke-width="1.5"/>
+<path d="M302 1219 l18 20 M320 1219 l-18 20" stroke="#4F7942" stroke-width="2.5" fill="none"/>
+<text x="80.0" y="1298.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" fill="#2B2B2B" text-anchor="start" font-weight="normal" opacity="1.0">•  0 of 1153 artefacts visible</text>
+<text x="80.0" y="1324.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" fill="#2B2B2B" text-anchor="start" font-weight="normal" opacity="1.0">•  0 of 320 escapes resolved</text>
+<text x="80.0" y="1350.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="14" fill="#2B2B2B" text-anchor="start" font-weight="normal" opacity="1.0">•  1 mediation point, structural</text>
+<text x="80.0" y="1388.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#8A8A8A" text-anchor="start" font-weight="normal" opacity="1.0">positive control: 11,453 bits same-namespace</text>
+<text x="630.0" y="1178.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="16" fill="#D98C2B" text-anchor="start" font-weight="600" opacity="1.0">and costs cache reuse</text>
+<rect x="660.0" y="1326.5" width="34.0" height="13.5" rx="3" fill="#3A6EA5" stroke="none" stroke-width="1.5" opacity="0.55"/>
+<rect x="700.0" y="1325.0" width="34.0" height="15.0" rx="3" fill="#D98C2B" stroke="none" stroke-width="1.5" opacity="0.7"/>
+<text x="697.0" y="1315.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#D98C2B" text-anchor="middle" font-weight="700" opacity="1.0">1.11×</text>
+<text x="697.0" y="1358.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#8A8A8A" text-anchor="middle" font-weight="normal" opacity="1.0">2</text>
+<rect x="772.0" y="1318.0" width="34.0" height="22.1" rx="3" fill="#3A6EA5" stroke="none" stroke-width="1.5" opacity="0.55"/>
+<rect x="812.0" y="1310.0" width="34.0" height="30.0" rx="3" fill="#D98C2B" stroke="none" stroke-width="1.5" opacity="0.7"/>
+<text x="809.0" y="1300.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#D98C2B" text-anchor="middle" font-weight="700" opacity="1.0">1.36×</text>
+<text x="809.0" y="1358.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#8A8A8A" text-anchor="middle" font-weight="normal" opacity="1.0">4</text>
+<rect x="884.0" y="1308.9" width="34.0" height="31.1" rx="3" fill="#3A6EA5" stroke="none" stroke-width="1.5" opacity="0.55"/>
+<rect x="924.0" y="1280.0" width="34.0" height="60.0" rx="3" fill="#D98C2B" stroke="none" stroke-width="1.5" opacity="0.7"/>
+<text x="921.0" y="1270.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#D98C2B" text-anchor="middle" font-weight="700" opacity="1.0">1.93×</text>
+<text x="921.0" y="1358.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#8A8A8A" text-anchor="middle" font-weight="normal" opacity="1.0">8</text>
+<rect x="996.0" y="1303.6" width="34.0" height="36.4" rx="3" fill="#3A6EA5" stroke="none" stroke-width="1.5" opacity="0.55"/>
+<rect x="1036.0" y="1220.0" width="34.0" height="120.0" rx="3" fill="#D98C2B" stroke="none" stroke-width="1.5" opacity="0.7"/>
+<text x="1033.0" y="1210.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#D98C2B" text-anchor="middle" font-weight="700" opacity="1.0">3.29×</text>
+<text x="1033.0" y="1358.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#8A8A8A" text-anchor="middle" font-weight="normal" opacity="1.0">16</text>
+<line x1="648.0" y1="1340.0" x2="1108.0" y2="1340.0" stroke="#8A8A8A" stroke-width="1"/>
+<text x="660.0" y="1380.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#8A8A8A" text-anchor="start" font-weight="normal" opacity="1.0">agents</text>
+<rect x="880.0" y="1226.0" width="14.0" height="14.0" rx="2" fill="#3A6EA5" stroke="none" stroke-width="1.5" opacity="0.55"/>
+<text x="902.0" y="1238.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#2B2B2B" text-anchor="start" font-weight="normal" opacity="1.0">shared</text>
+<rect x="980.0" y="1226.0" width="14.0" height="14.0" rx="2" fill="#D98C2B" stroke="none" stroke-width="1.5" opacity="0.7"/>
+<text x="1002.0" y="1238.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="12" fill="#2B2B2B" text-anchor="start" font-weight="normal" opacity="1.0">per-agent</text>
+<text x="630.0" y="1418.0" font-family="Inter, Helvetica, Arial, sans-serif" font-size="13" fill="#8A8A8A" text-anchor="start" font-weight="normal" opacity="1.0">the multiplier rises with the overlap that justifies a cache</text>
+<line x1="40.0" y1="400.0" x2="1140.0" y2="400.0" stroke="#E3E3E3" stroke-width="1"/>
+<line x1="40.0" y1="540.0" x2="1140.0" y2="540.0" stroke="#E3E3E3" stroke-width="1"/>
+<line x1="40.0" y1="930.0" x2="1140.0" y2="930.0" stroke="#E3E3E3" stroke-width="1"/>
+<line x1="40.0" y1="1100.0" x2="1140.0" y2="1100.0" stroke="#E3E3E3" stroke-width="1"/>
+</svg>
