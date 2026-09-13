@@ -252,6 +252,9 @@ class AnthropicProvider(Provider):
 class OpenAIProvider(Provider):
     family = "openai"
 
+    #: Spelling of the output-budget parameter for this endpoint. See `step()`.
+    token_param = "max_completion_tokens"
+
     def __init__(self, model: str = "gpt-5.1", max_tokens: int = 2048):
         from openai import OpenAI
 
@@ -266,10 +269,13 @@ class OpenAIProvider(Provider):
         payload = [{"type": "function",
                     "function": {"name": t.name, "description": t.description, "parameters": t.schema}}
                    for t in tools]
+        # OpenAI renamed this parameter; most OpenAI-compatible endpoints did not follow, and the
+        # Hugging Face router rejects the new spelling outright with a bare 400. The name is
+        # therefore a property of the endpoint, not of this class.
         resp = _retry(lambda: self.client.chat.completions.create(
             model=self.model,
             messages=[{"role": "system", "content": system}] + messages,
-            tools=payload, max_completion_tokens=self.max_tokens,
+            tools=payload, **{self.token_param: self.max_tokens},
         ))
         choice = resp.choices[0]
         calls = []
@@ -363,6 +369,43 @@ class GatewayProvider(OpenAIProvider):
         if not key:
             raise RuntimeError("FREELLM_KEY is not set (the gateway's freellmapi-... unified key)")
         self.client = OpenAI(api_key=key, base_url=base)
+        self.model = model
+        self.max_tokens = max_tokens
+
+
+class HFRouterProvider(OpenAIProvider):
+    """Hugging Face's inference router, OpenAI-compatible, serving open-weight checkpoints.
+
+    Registered as its own family rather than reached through `GatewayProvider` because the paper
+    groups results by `family`, and a Qwen checkpoint served over the HF router is a Qwen result,
+    not a "gateway" result. Labelling it by the transport would silently weaken the cross-family
+    claim it exists to support.
+
+    It also carries the same argument as the Groq adapter, and carries it further: these are the
+    weights a defender can host. Hugging Face's own responders fell back to a self-hosted
+    open-weight model when hosted frontier models refused their forensic work, so measuring
+    channel genesis here is measuring it on the class of model that was actually available during
+    the incident.
+
+    KNOWN LIMITATION, measured 13 Sep 2026 and the reason this route is not used for the
+    behavioural arm: `Qwen/Qwen3-32B` over this router does **not** emit native tool calls. Given a
+    tool schema it returns prose containing a ```tool_code fence -- the call written out as text --
+    and `tool_calls` comes back empty. The same checkpoint over OpenRouter emits proper tool calls
+    and passes the gate. So the deficiency is in the serving path, not the weights, and an
+    agentic episode cannot be driven through here. Fine for single-turn generation; check
+    `tool_calls` before trusting it for anything else.
+    """
+
+    family = "huggingface"
+    token_param = "max_tokens"
+
+    def __init__(self, model: str = "Qwen/Qwen3-32B", max_tokens: int = 4096):
+        from openai import OpenAI
+
+        key = os.environ.get("HF_TOKEN") or os.environ.get("HUGGINGFACE_API_KEY")
+        if not key:
+            raise RuntimeError("HF_TOKEN is not set (a Hugging Face token, 'hf_...')")
+        self.client = OpenAI(api_key=key, base_url="https://router.huggingface.co/v1")
         self.model = model
         self.max_tokens = max_tokens
 
@@ -1157,7 +1200,8 @@ def build(alias: str, **kw: Any) -> Provider:
         cls = {"anthropic": AnthropicProvider, "openai": OpenAIProvider,
                "google": GoogleProvider, "groq": GroqProvider,
                "nvidia": NvidiaProvider, "openrouter": OpenRouterProvider,
-               "gateway": GatewayProvider,
+               "gateway": GatewayProvider, "hf": HFRouterProvider,
+               "huggingface": HFRouterProvider,
                "hfspace": HFSpaceProvider, "ollama": OllamaProvider,
                "transformers": TransformersProvider,
                "bedrock": BedrockProvider}.get(fam)

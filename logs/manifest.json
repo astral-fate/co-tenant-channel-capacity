@@ -23,23 +23,23 @@
   },
   "check": {
     "artifacts": [],
-    "exit_code": null,
+    "exit_code": 0,
     "log": "D:\\ins respinse\\project-v2\\logs\\check.log",
     "name": "check",
-    "note": "already ok in manifest",
-    "seconds": 0.0,
-    "started": "",
-    "status": "skipped"
+    "note": "",
+    "seconds": 31.8,
+    "started": "2026-09-13T15:50:36",
+    "status": "ok"
   },
   "gate": {
     "artifacts": [],
-    "exit_code": 0,
+    "exit_code": 1,
     "log": "D:\\ins respinse\\project-v2\\logs\\gate.log",
     "name": "gate",
     "note": "",
-    "seconds": 8.9,
-    "started": "2026-09-05T02:41:08",
-    "status": "ok"
+    "seconds": 6.6,
+    "started": "2026-09-13T15:57:23",
+    "status": "failed"
   },
   "matrix": {
     "artifacts": [
