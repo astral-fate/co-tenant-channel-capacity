@@ -52,3 +52,15 @@ Thumbs.db
 *.swp
 paper/*.bak-*
 paper/*.bak
+
+# ---------------------------------------------------------------------------
+# Run logs. Transient by nature: they are rewritten on every invocation and
+# carry nothing that `results/` does not already hold authoritatively, so
+# tracking them means a dirty tree after every run. `manifest.json` stays --
+# resume reads it, so it is state rather than output.
+# ---------------------------------------------------------------------------
+logs/*.log
+logs/*.out
+logs/watchdog*.json
+logs/*.pid
+!logs/manifest.json

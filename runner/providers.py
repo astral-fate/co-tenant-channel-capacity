@@ -634,13 +634,20 @@ class OpenRouterProvider(OpenAIProvider):
 
     family = "openrouter"
 
-    def __init__(self, model: str = "openai/gpt-4o-mini", max_tokens: int = 2048):
+    def __init__(self, model: str = "openai/gpt-4o-mini", max_tokens: int = 2048,
+                 # The SDK default is 600 s with two retries, so one wedged request can stall an
+                 # episode loop for half an hour with nothing on stdout. A reasoning model needs
+                 # real headroom per turn -- 16k characters of thinking is normal for Qwen3-32B --
+                 # but not thirty minutes of it. Set explicitly so a hang fails fast enough to be
+                 # seen and resumed rather than silently eating a run.
+                 timeout: float = 180.0, max_retries: int = 2):
         from openai import OpenAI
 
         key = os.environ.get("OPENROUTER_API_KEY")
         if not key:
             raise RuntimeError("OPENROUTER_API_KEY is not set")
-        self.client = OpenAI(api_key=key, base_url="https://openrouter.ai/api/v1")
+        self.client = OpenAI(api_key=key, base_url="https://openrouter.ai/api/v1",
+                             timeout=timeout, max_retries=max_retries)
         self.model = model
         self.max_tokens = max_tokens
 

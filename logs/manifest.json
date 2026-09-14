@@ -6,7 +6,7 @@
     "name": "analyse",
     "note": "",
     "seconds": 0.5,
-    "started": "2026-09-05T21:56:20",
+    "started": "2026-09-14T02:10:46",
     "status": "ok"
   },
   "calibrate": {
@@ -16,9 +16,9 @@
     "exit_code": 0,
     "log": "D:\\ins respinse\\project-v2\\logs\\calibrate.log",
     "name": "calibrate",
-    "note": "max_probes=24",
-    "seconds": 806.5,
-    "started": "2026-09-05T02:42:29",
+    "note": "max_probes=12",
+    "seconds": 1239.0,
+    "started": "2026-09-14T01:07:19",
     "status": "ok"
   },
   "check": {
@@ -33,13 +33,13 @@
   },
   "gate": {
     "artifacts": [],
-    "exit_code": 1,
+    "exit_code": 0,
     "log": "D:\\ins respinse\\project-v2\\logs\\gate.log",
     "name": "gate",
     "note": "",
-    "seconds": 6.6,
-    "started": "2026-09-13T15:57:23",
-    "status": "failed"
+    "seconds": 14.3,
+    "started": "2026-09-14T01:06:37",
+    "status": "ok"
   },
   "matrix": {
     "artifacts": [
@@ -48,9 +48,9 @@
     "exit_code": 0,
     "log": "D:\\ins respinse\\project-v2\\logs\\matrix.log",
     "name": "matrix",
-    "note": "40 episode(s) on disk (+40 this run)",
-    "seconds": 4019.5,
-    "started": "2026-09-05T03:31:47",
+    "note": "51 episode(s) on disk (+40 this run)",
+    "seconds": 2567.6,
+    "started": "2026-09-14T01:27:58",
     "status": "ok"
   }
 }
