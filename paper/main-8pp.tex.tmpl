@@ -910,6 +910,61 @@ carries information at all, not how much.
 
 %====================================================================
 \appendix
+\section{Artifact availability and reproduction}
+\label{app:artifact}
+%====================================================================
+
+\noindent Everything this paper reports is publicly available and reproducible. The code, the substrate, the harness, the raw results
+every number is substituted from, the full per-episode transcripts of all three
+model arms and the manuscript source are at {{ART_URL}}, under the
+{{ART_LICENSE_CODE}} licence with the contents of \texttt{results/} under
+{{ART_LICENSE_DATA}}.
+
+The measurement arm --- the substrate, the closure policy, the
+per-attribute coders of \S\ref{sec:ladder}, the joint coder of
+\S\ref{sec:joint} and the monitors --- depends on the Python standard
+library and nothing else (third-party dependencies: {{ART_DEPS}}). It
+was run on {{ART_PYTHON}} and targets {{ART_PYTHON_MIN}} or later, so
+\texttt{python src/capacity.py} and \texttt{python src/joint.py}
+reproduce Table~\ref{tab:ladder} and the joint residual on a clean
+interpreter with no installation step and no network access. Trials are
+seeded deterministically: the per-attribute search uses
+\texttt{{{ART_SEED_CAPACITY}}} and the joint coder uses
+\texttt{{{ART_SEED_JOINT}}}, so the {{TRIALS}} trials behind every
+credited width are the same trials on any machine.
+
+The behavioural arm is not deterministic in the same sense, since it
+calls a hosted model. It used {{ART_MODEL}} served via {{ART_ROUTE}},
+sampled in {{ART_MODEL_DATED}}, at seeds {{ART_SEEDS}} --- the seed
+selects the task instance and the substrate initialisation, not the
+model's sampling. Full transcripts, per-turn substrate event logs and
+the calibration sweep are in \texttt{results/}, so the reported
+episode-level outcomes can be recomputed without re-running the model;
+\texttt{python analyze/reanalysis.py} does exactly that. Re-collecting
+the episodes against a later model snapshot will not reproduce these
+transcripts, and \S\ref{sec:threats} states why that is a limitation of
+the behavioural claim rather than of the artifact.
+
+\paragraph{LLM-assisted authoring.} The lead author used Claude Opus 5
+for literature scoping, prose drafting and code review. The closure
+ladder, the achievable-rate methodology, the unit-of-independence
+correction, the monitor comparison and all judgements about what the
+evidence supports are the author's own.
+
+
+\paragraph{Reproduction.} The measurement arm runs with no model, no network and
+no key:
+
+\begin{lstlisting}[language=bash]
+python check.py                       # eight suites; no GPU, no network, no keys
+python src/capacity.py                # measure achievable rate per attribute per rung
+python src/joint.py                   # the jointly measured residual
+python analyze/p41_content_blindness.py
+python analyze/reanalysis.py          # recompute behavioural outcomes from transcripts
+python paper/render.py --tmpl=main-8pp.tex.tmpl --out=main-8pp.tex
+\end{lstlisting}
+
+%====================================================================
 \section{System architecture}
 \label{app:arch}
 %====================================================================
@@ -943,7 +998,7 @@ open, where $\log_2(n!)$ at $n = {{MAX_ENTRIES}}$ would assign
 \end{figure}
 
 %====================================================================
-\section{Limitations in full, and artifact availability}
+\section{Limitations in full}
 \label{app:limitations}
 %====================================================================
 
@@ -1048,56 +1103,6 @@ straightforward gap in the detector's characterisation. The framing in
 made after a corresponding experiment had been specified, and is reported here
 as such.
 
-\paragraph{Artifact availability.} Everything this paper reports is publicly
-available and reproducible. The code, the substrate, the harness, the raw results
-every number is substituted from, the full per-episode transcripts of all three
-model arms and the manuscript source are at {{ART_URL}}, under the
-{{ART_LICENSE_CODE}} licence with the contents of \texttt{results/} under
-{{ART_LICENSE_DATA}}.
-
-The measurement arm --- the substrate, the closure policy, the
-per-attribute coders of \S\ref{sec:ladder}, the joint coder of
-\S\ref{sec:joint} and the monitors --- depends on the Python standard
-library and nothing else (third-party dependencies: {{ART_DEPS}}). It
-was run on {{ART_PYTHON}} and targets {{ART_PYTHON_MIN}} or later, so
-\texttt{python src/capacity.py} and \texttt{python src/joint.py}
-reproduce Table~\ref{tab:ladder} and the joint residual on a clean
-interpreter with no installation step and no network access. Trials are
-seeded deterministically: the per-attribute search uses
-\texttt{{{ART_SEED_CAPACITY}}} and the joint coder uses
-\texttt{{{ART_SEED_JOINT}}}, so the {{TRIALS}} trials behind every
-credited width are the same trials on any machine.
-
-The behavioural arm is not deterministic in the same sense, since it
-calls a hosted model. It used {{ART_MODEL}} served via {{ART_ROUTE}},
-sampled in {{ART_MODEL_DATED}}, at seeds {{ART_SEEDS}} --- the seed
-selects the task instance and the substrate initialisation, not the
-model's sampling. Full transcripts, per-turn substrate event logs and
-the calibration sweep are in \texttt{results/}, so the reported
-episode-level outcomes can be recomputed without re-running the model;
-\texttt{python analyze/reanalysis.py} does exactly that. Re-collecting
-the episodes against a later model snapshot will not reproduce these
-transcripts, and \S\ref{sec:threats} states why that is a limitation of
-the behavioural claim rather than of the artifact.
-
-\paragraph{LLM-assisted authoring.} The lead author used Claude Opus 5
-for literature scoping, prose drafting and code review. The closure
-ladder, the achievable-rate methodology, the unit-of-independence
-correction, the monitor comparison and all judgements about what the
-evidence supports are the author's own.
-
-
-\paragraph{Reproduction.} The measurement arm runs with no model, no network and
-no key:
-
-\begin{lstlisting}[language=bash]
-python check.py                       # seven suites; no GPU, no network, no keys
-python src/capacity.py                # measure achievable rate per attribute per rung
-python src/joint.py                   # the jointly measured residual
-python analyze/p41_content_blindness.py
-python analyze/reanalysis.py          # recompute behavioural outcomes from transcripts
-python paper/render.py --tmpl=main-8pp.tex.tmpl --out=main-8pp.tex
-\end{lstlisting}
 
 %====================================================================
 \section{Extended results}
