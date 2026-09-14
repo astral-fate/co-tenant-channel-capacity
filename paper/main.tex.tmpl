@@ -1624,21 +1624,55 @@ requires, but it leaves the reported arm at budget {{HK_BUDGET}} and
 this one at {{M3_BUDGET}} --- half the probes. We report both figures
 rather than presenting the second as a replication.
 
-A head-to-head is possible and we did not run it. Comparing the two
-measured curves, budget {{OVERLAP_BUDGET}} is the only point at which
-neither model is pinned: the reported arm sits at $0.17$ there and
-{{M3_NAME}} at $0.67$, both strictly inside $(0,1)$, so both can express
-$\Delta$. Below it the reported arm is on the floor; above it the third
-model is on the ceiling. Running both arms at budget {{OVERLAP_BUDGET}}
-would hold affordance constant and make substrate engagement directly
-comparable, at the cost of unequal difficulty, which would then be a
-reported covariate rather than a hidden asymmetry. That is the next
-measurement this paper needs.
+\paragraph{The matched-budget comparison, and what it settles.}
+Comparing the two measured curves, budget {{OVERLAP_BUDGET}} is the only
+point at which neither model is pinned --- the reported arm sits at
+$0.17$ there and {{M3_NAME}} at $0.67$, both strictly inside $(0,1)$.
+Below it the reported arm is on the floor; above it the third model is on
+the ceiling. We therefore re-ran both arms at budget
+{{OVERLAP_BUDGET}}, {{HH_N}} episodes each, identical task family, turn
+cap and tool set, {{HH_ERRORS}} API errors (Table~\ref{tab:headtohead}):
 
-What none of this does is lift the single-model limitation on the
-deposit rate. That still stands. A second deposit rate from an arm that
-actually engages the substrate remains the most valuable missing
-measurement in this paper.
+\begin{table}[h]
+\centering
+\begin{tabular}{lrrrr}
+\toprule
+model & episodes & read the store & read calls & solved \\
+\midrule
+reported arm & {{HH_N}} & {{HH_HK_READ}} ({{HH_HK_PCT}}\%) & {{HH_HK_CALLS}} & {{HH_HK_SOLVED}} \\
+{{M3_NAME}} & {{HH_N}} & {{HH_M3_READ}} ({{HH_M3_PCT}}\%) & {{HH_M3_CALLS}} & {{HH_M3_SOLVED}} \\
+\bottomrule
+\end{tabular}
+\caption{Substrate engagement at matched probe budget. Affordance,
+task family and turn cap are held constant; the difference is the model.}
+\label{tab:headtohead}
+\end{table}
+
+Three things follow. Substrate engagement is a property of the model and
+not of the affordance: doubling {{M3_NAME}}'s budget from {{M3_BUDGET}}
+to {{OVERLAP_BUDGET}} moved its read rate from {{M3_READS}} of
+{{M3_EPISODES}} to {{HH_M3_READ}} of {{HH_N}}, and the additional probes
+went entirely to the validator. The wiped condition is the cleanest cut,
+because a freshly reset store contains nothing to find and a read is
+therefore purely the decision to look: the reported arm read in
+{{HH_HK_WIPE_READ}} of {{HH_HK_WIPE_N}} wiped episodes, {{M3_NAME}} in
+{{HH_M3_WIPE_READ}} of {{HH_M3_WIPE_N}}. And the two arms turned out
+comparable on difficulty as well as affordance --- {{HH_HK_SOLVED}}
+against {{HH_M3_SOLVED}} solved --- so the unequal-difficulty covariate
+we expected to have to report did not materialise.
+
+The deposit finding is correspondingly stronger than a single-model null.
+Across {{HH_TOTAL}} matched-budget episodes and {{HH_ALL_CALLS}} read
+calls, deposits numbered {{HH_WRITES}}. The store was inspected
+thoroughly, under both conditions, by a model that inspects it in almost
+every episode, and nothing was left in it.
+
+What this does not separate is engagement from style. The arm that reads
+is also the arm that spends more input tokens per episode, and these two
+arms cannot say whether it reads because it is disposed to survey a
+shared resource or because surveying is how it approaches any task. A
+third model that engages the substrate would settle that, and remains
+the most valuable missing measurement here.
 
 %====================================================================
 \section{Discussion}

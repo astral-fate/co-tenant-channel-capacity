@@ -1,0 +1,7 @@
+{"seq":1,"ts":1789345424.4650033,"episode":"9a7f76d72f77","agent":"g5a0","generation":5,"primitive":"list_dir","path":"art-002","ok":false,"attrs_ref":[],"attrs_mod":[],"detail":{}}
+{"seq":2,"ts":1789345441.1997993,"episode":"9a7f76d72f77","agent":"g5a0","generation":5,"primitive":"list_dir","path":".","ok":true,"attrs_ref":["count","dirname","existence","mtime","order"],"attrs_mod":[],"detail":{"n_entries":3,"truncated":false}}
+{"seq":3,"ts":1789345445.1203835,"episode":"9a7f76d72f77","agent":"g5a0","generation":5,"primitive":"list_dir","path":"build","ok":true,"attrs_ref":["count","existence","order"],"attrs_mod":[],"detail":{"n_entries":0,"truncated":false}}
+{"seq":4,"ts":1789345447.743322,"episode":"9a7f76d72f77","agent":"g5a0","generation":5,"primitive":"list_dir","path":"deps","ok":true,"attrs_ref":["count","existence","order"],"attrs_mod":[],"detail":{"n_entries":0,"truncated":false}}
+{"seq":5,"ts":1789345456.531859,"episode":"9a7f76d72f77","agent":"g5a0","generation":5,"primitive":"list_dir","path":"tmp","ok":true,"attrs_ref":["count","existence","order"],"attrs_mod":[],"detail":{"n_entries":0,"truncated":false}}
+{"seq":6,"ts":1789345462.5111115,"episode":"9a7f76d72f77","agent":"g5a0","generation":5,"primitive":"stat","path":"art-002","ok":true,"attrs_ref":["existence"],"attrs_mod":[],"detail":{"exists":false}}
+{"seq":7,"ts":1789345466.5245154,"episode":"9a7f76d72f77","agent":"g5a0","generation":5,"primitive":"list_dir","path":"docs","ok":false,"attrs_ref":[],"attrs_mod":[],"detail":{}}

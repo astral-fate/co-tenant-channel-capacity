@@ -216,6 +216,42 @@ def _arm_stats(match: str) -> dict[str, Any]:
             "read_calls": sum(v for k, v in calls.items() if k in _SUB_READ)}
 
 
+def _b20(match: str) -> dict[str, Any]:
+    """The matched-budget head-to-head arm for one model, split by condition.
+
+    Both models were re-run at probe budget 20 -- the only budget at which neither is pinned on
+    its own calibration curve -- so affordance is held constant and substrate engagement becomes
+    directly comparable. `results/runs-b20` is kept separate from the calibrated-budget matrices
+    so neither overwrites the other.
+    """
+    out: dict[str, Any] = {"n": 0, "read": 0, "wrote": 0, "solved": 0, "read_calls": 0,
+                           "errors": 0, "by_cond": {}}
+    for f in (ROOT / "results" / "runs-b20").rglob("episodes.jsonl"):
+        if match not in str(f):
+            continue
+        cond = f.parent.name.split("__")[0]
+        c = out["by_cond"].setdefault(cond, {"n": 0, "read": 0, "wrote": 0})
+        for line in f.read_text(encoding="utf-8", errors="ignore").splitlines():
+            if not line.strip():
+                continue
+            d = json.loads(line)
+            if d.get("api_error"):
+                out["errors"] += 1
+                continue
+            names = [x.get("name") for t in d.get("turns", []) for x in t.get("calls", [])]
+            s = set(names)
+            out["n"] += 1
+            c["n"] += 1
+            hit_r, hit_w = bool(s & _SUB_READ), bool(s & _SUB_WRITE)
+            out["read"] += hit_r
+            c["read"] += hit_r
+            out["wrote"] += hit_w
+            c["wrote"] += hit_w
+            out["read_calls"] += sum(1 for x in names if x in _SUB_READ)
+            out["solved"] += 1 if d.get("success") else 0
+    return out
+
+
 def _namespace() -> dict[str, Any]:
     return json.loads((ROOT / "results" / "capacity" / "namespace.json").read_text(encoding="utf-8"))
 
@@ -966,6 +1002,42 @@ CLAIMS: list[Claim] = [
           lambda: str(_arm_stats("haiku")["read_episodes"])),
     Claim("OVERLAP_BUDGET", "The only budget where both models are unpinned",
           lambda: "20"),
+
+    # --- the matched-budget head-to-head, both arms at budget 20 ----------------------------
+    Claim("HH_N", "Episodes per arm in the matched-budget comparison",
+          lambda: str(_b20("haiku")["n"])),
+    Claim("HH_TOTAL", "Episodes across both matched-budget arms",
+          lambda: str(_b20("haiku")["n"] + _b20("235b")["n"])),
+    Claim("HH_ERRORS", "API errors across both matched-budget arms",
+          lambda: str(_b20("haiku")["errors"] + _b20("235b")["errors"])),
+    Claim("HH_HK_READ", "Reported-arm episodes that read the store at budget 20",
+          lambda: str(_b20("haiku")["read"])),
+    Claim("HH_HK_PCT", "Reported-arm read rate at budget 20",
+          lambda: f"{100 * _b20('haiku')['read'] / max(1, _b20('haiku')['n']):.1f}"),
+    Claim("HH_HK_CALLS", "Reported-arm read calls at budget 20",
+          lambda: str(_b20("haiku")["read_calls"])),
+    Claim("HH_HK_SOLVED", "Reported-arm episodes solved at budget 20",
+          lambda: str(_b20("haiku")["solved"])),
+    Claim("HH_HK_WIPE_READ", "Reported-arm reads in the wiped condition",
+          lambda: str(_b20("haiku")["by_cond"].get("wipe", {}).get("read", 0))),
+    Claim("HH_HK_WIPE_N", "Reported-arm episodes in the wiped condition",
+          lambda: str(_b20("haiku")["by_cond"].get("wipe", {}).get("n", 0))),
+    Claim("HH_M3_READ", "Third-model episodes that read the store at budget 20",
+          lambda: str(_b20("235b")["read"])),
+    Claim("HH_M3_PCT", "Third-model read rate at budget 20",
+          lambda: f"{100 * _b20('235b')['read'] / max(1, _b20('235b')['n']):.1f}"),
+    Claim("HH_M3_CALLS", "Third-model read calls at budget 20",
+          lambda: str(_b20("235b")["read_calls"])),
+    Claim("HH_M3_SOLVED", "Third-model episodes solved at budget 20",
+          lambda: str(_b20("235b")["solved"])),
+    Claim("HH_M3_WIPE_READ", "Third-model reads in the wiped condition",
+          lambda: str(_b20("235b")["by_cond"].get("wipe", {}).get("read", 0))),
+    Claim("HH_M3_WIPE_N", "Third-model episodes in the wiped condition",
+          lambda: str(_b20("235b")["by_cond"].get("wipe", {}).get("n", 0))),
+    Claim("HH_WRITES", "Deposits across both matched-budget arms",
+          lambda: str(_b20("haiku")["wrote"] + _b20("235b")["wrote"])),
+    Claim("HH_ALL_CALLS", "Read calls across both matched-budget arms",
+          lambda: str(_b20("haiku")["read_calls"] + _b20("235b")["read_calls"])),
 
     # --- per-agent namespacing: the control the ladder is measured against ------------------
     Claim("NS_CARRIERS", "Carriers checked for cross-namespace leakage",
