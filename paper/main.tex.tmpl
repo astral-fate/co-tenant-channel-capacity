@@ -5,6 +5,7 @@
 \usepackage{microtype}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{array}   % >{...} column prefixes, for the ragged evidence column
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{xcolor}
@@ -1030,7 +1031,7 @@ the operation, not by reading documentation.
 \begin{table}[h]
 \centering
 \small
-\begin{tabular}{llp{0.52\textwidth}}
+\begin{tabular}{ll>{\raggedright\arraybackslash}p{0.52\textwidth}}
 \toprule
 Attribute & Verdict & Evidence \\
 \midrule

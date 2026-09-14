@@ -17,6 +17,7 @@
 \usepackage{microtype}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage{array}   % >{...} column prefixes, for the ragged evidence column
 \usepackage[labelformat=simple]{subcaption}
 % Grouped floats: a panel is cited as "Table 3b", not "Table 3(b)", so body
 % text can point at one panel the way it pointed at a standalone table.
@@ -473,7 +474,7 @@ argues against.
 \begin{table}[tbp]
 \centering
 \small
-\begin{subtable}[t]{0.98\textwidth}
+\begin{subtable}[t]{0.63\textwidth}
 \centering
 \footnotesize
 \begin{tabular}{lrrrr}
@@ -490,7 +491,7 @@ closed simultaneously. Mediation points are de-duplicated across rows.}
 
 \vspace{2pt}
 
-\begin{subtable}[t]{0.98\textwidth}
+\begin{subtable}[t]{0.95\textwidth}
 \centering
 \footnotesize
 \begin{tabular}{{{USECOST_BUDGET_COLS}}}
@@ -547,7 +548,7 @@ gives the sweep.
 \begin{table}[tbp]
 \centering
 \small
-\begin{subtable}[t]{0.45\textwidth}
+\begin{subtable}[t]{0.40\textwidth}
 \centering
 \footnotesize
 \begin{tabular}{lrc}
@@ -562,7 +563,7 @@ secret is carried by the {{JOINT_BITS}}-bit jointly measured residual in a
 single deposit. Sizes are information content, not encoded length.}
 \label{tab:payloads}
 \end{subtable}\hfill
-\begin{subtable}[t]{0.45\textwidth}
+\begin{subtable}[t]{0.46\textwidth}
 \centering
 \footnotesize
 \begin{tabular}{rrrrr}
@@ -580,10 +581,10 @@ columns but \emph{Removed} are bits.}
 
 \vspace{2pt}
 
-\begin{subtable}[t]{0.98\textwidth}
+\begin{subtable}[t]{0.75\textwidth}
 \centering
 \footnotesize
-\begin{tabular}{llp{0.52\textwidth}}
+\begin{tabular}{ll>{\raggedright\arraybackslash}p{0.52\textwidth}}
 \toprule
 Attribute & Verdict & Evidence \\
 \midrule
@@ -637,14 +638,14 @@ condition, which contains no shared store and so cannot express the
 effect it licenses: the operating point is {{CALIB_CHOSEN}} probes at
 solo success {{CALIB_CHOSEN_RATE}} over {{CALIB_CHOSEN_N}} episodes for
 {{CALIB_MODEL}} (95\% Wilson {{CALIB_CHOSEN_CI}}). The screen, the {{GRID_N_ROWS}}-row budget grid and the excluded models are
-Tables~\ref{tab:screen}--\ref{tab:grid}; \S\ref{sec:gate} reads them.
+Tables~\ref{tab:screen}--\ref{tab:calib}; \S\ref{sec:gate} reads them.
 
 \begin{table}[tbp]
 \centering
 \small
-\begin{subtable}[t]{0.66\textwidth}
+\begin{subtable}[t]{0.645\textwidth}
 \centering
-\footnotesize
+\scriptsize
 \begin{tabular}{lllll}
 \toprule
 Model & Route & Solo & Verdict & Status \\
@@ -656,26 +657,26 @@ Model & Route & Solo & Verdict & Status \\
 episodes that completed without a provider error.}
 \label{tab:screen}
 \end{subtable}\hfill
-\begin{subtable}[t]{0.32\textwidth}
+\begin{subtable}[t]{0.325\textwidth}
 \centering
-\footnotesize
+\scriptsize
 \begin{tabular}{rrrl}
 \toprule
-Budget & Solved & Rate & 95\% Wilson \\
+Budget & Solved & Rate & 95\% CI \\
 \midrule
 {{CALIB_TABLE_TEX}}
 \bottomrule
 \end{tabular}
-\caption{Solo success in the \texttt{no\_substrate} baseline against probe budget;
-rates strictly between 0 and 1 in bold.}
+\caption{Solo success in the \texttt{no\_substrate} baseline against probe budget,
+with 95\% Wilson intervals; rates strictly between 0 and 1 in bold.}
 \label{tab:calib}
 \end{subtable}
 
 \vspace{2pt}
 
-\begin{subtable}[t]{0.98\textwidth}
+\begin{subtable}[t]{0.64\textwidth}
 \centering
-\footnotesize
+\scriptsize
 \begin{tabular}{{{GRID_COLS}}}
 \toprule
 model & route & \multicolumn{{{GRID_N_BUDGETS}}}{c}{probe budget} \\
@@ -692,9 +693,9 @@ an operating point strictly inside $(0,1)$, the gate condition.}
 
 \vspace{2pt}
 
-\begin{subtable}[t]{0.98\textwidth}
+\begin{subtable}[t]{0.54\textwidth}
 \centering
-\footnotesize
+\scriptsize
 \begin{tabular}{lrrrr}
 \toprule
 model at budget {{OVERLAP_BUDGET}} & episodes & read the store & read calls & solved \\
@@ -707,7 +708,7 @@ reported arm & {{HH_N}} & {{HH_HK_READ}} ({{HH_HK_PCT}}\%) & {{HH_HK_CALLS}} & {
 and turn cap held constant; the difference is the model.}
 \label{tab:headtohead}
 \end{subtable}
-\caption{\textbf{Which model, at which operating point, and how it compares.} The gate resolves per operating point rather than per model, so the screen (a) is reported beside the baseline curve (b) the reported arm was calibrated on and the budget sweep (c) that locates each window. Panel (d) is the one budget at which neither reported model is pinned on its own curve.}
+\caption{\textbf{Which model, at which operating point, and how it compares.} The gate resolves per operating point rather than per model, so the screen (a) is reported beside the baseline curve (b) the reported arm was calibrated on and the budget sweep (c) that locates each model's window. Panel (d) is the one budget at which neither reported model is pinned on its own curve.}
 \end{table}
 
 The matrix ran {{N_MATRIX_EPISODES}} episodes, \texttt{open} and
