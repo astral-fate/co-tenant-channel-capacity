@@ -86,10 +86,17 @@ runner/     episode loop, provider adapters, difficulty calibration
 detect/     content monitor and structural (SRM) monitor
 analyze/    measures with generation-level inference, claim verifier, scorecard
 real/       probes against real infrastructure (S3, OCI registry)
-docs/       incident timeline with per-line sourcing, novelty positioning, pre-registration
+docs/       incident timeline with per-line sourcing, novelty positioning, pre-registration,
+            and slides.pdf, the compiled talk
+paper/      manuscript sources and both builds
 results/    capacity, cost, detector and behavioural artifacts
 colab/      notebook packaging for hosted runs
 ```
+
+Two builds render from one claim set. `paper/main-8pp.pdf` is the sprint submission: the body is
+eight pages and carries every results table, with the architecture figure and the full-length
+discussion in appendices outside that limit. `paper/main.pdf` is the same claims without a page
+budget. `./build-slides.sh` renders `slides.html` to `docs/slides.pdf`.
 
 `docs/00-incident-timeline.md` records every timeline claim with its source and a strength label.
 Phase A is single-sourced to CeSIA and is marked as such; the empirical claims rest on Phase B,

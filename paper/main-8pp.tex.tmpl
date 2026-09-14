@@ -11,12 +11,21 @@
 % main.tex.tmpl unchanged, so the two builds cannot disagree.
 %====================================================================
 \documentclass[10pt,a4paper]{article}
-\usepackage[margin=0.9in]{geometry}
+\usepackage[margin=0.8in]{geometry}
 \usepackage{lmodern}
 \usepackage[T1]{fontenc}
 \usepackage{microtype}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
+\usepackage[labelformat=simple]{subcaption}
+% Grouped floats: a panel is cited as "Table 3b", not "Table 3(b)", so body
+% text can point at one panel the way it pointed at a standalone table.
+\makeatletter
+\renewcommand\thesubtable{\thetable\alph{subtable}}
+\renewcommand\p@subtable{}
+\makeatother
+\captionsetup{skip=4pt,font=small}
+\captionsetup[subtable]{skip=2pt,font=footnotesize}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{xcolor}
@@ -74,13 +83,6 @@ episodes agents read the store almost always and deposited in none, even
 under the unsolvable tasks that motivated the incident --- so a lab
 contains capacity, not current propensity.
 \end{abstract}
-
-\vspace{-6pt}
-{\small\noindent\rule{\textwidth}{0.4pt}\\[2pt]
-\textbf{Reading this submission.} The body is the 8-page report and states every
-claim the study makes; the appendices, outside that limit, carry the same
-measurements at full length and no claim the body does not.\\[2pt]
-\rule{\textwidth}{0.4pt}\par}
 
 %====================================================================
 \section{Introduction}
@@ -228,38 +230,15 @@ case for build and package caches --- and do not transfer unchanged to a
 derived-name store, measuring which is the most informative single
 extension to this work.
 
-\begin{figure}[tbp]
-\centering
-\IfFileExists{figures/methodology.jpg}{%
-  \includegraphics[width=0.76\textwidth]{figures/methodology.jpg}%
-}{%
-  \fbox{\parbox[c][46mm][c]{0.96\textwidth}{\centering\itshape
-    Figure asset not present.\\[2pt]
-    \normalfont\small Generate \texttt{figures/methodology.jpg} and rebuild;
-    every number in the caption below is substituted from \texttt{results/capacity.json}
-    at build time and must match the figure.}}%
-}
-\caption{\textbf{How a residual is measured, and what closure leaves behind.}
-\emph{Left:} a sender in generation $g$ writes using only permitted operations;
-a receiver in generation $g+1$ inherits the substrate but not the transcript and
-reads it back through \texttt{list\_dir}, \texttt{stat} and \texttt{read\_file}.
-\emph{Centre:} the eight attributes a sender can vary and a receiver observe.
-\emph{Right:} the ladder is cumulative, and a payload is credited only when
-recovered exactly on all {{TRIALS}} trials. Content closure leaves
-{{JOINT_BITS}} bits, {{JOINT_MULTIPLE}} times the {{PASSCODE_BITS}}-bit
-passcode; directory-name closure leaves {{DIRNAME_BITS}}, an object's size, and
-only existence closure reaches {{EXISTENCE_BITS}}. The per-attribute sum with
-nothing closed is {{OPEN_BITS}} bits, an upper bound over separately measured
-cells. \emph{$\dagger$ \texttt{order} carries {{ORDER_BITS}} bits even fully
-open, where $\log_2(n!)$ at $n = {{MAX_ENTRIES}}$ would assign
-{{ORDER_NOMINAL_FORMULA}}.}}
-\label{fig:method}
-\end{figure}
-
 \subsection{The closure ladder}
 \label{sec:ladder}
 
-Figure~\ref{fig:method} summarises the method. Closure is cumulative:
+\begin{center}
+\small
+\fbox{\parbox{0.95\textwidth}{\textbf{System architecture: Figure~\ref{fig:method}, Appendix~\ref{app:arch}.} The sender and receiver generations, the eight attributes and the cumulative ladder, in one picture. It restates what this section states in words, so it sits outside the page limit; its numbers are substituted from \texttt{results/} by this build.}}
+\end{center}
+
+Closure is cumulative:
 each rung disables one further observable attribute, in the order a
 defender would plausibly adopt them --- \texttt{content},
 \texttt{filename}, \texttt{dirname}, \texttt{existence}, and finally
@@ -329,7 +308,7 @@ conventional threshold and the correct one does not.
 
 \subsection{Measured capacity per attribute and rung}
 
-\begin{table}[h]
+\begin{table}[tbp]
 \centering
 \small
 \begin{tabular}{lrrrrrr}
@@ -410,7 +389,7 @@ not the other, a property of the substrate rather than of the method.
 magnitude more capacity than an inherited answer requires. Anchored
 instead to payload sizes fixed by third parties, {{N_PAYLOADS_FIT}} of
 {{N_PAYLOADS}} externally specified secrets fit in a single deposit,
-including the largest (\S\ref{sec:payloads}).
+including the largest (Table~\ref{tab:payloads}).
 
 \subsection{Why a payload monitor cannot see a name-carried deposit}
 \label{sec:blind}
@@ -488,9 +467,12 @@ integration would cost in engineer-weeks is not estimated here;
 inventing it would be the unmeasured quantity \S\ref{sec:fraction}
 argues against.
 
-\begin{table}[h]
+\begin{table}[tbp]
 \centering
 \small
+\begin{subtable}[t]{0.98\textwidth}
+\centering
+\footnotesize
 \begin{tabular}{lrrrr}
 \toprule
 Rung & Rows closed & Mediation points & Payload-class rows & Bits \\
@@ -501,6 +483,27 @@ Rung & Rows closed & Mediation points & Payload-class rows & Bits \\
 \caption{Cost of \emph{holding} each rung: every row at or before it stays
 closed simultaneously. Mediation points are de-duplicated across rows.}
 \label{tab:cost}
+\end{subtable}
+
+\vspace{4pt}
+
+\begin{subtable}[t]{0.98\textwidth}
+\centering
+\footnotesize
+\begin{tabular}{{{USECOST_BUDGET_COLS}}}
+\toprule
+closure & \multicolumn{14}{c}{probe budget} \\
+\cmidrule(l){2-15}
+ & {{USECOST_BUDGET_HDR}} \\
+\midrule
+{{USECOST_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Task success under cumulative closure. Rows below \texttt{+ filename} are
+identical to it: once names are closed, every further rung is free.}
+\label{tab:usecost}
+\end{subtable}
+\caption{\textbf{What closure costs.} The defender's price (a) and the agents' (b) for the same rungs. The rung that removes the capacity which matters is the one neither party pays for.}
 \end{table}
 
 \paragraph{Closure is not ordered by cost, and the incident shows it.}
@@ -524,7 +527,8 @@ argument: the obstacle is not that the effective control is expensive,
 but that the ineffective one looks like security. It is also deployable
 on a store we did not write --- name canonicalisation ran as a shim on a
 live commercial object store at {{PROD_S3_ENFORCE}} enforcement point
-(\S\ref{sec:real}). Appendix~\ref{app:extended} gives the full costing.
+(\S\ref{sec:real}). Table~\ref{tab:store} reports that probe and
+Table~\ref{tab:usecost} the price in task success.
 
 \subsection{Why the fraction removed is not reported}
 \label{sec:fraction}
@@ -534,8 +538,60 @@ Sweeping only the search ceiling on the censored content cell, the
 fraction content closure appears to remove slides from
 {{CEIL_FRAC_MIN}} to {{CEIL_FRAC_MAX}} --- a factor of three --- while
 the joint residual, measured by the same encoder and never touching that
-cell, holds at {{CEIL_RESIDUAL}} bits throughout. Appendix~\ref{app:extended}
+cell, holds at {{CEIL_RESIDUAL}} bits throughout. Table~\ref{tab:ceiling}
 gives the sweep.
+
+\begin{table}[tbp]
+\centering
+\small
+\begin{subtable}[t]{0.45\textwidth}
+\centering
+\footnotesize
+\begin{tabular}{lrc}
+\toprule
+Secret & Bits & Fits? \\
+\midrule
+{{PAYLOAD_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Payload sizes set by external specification. \emph{Fits} asks whether the
+secret is carried by the {{JOINT_BITS}}-bit jointly measured residual in a
+single deposit. Sizes are information content, not encoded length.}
+\label{tab:payloads}
+\end{subtable}\hfill
+\begin{subtable}[t]{0.45\textwidth}
+\centering
+\footnotesize
+\begin{tabular}{rrrrr}
+\toprule
+Ceiling & Cell & Open total & Removed & Residual \\
+\midrule
+{{CEIL_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{The fraction is the analyst's; the residual is the channel's. Only the
+content-cell search ceiling varies, and the joint residual never moves. All
+columns but \emph{Removed} are bits.}
+\label{tab:ceiling}
+\end{subtable}
+
+\vspace{4pt}
+
+\begin{subtable}[t]{0.98\textwidth}
+\centering
+\footnotesize
+\begin{tabular}{llp{0.52\textwidth}}
+\toprule
+Attribute & Verdict & Evidence \\
+\midrule
+{{STORE_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{What a real OCI registry carries between co-tenants, probed directly.}
+\label{tab:store}
+\end{subtable}
+\caption{\textbf{What the residual is worth, and how far the reading travels.} Third-party payload sizes (a); the analyst's ceiling swept against a residual that does not move (b); the same attributes on a real OCI registry (c).}
+\end{table}
 
 \subsection{The control this ladder is measured against}
 \label{sec:namespace}
@@ -577,9 +633,61 @@ success strictly between 0 and 1 in the \texttt{no\_substrate}
 condition, which contains no shared store and so cannot express the
 effect it licenses: the operating point is {{CALIB_CHOSEN}} probes at
 solo success {{CALIB_CHOSEN_RATE}} over {{CALIB_CHOSEN_N}} episodes for
-{{CALIB_MODEL}} (95\% Wilson {{CALIB_CHOSEN_CI}}). The screen, the
-{{GRID_N_ROWS}}-row budget grid and the excluded models are in
-\S\ref{sec:gate}.
+{{CALIB_MODEL}} (95\% Wilson {{CALIB_CHOSEN_CI}}). The screen, the {{GRID_N_ROWS}}-row budget grid and the excluded models are
+Tables~\ref{tab:screen}--\ref{tab:grid}; \S\ref{sec:gate} reads them.
+
+\begin{table}[tbp]
+\centering
+\small
+\begin{subtable}[t]{0.66\textwidth}
+\centering
+\footnotesize
+\begin{tabular}{lllll}
+\toprule
+Model & Route & Solo & Verdict & Status \\
+\midrule
+{{SCREEN_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Models screened for the reported calibration model. \emph{Solo} counts only
+episodes that completed without a provider error.}
+\label{tab:screen}
+\end{subtable}\hfill
+\begin{subtable}[t]{0.32\textwidth}
+\centering
+\footnotesize
+\begin{tabular}{rrrl}
+\toprule
+Budget & Solved & Rate & 95\% Wilson \\
+\midrule
+{{CALIB_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Solo success in the \texttt{no\_substrate} baseline against probe budget;
+rates strictly between 0 and 1 in bold.}
+\label{tab:calib}
+\end{subtable}
+
+\vspace{4pt}
+
+\begin{subtable}[t]{0.98\textwidth}
+\centering
+\footnotesize
+\begin{tabular}{{{GRID_COLS}}}
+\toprule
+model & route & \multicolumn{{{GRID_N_BUDGETS}}}{c}{probe budget} \\
+\cmidrule(l){3-{{GRID_CMID_END}}}
+ & & {{GRID_BUDGET_HDR}} \\
+\midrule
+{{GRID_TABLE_TEX}}
+\bottomrule
+\end{tabular}
+\caption{Solo success in \texttt{no\_substrate}, solved over clean episodes. Bold marks
+an operating point strictly inside $(0,1)$, the gate condition.}
+\label{tab:grid}
+\end{subtable}
+\caption{\textbf{Which model, and at which operating point.} The gate resolves per operating point rather than per model, so the screen (a) is reported beside the baseline curve (b) the reported arm was calibrated on and the budget sweep (c) that locates each window.}
+\end{table}
 
 The matrix ran {{N_MATRIX_EPISODES}} episodes, \texttt{open} and
 \texttt{wipe}, {{N_GENERATIONS}} generations $\times$
@@ -658,15 +766,15 @@ its own curve, so we re-ran both arms there, {{HH_N}} episodes each,
 identical task family, turn cap and tool set, {{HH_ERRORS}} API errors
 (Table~\ref{tab:headtohead}).
 
-\begin{table}[h]
+\begin{table}[tbp]
 \centering
 \small
 \begin{tabular}{lrrrr}
 \toprule
-model at budget {{OVERLAP_BUDGET}} & episodes & read the store & read calls & solved \
+model at budget {{OVERLAP_BUDGET}} & episodes & read the store & read calls & solved \\
 \midrule
-reported arm & {{HH_N}} & {{HH_HK_READ}} ({{HH_HK_PCT}}\%) & {{HH_HK_CALLS}} & {{HH_HK_SOLVED}} \
-{{M3_NAME}} & {{HH_N}} & {{HH_M3_READ}} ({{HH_M3_PCT}}\%) & {{HH_M3_CALLS}} & {{HH_M3_SOLVED}} \
+reported arm & {{HH_N}} & {{HH_HK_READ}} ({{HH_HK_PCT}}\%) & {{HH_HK_CALLS}} & {{HH_HK_SOLVED}} \\
+{{M3_NAME}} & {{HH_N}} & {{HH_M3_READ}} ({{HH_M3_PCT}}\%) & {{HH_M3_CALLS}} & {{HH_M3_SOLVED}} \\
 \bottomrule
 \end{tabular}
 \caption{Substrate engagement at matched probe budget. Affordance, task
@@ -795,6 +903,39 @@ seeds and reproduction commands: Appendix~\ref{app:limitations}.
 
 %====================================================================
 \appendix
+\section{System architecture}
+\label{app:arch}
+%====================================================================
+
+\begin{figure}[htbp]
+\centering
+\IfFileExists{figures/methodology.jpg}{%
+  \includegraphics[width=0.76\textwidth]{figures/methodology.jpg}%
+}{%
+  \fbox{\parbox[c][46mm][c]{0.96\textwidth}{\centering\itshape
+    Figure asset not present.\\[2pt]
+    \normalfont\small Generate \texttt{figures/methodology.jpg} and rebuild;
+    every number in the caption below is substituted from \texttt{results/capacity.json}
+    at build time and must match the figure.}}%
+}
+\caption{\textbf{How a residual is measured, and what closure leaves behind.}
+\emph{Left:} a sender in generation $g$ writes using only permitted operations;
+a receiver in generation $g+1$ inherits the substrate but not the transcript and
+reads it back through \texttt{list\_dir}, \texttt{stat} and \texttt{read\_file}.
+\emph{Centre:} the eight attributes a sender can vary and a receiver observe.
+\emph{Right:} the ladder is cumulative, and a payload is credited only when
+recovered exactly on all {{TRIALS}} trials. Content closure leaves
+{{JOINT_BITS}} bits, {{JOINT_MULTIPLE}} times the {{PASSCODE_BITS}}-bit
+passcode; directory-name closure leaves {{DIRNAME_BITS}}, an object's size, and
+only existence closure reaches {{EXISTENCE_BITS}}. The per-attribute sum with
+nothing closed is {{OPEN_BITS}} bits, an upper bound over separately measured
+cells. \emph{$\dagger$ \texttt{order} carries {{ORDER_BITS}} bits even fully
+open, where $\log_2(n!)$ at $n = {{MAX_ENTRIES}}$ would assign
+{{ORDER_NOMINAL_FORMULA}}.}}
+\label{fig:method}
+\end{figure}
+
+%====================================================================
 \section{Limitations and Dual-Use Considerations}
 \label{app:limitations}
 %====================================================================
@@ -912,8 +1053,7 @@ all, not to maximise throughput.
 \paragraph{Artifact availability.} Code, results and the manuscript
 source are available at {{ART_URL}} under the {{ART_LICENSE_CODE}}
 licence, with the contents of \texttt{results/} under
-{{ART_LICENSE_DATA}}; the version producing every number reported here
-is commit {{ART_COMMIT}}, archived at {{ART_DOI}}.
+{{ART_LICENSE_DATA}}.
 
 The measurement arm --- the substrate, the closure policy, the
 per-attribute coders of \S\ref{sec:ladder}, the joint coder of
@@ -964,9 +1104,9 @@ python paper/render.py --tmpl=main-8pp.tex.tmpl --out=main-8pp.tex
 \label{app:extended}
 %====================================================================
 
-This appendix carries, at full length, the measurements the body summarises. It is
-outside the 8-page limit and states no claim the body does not: each section below
-is the corresponding section of the full manuscript unchanged, and every number in
+Every measured table is in the body. This appendix is the discussion around them at
+full length: each section below is the corresponding section of the full manuscript
+unchanged, so the two builds read the same tables the same way, and every number in
 it is substituted from \texttt{results/} by the same build.
 
 \subsection{Per-attribute sums after closure}
@@ -1111,23 +1251,6 @@ weighs when deciding whether to adopt a control. A separate arm supplies it:
 cache user, no channel and no inheritance. Table~\ref{tab:usecost} reports task
 success as each rung is added.
 
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{{{USECOST_BUDGET_COLS}}}
-\toprule
-closure & \multicolumn{14}{c}{probe budget} \\
-\cmidrule(l){2-15}
- & {{USECOST_BUDGET_HDR}} \\
-\midrule
-{{USECOST_TABLE_TEX}}
-\bottomrule
-\end{tabular}
-\caption{Task success under cumulative closure. Rows below \texttt{+ filename}
-are identical to it: once names are closed, every further rung is free.}
-\label{tab:usecost}
-\end{table}
-
 \paragraph{The closure that works is the one that costs nothing.} Closing
 \texttt{dirname} in isolation costs \textbf{{{USECOST_DIRNAME_MAX}}} task
 success at every budget swept, and so do
@@ -1163,23 +1286,6 @@ multiple built from them is partly circular. Table~\ref{tab:payloads}
 anchors the comparison instead to payload sizes fixed by third parties,
 and asks of each whether the jointly measured residual is large enough
 to carry it.
-
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{lrc}
-\toprule
-Secret & Bits & Fits in {{JOINT_BITS}}? \\
-\midrule
-{{PAYLOAD_TABLE_TEX}}
-\bottomrule
-\end{tabular}
-\caption{Information content of identifiers and credentials whose sizes
-are set by external specification, against the jointly measured residual
-after content closure. Sizes are information content, not encoded
-length: a UUIDv4 is 36 printable characters but only 122 bits vary.}
-\label{tab:payloads}
-\end{table}
 
 \textbf{{{N_PAYLOADS_FIT}} of {{N_PAYLOADS}} fit, which is to say the
 table does not discriminate.} At {{JOINT_BITS}} bits every secret listed
@@ -1252,21 +1358,6 @@ configuration, authentication disabled --- the configuration a
 single-tenant internal harness typically runs. Table~\ref{tab:store}
 gives the per-attribute verdict; each one was established by performing
 the operation, not by reading documentation.
-
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{llp{0.52\textwidth}}
-\toprule
-Attribute & Verdict & Evidence \\
-\midrule
-{{STORE_TABLE_TEX}}
-\bottomrule
-\end{tabular}
-\caption{What a real OCI registry carries between co-tenants, probed
-directly. Generated from \texttt{results/real-store-registry.json}.}
-\label{tab:store}
-\end{table}
 
 The registry closes \texttt{filename} properly and by construction: a
 blob's identifier \emph{is} its \texttt{sha256}, so a sender cannot
@@ -1352,24 +1443,6 @@ touching the content cell, holds at {{CEIL_RESIDUAL}} bits throughout. A
 percentage reported from any single ceiling is a reading of the
 analyst's knob; the residual is a reading of the channel.
 
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{rrrrr}
-\toprule
-Content ceiling & Content cell & Open total & Fraction removed & Joint residual \\
-(bits) & (bits) & (bits) & & (bits) \\
-\midrule
-{{CEIL_TABLE_TEX}}
-\bottomrule
-\end{tabular}
-\caption{The fraction is the analyst's; the residual is the channel's.
-The substrate is held fixed and only the content-cell search ceiling
-varies; above the substrate's own limit the ceiling stops mattering and
-the open total plateaus, while the joint residual never moves.}
-\label{tab:ceiling}
-\end{table}
-
 \textbf{The figure that is immune is the joint residual, and only
 because it excludes the censored cell.} {{JOINT_BITS}} bits were
 recovered by one encoder across carriers whose measurements
@@ -1439,22 +1512,6 @@ reported. Table~\ref{tab:screen} lists all of them, because a survivor presented
 without its screen reads as a model that was used rather than one that was
 chosen.
 
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{lllll}
-\toprule
-Model & Route & Solo & Verdict & Status \\
-\midrule
-{{SCREEN_TABLE_TEX}}
-\bottomrule
-\end{tabular}
-\caption{Models screened as candidates for the reported calibration model.
-\emph{Solo} counts only episodes that completed without a provider error, since
-a run cut short by a rate limit is not evidence about a model.}
-\label{tab:screen}
-\end{table}
-
 \paragraph{The gate resolves per operating point, not per model.} A single
 rate for a model is the wrong summary, because the gate is a property of the
 operating point: a model can floor at one probe budget and sit inside the window
@@ -1467,24 +1524,6 @@ run on Bedrock --- whose per-token billing, unlike a shared free tier, lets the
 budget be swept in full without a rate limit truncating the run --- across
 {{GRID_N_ROWS}} model--route rows over {{GRID_N_BUDGETS}} probe budgets, with the
 operating points satisfying the gate in bold.
-
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{{{GRID_COLS}}}
-\toprule
-model & route & \multicolumn{{{GRID_N_BUDGETS}}}{c}{probe budget} \\
-\cmidrule(l){3-{{GRID_CMID_END}}}
- & & {{GRID_BUDGET_HDR}} \\
-\midrule
-{{GRID_TABLE_TEX}}
-\bottomrule
-\end{tabular}
-\caption{Solo success in \texttt{no\_substrate}, solved over clean episodes.
-API-error episodes are excluded rather than counted as failures. Bold marks an
-operating point strictly inside $(0,1)$, which is the gate condition.}
-\label{tab:grid}
-\end{table}
 
 Read across a row and the difficulty curve is visible where a pooled rate would
 hide it. {{GRID_WINDOWS}}. The reported model is not the only one that clears the
@@ -1514,21 +1553,6 @@ show it.
 
 Table~\ref{tab:calib} reports {{CALIB_N_EPISODES}} baseline episodes for
 {{CALIB_MODEL}} across {{CALIB_N_BUDGETS}} probe budgets.
-
-\begin{table}[h]
-\centering
-\small
-\begin{tabular}{rrrl}
-\toprule
-Probe budget & Solved & Rate & 95\% Wilson CI \\
-\midrule
-{{CALIB_TABLE_TEX}}
-\bottomrule
-\end{tabular}
-\caption{Solo success in the \texttt{no\_substrate} baseline. Rates strictly
-between 0 and 1 are in bold.}
-\label{tab:calib}
-\end{table}
 
 The operating point is the budget nearest the pre-registered target of
 {{CALIB_TARGET}}: \textbf{{{CALIB_CHOSEN}}} probes, at solo success

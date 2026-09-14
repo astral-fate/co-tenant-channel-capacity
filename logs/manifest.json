@@ -36,9 +36,9 @@
     "exit_code": 0,
     "log": "D:\\ins respinse\\project-v2\\logs\\gate.log",
     "name": "gate",
-    "note": "",
-    "seconds": 14.3,
-    "started": "2026-09-14T01:06:37",
+    "note": "passed for openrouter:deepseek/deepseek-chat",
+    "seconds": 79.1,
+    "started": "2026-09-14T06:14:15",
     "status": "ok"
   },
   "matrix": {
