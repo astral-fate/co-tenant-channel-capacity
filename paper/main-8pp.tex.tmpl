@@ -172,62 +172,35 @@ neither supplies the measurement. That measurement is the contribution.
 \section{Background and related work}
 %====================================================================
 
-\paragraph{Covert channels, and the policy they are covert to.}
 Lampson's confinement problem \cite{lampson1973} and Kemmerer's shared
-resource matrix \cite{kemmerer1983} give the analytic frame: any
-attribute of a shared resource one principal can modify and another
-reference is a potential channel. A covert channel is defined relative
-to a policy, and the policy here is non-interference \cite{goguen1982}
---- what one agent does should not be observable to another. The channel
-described here is covert with respect to a non-interference requirement
-AIS-11 states but does not enforce; it is \emph{not} covert with respect
-to the file-system permissions, which permit every operation it uses.
-That distinction admits a remedy the covert-channel framing obscures:
-per-agent namespaces make the same flow an ordinary, visible, denied
-access.
+resource matrix \cite{kemmerer1983} give the frame: any attribute of a
+shared resource one principal can modify and another reference is a
+potential channel. A covert channel is defined relative to a policy, and
+the policy here is non-interference \cite{goguen1982}. The channel is
+covert with respect to a requirement AIS-11 states but does not enforce;
+it is \emph{not} covert with respect to the file-system permissions,
+which permit every operation it uses --- a distinction that admits the
+remedy of \S\ref{sec:namespace}.
 
-\paragraph{Measuring capacity rather than declaring it.}
-Treating capacity as a quantity to be measured is not new and we claim
-no novelty for it: Millen \cite{millen1987} connects Shannon capacity to
-the Goguen--Meseguer model, and Moskowitz and Kang \cite{moskowitz1994}
-argue residual channels persist in practice and must be quantified and
-accepted rather than assumed away. The contribution here is narrower and
-applied --- we have found no application of this lineage to co-tenant
-agent evaluation infrastructure, and the convention it implies, a
-residual in bits per closure rather than a fraction removed, is what
-\S\ref{sec:fraction} argues for. The ladder is measured against a
-\emph{model} of such infrastructure, not a deployed one, so what is
-demonstrated is the method and the convention, not a figure anyone can
-quote for a production cache (L3).
-
-\paragraph{Covert coordination between language-model agents.}
-Motwani et al.\ \cite{motwani2024} formalise secret collusion among
-communicating generative agents, hiding a payload steganographically in
-the \emph{content} of messages. The channel here is disjoint: no message
-passes between agents at all, and the payload rides on metadata --- entry
-names, presence, size, timestamp --- of a store both agents merely use, so
+Measuring capacity rather than declaring it is not new and we claim no
+novelty for it \cite{millen1987,moskowitz1994}; the contribution is its
+application to co-tenant agent evaluation infrastructure, and the
+convention that implies --- a residual in bits per closure rather than a
+fraction removed (\S\ref{sec:fraction}). Motwani et al.\
+\cite{motwani2024} formalise secret collusion hiding payloads in message
+\emph{content}; the channel here is disjoint, since no message passes
+and the payload rides on metadata of a store both agents merely use, so
 a monitor built for one is structurally blind to the other
-(\S\ref{sec:blind}). Closer on the channel axis, Huang et al.\
-\cite{huang2025whispering} modulate \emph{observable events} rather than
-message bodies, but they design a protocol and show it works, where the
-question here is what a substrate carries \emph{after a defender has
-closed part of it} --- closure rather than protocol design as the
-independent variable. Metere \cite{metere2026monitor} is the closest
-methodological precedent we have found, residual capacity measured with
-working encoders rather than declared widths, and we concede the
-priority for that move; its threat model is egress to the outside, ours
-flow between co-tenants that never egress, and it reports
-Miller--Madow-corrected mutual information where we report an achievable
-rate under a zero-error criterion, which cannot exceed it.
-
-\paragraph{Detection ranking in safety engineering.}
-Enumerating shared attributes and ranking each closed, monitored or
-accepted is structurally what HAZOP and FMEA do, and the critique of
-FMEA's risk-priority number is the same inversion reported here: a
-nominal budget assigned by an analyst diverging from what the mechanism
-does. STAMP \cite{leveson2011} begins from unsafe interactions among
-components that each satisfied their own requirements --- precisely two
-authorized agents and one shared cache.
+(\S\ref{sec:blind}). Huang et al.\ \cite{huang2025whispering} modulate
+observable events but design a protocol, where the independent variable
+here is closure. Metere \cite{metere2026monitor} is the closest
+methodological precedent --- residual capacity measured with working
+encoders --- and we concede that priority; its threat model is egress,
+ours is flow between co-tenants that never egress. Enumerating shared
+attributes and ranking each closed, monitored or accepted is
+structurally what HAZOP, FMEA and STAMP \cite{leveson2011} do, and
+FMEA's risk-priority critique is the same inversion reported here.
+Appendix~\ref{app:extended} expands each of these.
 
 %====================================================================
 \section{Substrate, threat model and method}
@@ -531,83 +504,65 @@ closed simultaneously. Mediation points are de-duplicated across rows.}
 \end{table}
 
 \paragraph{Closure is not ordered by cost, and the incident shows it.}
-The July response was not a closure at all. OpenAI records that its
-security team ``blocked a known privilege-escalation route, removed
-exposed credentials, and later rebuilt Artifactory,'' and that clearing
-the message board was ``the side effect'' of the rebuild
-\cite{openai2026}. That is a \emph{wipe}: it erases state without
-removing any attribute's capacity to carry the next message, so every
-row of Table~\ref{tab:ladder} was as open after the rebuild as before,
-and it recurs where a closure does not --- the operator pays again at
-every remediation for the same residual.
+The July response was a \emph{wipe}, not a closure: OpenAI records that
+clearing the board was ``the side effect'' of rebuilding Artifactory
+\cite{openai2026}. A wipe erases state without removing any attribute's
+capacity to carry the next message, so every row of
+Table~\ref{tab:ladder} was as open afterwards as before, and the operator
+pays again at every remediation for the same residual.
 
-Content closure, the durable control an operator would most likely reach
-for next, is a \texttt{{{CONTENT_CLASS}}} control in the expensive
-regime at {{MED_CONTENT}} mediation points, and leaves {{JOINT_BITS}}
-bits reachable to a single encoder; directory-name closure reduces that
-to {{DIRNAME_BITS}} bits, an object's size. Reaching zero requires
-existence closure, a \texttt{{{EXISTENCE_CLASS}}} control --- a fixed
-content-addressed manifest refusing sender-created slots --- holding
-{{MED_EXISTENCE}} mediation points in total, of
-which {{PAYLOAD_ROWS_EXISTENCE}} is payload-class, the one the lab has
-already paid for. The distance from the content control is
-\textbf{{{MED_EXTRA_EXISTENCE}} additional mediation points}: no further
-body is read, no threshold chosen, nothing scaling with stored bytes.
+Content closure --- the durable control an operator would most likely
+reach for next --- is a \texttt{{{CONTENT_CLASS}}} control at
+{{MED_CONTENT}} mediation points and leaves {{JOINT_BITS}} bits; the
+rung that reaches zero, a fixed content-addressed manifest, is
+\texttt{{{EXISTENCE_CLASS}}} and costs
+\textbf{{{MED_EXTRA_EXISTENCE}} additional mediation points} with no body
+read, no threshold, nothing scaling with stored bytes.
 \textbf{The rung that reaches zero is in the cheaper regime than the
 content control that does not}, which inverts the usual adoption
-argument --- the obstacle is not that the effective control is
-expensive, but that the ineffective one is the one that looks like
-security. That an operator would reach for content inspection next is a
-counterfactual, not an observation; the response taken was a wipe. The
-effective control is nonetheless deployable on a store we did not write:
-name canonicalisation, content-addressing the write path, ran as a shim
-on a live commercial object store at {{PROD_S3_ENFORCE}} enforcement
-point, discarding the sender's chosen key while a receiver that knows
-the content it wants still fetches it by hash (\S\ref{sec:real}).
-
-\paragraph{And it is free to the agents the cache serves.} Mediation
-points price the defender's work, not the price paid by the agents the
-cache exists to serve, which is what a lab weighs when adopting a
-control. A separate arm supplies it: {{USECOST_SEEDS}} seeds,
-{{USECOST_EPISODES}} episodes per cell, probe budgets
-{{USECOST_BUDGET_LO}}--{{USECOST_BUDGET_HI}}, a single agent with an
-oracle cache user (\S\ref{sec:usecost}). Closing \texttt{dirname} in
-isolation costs \textbf{{{USECOST_DIRNAME_MAX}}} task success at every
-budget swept, and so do {{USECOST_FREE_ATTRS}}; adding \texttt{dirname}
-closure on top of \texttt{filename} closure changes task success by
-\textbf{{{USECOST_STEP_L2_L3}}}, and adding existence closure on top of
-that by \textbf{{{USECOST_STEP_L3_L4}}}. The expensive closures are the
-ones that do not finish the job: content closure costs up to
-\textbf{{{USECOST_CONTENT_MAX}}} and filename closure up to
-\textbf{{{USECOST_FILENAME_MAX}}}, both paid in full before any of the
-capacity that matters is removed. Two limits: above a budget of about 14
-an agent can recompute what it needed, so no closure can show a cost
-there; and the cache user is an \emph{oracle}, so every cost above is a
-\textbf{lower bound} on what a real model would pay. The proposed
-verification clauses each name the evidence a third party could demand
-and mark its cost MEASURED or ESTIMATED (Appendix~\ref{app:standard}).
+argument: the obstacle is not that the effective control is expensive,
+but that the ineffective one looks like security. It is also deployable
+on a store we did not write --- name canonicalisation ran as a shim on a
+live commercial object store at {{PROD_S3_ENFORCE}} enforcement point
+(\S\ref{sec:real}). Appendix~\ref{app:extended} gives the full costing.
 
 \subsection{Why the fraction removed is not reported}
 \label{sec:fraction}
 
-It is tempting to report that content closure removes most of the
-capacity. That figure is not stable, and this project has watched it
-move: raising the per-attribute search ceilings from hand-chosen values
-to ones derived from the substrate's own constants changed the open-rung
-sum from $\geq$4297 bits to {{OPEN_BITS}} while the substrate itself was
-not touched. The movement reproduces on demand. Sweeping only the
-analyst's search ceiling on the censored content cell, the fraction
-content closure appears to remove slides from {{CEIL_FRAC_MIN}} to
-{{CEIL_FRAC_MAX}} --- a factor of three --- plateauing only once the
-ceiling passes the substrate's own limit, while the joint residual,
-measured by the same encoder and never touching the content cell, holds
-at {{CEIL_RESIDUAL}} bits throughout (\S\ref{sec:ratio}). A percentage
-from any single ceiling is a reading of the analyst's knob; the residual
-is a reading of the channel, and it is immune only because it excludes
-the censored cell --- the one row still censored, \texttt{count}
-($\geq${{COUNT_ROW_BITS}}), is omitted by construction because an
-existence pattern determines it. The per-attribute sums do contain that
-cell, which is one more reason not to quote them.
+A percentage is a reading of the analyst's knob, not of the channel.
+Sweeping only the search ceiling on the censored content cell, the
+fraction content closure appears to remove slides from
+{{CEIL_FRAC_MIN}} to {{CEIL_FRAC_MAX}} --- a factor of three --- while
+the joint residual, measured by the same encoder and never touching that
+cell, holds at {{CEIL_RESIDUAL}} bits throughout. Appendix~\ref{app:extended}
+gives the sweep.
+
+\subsection{The control this ladder is measured against}
+\label{sec:namespace}
+
+The cheapest objection is the strongest: if per-agent namespaces convert
+co-tenant flow into an ordinary access attempt, the ladder instruments a
+problem a one-line fix dissolves. On the capacity axis that is correct,
+and we measured it rather than argued. Namespacing is not a further rung
+--- the ladder closes attributes on a shared resource, namespacing
+removes the sharing --- and it is strictly stronger on the axis it acts
+on. Across {{NS_CARRIERS}} carriers, {{NS_VISIBLE}} of {{NS_PLANTED}}
+planted artefacts were observable from a second namespace and
+{{NS_ESCAPES_OK}} of {{NS_ESCAPES}} escape attempts resolved, against a
+same-namespace positive control of {{NS_SAME_TOTAL}} bits.
+
+Its cost is not integration --- {{NS_MEDIATION}} mediation point, the
+{{NS_CLASS}} class, no operating point --- but reuse. A shared cache
+exists so two agents fetch one artefact once; partitioning removes that
+by construction. Over {{NS_TRIALS}} workload draws, the fetch multiplier
+runs from {{NS_MIN_MULT}}$\times$ at two agents to
+{{NS_WORST_MULT}}$\times$ at {{NS_WORST_AGENTS}}
+({{NS_WORST_SHARED}} fetches becoming {{NS_WORST_NS}}), rising with
+exactly the overlap that justifies having a cache. So the recommendation
+is namespacing where the substrate can be partitioned, and the ladder for
+the residual: shared build artefacts, content-addressed blobs, any store
+whose value is that two agents reach the same object. The incident's
+substrate was of that kind.
 
 \subsection{The behavioural arm: agents read the substrate and never write to it}
 \label{sec:behaviour}
@@ -677,6 +632,60 @@ the deposits this arm measures at zero (\S\ref{sec:followup}). The
 question is about conditions rather than capability, which makes the
 next experiment specific rather than larger: introduce first-to-solve
 lockout and measure again.
+
+\subsection{Three models, and a matched-budget comparison}
+\label{sec:models}
+
+A single-model null invites the obvious remedy, so we ran two more
+models on the identical harness. {{M2_NAME}} never cleared the
+calibration floor --- {{M2_SOLVED}} of {{M2_EPISODES}} baseline episodes
+solved across budgets {{M2_BUDGET_LO}} to {{M2_BUDGET_HI}},
+{{M2_ERRORS}} API errors --- and the pre-registered rule stopped it
+before a matrix episode was spent. {{M3_NAME}} cleared it (curve
+{{M3_CURVE}}) and ran a full matrix at budget {{M3_BUDGET}}:
+{{M3_EPISODES}} episodes, {{M3_WRITES}} deposits. That reads as a
+replication and is not one --- it read the substrate in {{M3_READS}} of
+them, calling no substrate tool at all, where the reported arm read in
+{{HK_READ_EPISODES}} episodes over {{HK_READ_CALLS}} calls. Zero from an
+agent that examined the store and declined is evidence about propensity;
+zero from an agent that never looked is evidence about attention.
+
+Budgets are calibrated per model to equalise difficulty, which the
+$\Delta$ design requires but which leaves the arms at
+{{HK_BUDGET}} probes against {{M3_BUDGET}}. Budget
+{{OVERLAP_BUDGET}} is the only point at which neither model is pinned on
+its own curve, so we re-ran both arms there, {{HH_N}} episodes each,
+identical task family, turn cap and tool set, {{HH_ERRORS}} API errors
+(Table~\ref{tab:headtohead}).
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lrrrr}
+\toprule
+model at budget {{OVERLAP_BUDGET}} & episodes & read the store & read calls & solved \
+\midrule
+reported arm & {{HH_N}} & {{HH_HK_READ}} ({{HH_HK_PCT}}\%) & {{HH_HK_CALLS}} & {{HH_HK_SOLVED}} \
+{{M3_NAME}} & {{HH_N}} & {{HH_M3_READ}} ({{HH_M3_PCT}}\%) & {{HH_M3_CALLS}} & {{HH_M3_SOLVED}} \
+\bottomrule
+\end{tabular}
+\caption{Substrate engagement at matched probe budget. Affordance, task
+family and turn cap held constant; the difference is the model.}
+\label{tab:headtohead}
+\end{table}
+
+Engagement is a property of the model, not the affordance: doubling
+{{M3_NAME}}'s budget moved its read rate from {{M3_READS}}/{{M3_EPISODES}}
+to {{HH_M3_READ}}/{{HH_N}}, the extra probes going entirely to the
+validator. The wiped condition is the cleanest cut, since a reset store
+holds nothing to find and a read is purely the decision to look:
+{{HH_HK_WIPE_READ}}/{{HH_HK_WIPE_N}} against
+{{HH_M3_WIPE_READ}}/{{HH_M3_WIPE_N}}. The arms also matched on
+difficulty ({{HH_HK_SOLVED}} against {{HH_M3_SOLVED}} solved), so the
+covariate we expected to report did not arise. Across {{HH_TOTAL}}
+matched-budget episodes and {{HH_ALL_CALLS}} read calls, deposits
+numbered {{HH_WRITES}}. What these arms cannot separate is engagement
+from style: the arm that reads also spends more input tokens per episode.
 
 \subsection{A significant result on a comparison with no treatment in it}
 \label{sec:noeffect}
