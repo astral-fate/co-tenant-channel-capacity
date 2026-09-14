@@ -1895,11 +1895,28 @@ against any deployed system, and the encoders are deliberately simple
 --- their purpose is to establish that a channel carries information at
 all, not to maximise throughput.
 
-\paragraph{Artifact availability.} Code, results and the manuscript
-source are available at {{ART_URL}} under the {{ART_LICENSE_CODE}}
-licence, with the contents of \texttt{results/} under
-{{ART_LICENSE_DATA}}; the version producing every number reported here
-is commit {{ART_COMMIT}}, archived at {{ART_DOI}}.
+\paragraph{Artifact availability.} \textbf{Everything reported in this
+paper is publicly available and reproducible} at
+
+\begin{center}
+{{ART_URL}}
+\end{center}
+
+\noindent
+The repository carries the substrate, the closure ladder, every coder and
+monitor, the episode harness, the analysis, and the manuscript source ---
+together with \texttt{results/}, which holds the raw artifacts every
+number here is substituted from at build time, including the complete
+per-episode logs and agent transcripts for all model arms. Code is under
+the {{ART_LICENSE_CODE}} licence and the contents of \texttt{results/}
+under {{ART_LICENSE_DATA}}. The version producing every number reported
+here is commit {{ART_COMMIT}}, archived at {{ART_DOI}}.
+
+Reproduction needs no GPU, no network and no API key for the measurement
+arm: \texttt{python check.py} runs the full suite, and
+\texttt{python src/capacity.py} recomputes the capacity ladder from
+scratch. The behavioural arms need provider credentials, and
+\texttt{.env.example} names the variables without carrying any value.
 
 The measurement arm --- the substrate, the closure policy, the
 per-attribute coders of \S\ref{sec:ladder}, the joint coder of

@@ -1261,7 +1261,12 @@ CLAIMS: list[Claim] = [
           lambda: f"{statistics.median([sum(1 for t in e['turns'] for c in t['calls'] if c['name'] in READ_TOOLS) for e in _blocked_eps()]):.0f}"),
 
     # Artifact metadata. `raw` because PENDING is itself LaTeX and must not be escaped.
-    Claim("ART_URL", "Artifact repository URL", lambda: _art("url"), raw=True),
+    # Rendered through \url{} so hyperref makes it clickable in the PDF rather than printing a
+    # string a reader has to retype. Still a PENDING marker when unset, so the paper cannot
+    # quietly claim an artifact nobody can reach.
+    Claim("ART_URL", "Artifact repository URL",
+          lambda: (PENDING if _ARTIFACT.get("url") in (None, "", [])
+                   else rf"\url{{{_ARTIFACT['url']}}}"), raw=True),
     Claim("ART_DOI", "Archived artifact DOI", lambda: _art("archive_doi"), raw=True),
     Claim("ART_COMMIT", "Commit the reported numbers were produced at",
           lambda: _art("commit"), raw=True),
