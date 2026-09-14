@@ -24,8 +24,8 @@
 \renewcommand\thesubtable{\thetable\alph{subtable}}
 \renewcommand\p@subtable{}
 \makeatother
-\captionsetup{skip=4pt,font=small}
-\captionsetup[subtable]{skip=2pt,font=footnotesize}
+\captionsetup{skip=2pt,font=small}
+\captionsetup[subtable]{skip=1pt,font=footnotesize}
 \usepackage{graphicx}
 \usepackage{listings}
 \usepackage{xcolor}
@@ -54,6 +54,9 @@
 \renewcommand{\topfraction}{0.9}
 \renewcommand{\textfraction}{0.08}
 \renewcommand{\floatpagefraction}{0.8}
+% Ten tables in an eight-page body: the binding constraint is row height, not prose.
+% Tightening the rows is what keeps the results in the body without cutting a table.
+\renewcommand{\arraystretch}{0.92}
 
 \title{\textbf{Closing Content Does Not Close the Channel:}\\
 Measured Residual Capacity in Co-Tenant\\
@@ -485,7 +488,7 @@ closed simultaneously. Mediation points are de-duplicated across rows.}
 \label{tab:cost}
 \end{subtable}
 
-\vspace{4pt}
+\vspace{2pt}
 
 \begin{subtable}[t]{0.98\textwidth}
 \centering
@@ -575,7 +578,7 @@ columns but \emph{Removed} are bits.}
 \label{tab:ceiling}
 \end{subtable}
 
-\vspace{4pt}
+\vspace{2pt}
 
 \begin{subtable}[t]{0.98\textwidth}
 \centering
@@ -668,7 +671,7 @@ rates strictly between 0 and 1 in bold.}
 \label{tab:calib}
 \end{subtable}
 
-\vspace{4pt}
+\vspace{2pt}
 
 \begin{subtable}[t]{0.98\textwidth}
 \centering
@@ -686,7 +689,25 @@ model & route & \multicolumn{{{GRID_N_BUDGETS}}}{c}{probe budget} \\
 an operating point strictly inside $(0,1)$, the gate condition.}
 \label{tab:grid}
 \end{subtable}
-\caption{\textbf{Which model, and at which operating point.} The gate resolves per operating point rather than per model, so the screen (a) is reported beside the baseline curve (b) the reported arm was calibrated on and the budget sweep (c) that locates each window.}
+
+\vspace{2pt}
+
+\begin{subtable}[t]{0.98\textwidth}
+\centering
+\footnotesize
+\begin{tabular}{lrrrr}
+\toprule
+model at budget {{OVERLAP_BUDGET}} & episodes & read the store & read calls & solved \\
+\midrule
+reported arm & {{HH_N}} & {{HH_HK_READ}} ({{HH_HK_PCT}}\%) & {{HH_HK_CALLS}} & {{HH_HK_SOLVED}} \\
+{{M3_NAME}} & {{HH_N}} & {{HH_M3_READ}} ({{HH_M3_PCT}}\%) & {{HH_M3_CALLS}} & {{HH_M3_SOLVED}} \\
+\bottomrule
+\end{tabular}
+\caption{Substrate engagement at matched probe budget. Affordance, task family
+and turn cap held constant; the difference is the model.}
+\label{tab:headtohead}
+\end{subtable}
+\caption{\textbf{Which model, at which operating point, and how it compares.} The gate resolves per operating point rather than per model, so the screen (a) is reported beside the baseline curve (b) the reported arm was calibrated on and the budget sweep (c) that locates each window. Panel (d) is the one budget at which neither reported model is pinned on its own curve.}
 \end{table}
 
 The matrix ran {{N_MATRIX_EPISODES}} episodes, \texttt{open} and
@@ -766,22 +787,6 @@ its own curve, so we re-ran both arms there, {{HH_N}} episodes each,
 identical task family, turn cap and tool set, {{HH_ERRORS}} API errors
 (Table~\ref{tab:headtohead}).
 
-\begin{table}[tbp]
-\centering
-\small
-\begin{tabular}{lrrrr}
-\toprule
-model at budget {{OVERLAP_BUDGET}} & episodes & read the store & read calls & solved \\
-\midrule
-reported arm & {{HH_N}} & {{HH_HK_READ}} ({{HH_HK_PCT}}\%) & {{HH_HK_CALLS}} & {{HH_HK_SOLVED}} \\
-{{M3_NAME}} & {{HH_N}} & {{HH_M3_READ}} ({{HH_M3_PCT}}\%) & {{HH_M3_CALLS}} & {{HH_M3_SOLVED}} \\
-\bottomrule
-\end{tabular}
-\caption{Substrate engagement at matched probe budget. Affordance, task
-family and turn cap held constant; the difference is the model.}
-\label{tab:headtohead}
-\end{table}
-
 Engagement is a property of the model, not the affordance: doubling
 {{M3_NAME}}'s budget moved its read rate from {{M3_READS}}/{{M3_EPISODES}}
 to {{HH_M3_READ}}/{{HH_N}}, the extra probes going entirely to the
@@ -829,69 +834,71 @@ hypothesis. The zero deposit rate is the only thing standing between
 that number and a publishable claim.
 
 %====================================================================
-\section{Threats to validity}
-\label{sec:threats}
 %====================================================================
-
-\paragraph{Measurement limits.} Five open-rung measurements terminate at
-their search ceiling and are lower bounds, as are the totals inheriting
-them. Every figure comes from one encoder, and a stronger one raises the
-residual --- no closure conclusion weakens, since they assert capacity
-\emph{remains}, not that it is bounded above. The monitor comparison
-(\S\ref{sec:blind}) uses constructed rather than sampled behaviour, so
-it bears on observability, not propensity; and since
-\S\ref{sec:behaviour} recorded no real deposit, whether a
-consequence-keyed monitor separates \emph{real} behaviour is unmeasured
-and no clause should cite it as working in deployment.
-
-\paragraph{The behavioural effect is undefined, not small.} A deposit
-rate of {{DEPOSIT_K}} of {{N_MATRIX_EPISODES}} made the two arms one
-condition, which bounds this configuration --- one model, one prompt,
-one task family --- not agents in general. Nothing in
-\S\ref{sec:results} depends on it, since the ladder is measured without
-any model call.
-
 %====================================================================
 \section{Discussion}
 %====================================================================
 
-Content inspection is the control most naturally reached for, and this
-measurement shows it insufficient alone: it leaves capacity reachable
-through attributes no payload monitor reads. A requirement stated as
-policy, as AIS-11 states it, admits an implementation that closes
-content, passes its own audit, and still permits the flow it was written
-to prevent. The remedy is not a better monitor but per-agent namespaces,
-which convert the flow into an ordinary access attempt where
-authorization controls work. The measurement's role is to price a
-partial closure in bits, so accepting a residual is a decision rather
-than an oversight.
+Content inspection is the control most naturally reached for, and it is
+insufficient alone: it leaves capacity reachable through attributes no payload
+monitor reads. A requirement stated as policy, as AIS-11 states it, admits an
+implementation that closes content, passes its own audit, and still permits the
+flow it forbids. The remedy is not a better monitor but per-agent namespaces,
+which turn the flow into an ordinary access attempt where authorization controls
+work. The measurement's role is to price a partial
+closure in bits, so accepting a residual is a decision rather than an oversight.
+Substrate, harness and ladder are released so the ladder can be run against a real
+cache: the step that would discharge the synthetic-substrate limitation of L3
+rather than argue it, alongside the derived-name store of \S\ref{sec:ladder} and
+the first-to-solve lockout of \S\ref{sec:behaviour}.
 
 \paragraph{Closure against designed channels.} Paglieri et al.\
 \cite{paglieri2026swarms} argue that closure is the wrong instrument,
 since ``depriving AI agents of legitimate communication channels only
-encourages them to establish unmonitored back-channels.'' We think this
-is right, and that it argues for the measurement: closure displaces
-traffic, and a ladder says where it goes. A ladder is therefore not a
-programme for eliminating coordination but a way of \emph{choosing which
-channel it uses} --- closing the covert paths, priced in
+encourages them to establish unmonitored back-channels.'' That is right, and it
+argues for the measurement: closure displaces traffic, and a ladder says where.
+A ladder is not a programme for eliminating coordination but a way of
+\emph{choosing which channel it uses} --- closing the covert paths, priced in
 \S\ref{sec:cost} as {{EXTRA_CLASSES}}, while leaving a designed one
 open (\S\ref{sec:objection}).
 
 %====================================================================
-\section{Conclusion}
+\section{Limitations and dual-use considerations}
+\label{sec:threats}
 %====================================================================
 
-Capacity in shared evaluation infrastructure can be measured rather than
-asserted, and when it is, inspection-based monitoring leaves an order of
-magnitude more capacity than an inherited answer requires. We report
-residuals rather than fractions because fractions move with the
-analyst's search ceiling. Substrate, harness and ladder are released so
-the ladder can be applied to a real cache.
+\paragraph{Measurement limits.} Five open-rung measurements terminate at their
+search ceiling and are lower bounds, as are the totals inheriting them. Every
+figure comes from one encoder, and a stronger one raises the residual --- no
+closure conclusion weakens, since they assert capacity \emph{remains}, not that
+it is bounded above. The monitor comparison (\S\ref{sec:blind}) uses constructed
+rather than sampled behaviour, so it bears on observability, not propensity;
+and since \S\ref{sec:behaviour} recorded no real deposit, whether a
+consequence-keyed monitor separates \emph{real} behaviour is unmeasured.
 
-\paragraph{Availability.} Every number is substituted at build time from
-\texttt{results/}, and \texttt{python src/capacity.py} reproduces
-Table~\ref{tab:ladder} with no GPU, network or key. Artifact, licences,
-seeds and reproduction commands: Appendix~\ref{app:limitations}.
+\paragraph{The behavioural effect is undefined, not small.} A deposit
+rate of {{DEPOSIT_K}} of {{N_MATRIX_EPISODES}} made the two arms one condition,
+bounding this configuration --- one model, one prompt, one task family --- not
+agents in general. Nothing in \S\ref{sec:results} depends on it: the ladder is
+measured without any model call.
+
+\paragraph{Design limitations.} Nine are in Appendix~\ref{app:limitations}; three
+are load-bearing. The substrate models the class of infrastructure involved
+rather than reproducing a deployed system, so transfer is argued, not
+demonstrated (L3). Both the operating point and the reported model were chosen
+after seeing outcomes, guarded but not eliminated by measuring the criterion only
+in a condition that cannot express the effect (L6). And three of six specified
+conditions were not run, of which \texttt{legit}, the detector's false-positive
+baseline, is a plain gap (L9). Build substitution establishes consistency, not
+correctness: an inappropriate measure would pass every check here (L8).
+
+\paragraph{Dual-use.} The channels are ordinary file-system attributes,
+documented for decades in the covert-channel literature
+\cite{lampson1973,kemmerer1983}, and the substrate is synthetic: the work
+supplies a measurement method for defenders and a verification method for a
+control that currently has none. It contains no exploit against a deployed
+system, and the encoders are deliberately simple: they establish that a channel
+carries information at all, not how much.
 
 % Marks the last page of the body, so build.sh can fail the build if the scoring
 % boundary is exceeded rather than leaving it to be eyeballed. The sprint scores
@@ -936,7 +943,7 @@ open, where $\log_2(n!)$ at $n = {{MAX_ENTRIES}}$ would assign
 \end{figure}
 
 %====================================================================
-\section{Limitations and Dual-Use Considerations}
+\section{Limitations in full, and artifact availability}
 \label{app:limitations}
 %====================================================================
 
@@ -1041,18 +1048,11 @@ straightforward gap in the detector's characterisation. The framing in
 made after a corresponding experiment had been specified, and is reported here
 as such.
 
-\paragraph{Dual-use.} The channels described are ordinary file-system
-attributes, documented for decades in the covert-channel literature
-\cite{lampson1973,kemmerer1983}, and the substrate is synthetic. The
-work supplies a measurement method for defenders and a verification
-method for a control that currently has none. It contains no exploit
-against any deployed system, and the encoders are deliberately simple
---- their purpose is to establish that a channel carries information at
-all, not to maximise throughput.
-
-\paragraph{Artifact availability.} Code, results and the manuscript
-source are available at {{ART_URL}} under the {{ART_LICENSE_CODE}}
-licence, with the contents of \texttt{results/} under
+\paragraph{Artifact availability.} Everything this paper reports is publicly
+available and reproducible. The code, the substrate, the harness, the raw results
+every number is substituted from, the full per-episode transcripts of all three
+model arms and the manuscript source are at {{ART_URL}}, under the
+{{ART_LICENSE_CODE}} licence with the contents of \texttt{results/} under
 {{ART_LICENSE_DATA}}.
 
 The measurement arm --- the substrate, the closure policy, the
