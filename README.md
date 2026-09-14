@@ -93,6 +93,11 @@ results/    capacity, cost, detector and behavioural artifacts
 colab/      notebook packaging for hosted runs
 ```
 
+`index.html` is the talk, served at
+[astral-fate.github.io/co-tenant-channel-capacity](https://astral-fate.github.io/co-tenant-channel-capacity/).
+It is named `index.html` rather than `slides.html` because GitHub Pages serves the repository
+root, and with no index it renders this README instead of the deck.
+
 Two builds render from one claim set. `paper/main-8pp.pdf` is the sprint submission: the body is
 eight pages and carries every results table, with the architecture figure and the full-length
 discussion in appendices outside that limit. `paper/main.pdf` is the same claims without a page

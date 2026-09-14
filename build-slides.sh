@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Render slides.html to slides.pdf, one page per slide.
+# Render the deck (index.html) to docs/slides.pdf, one page per slide.
 #
 #   ./build-slides.sh
 #
@@ -13,7 +13,9 @@
 set -u
 cd "$(dirname "$0")"
 
-SRC="$(pwd)/slides.html"
+# The deck is index.html because GitHub Pages serves the repository root: with no index
+# it renders the README, and the talk is the more useful landing page.
+SRC="$(pwd)/index.html"
 # The compiled deck ships beside the manuscripts, so a reader finds it where the other
 # documents are rather than loose at the repository root.
 mkdir -p docs
@@ -32,7 +34,7 @@ do
 done
 
 if [ -z "$CHROME" ]; then
-    echo "no Chrome or Edge found -- open slides.html and print to PDF instead" >&2
+    echo "no Chrome or Edge found -- open index.html and print to PDF instead" >&2
     exit 1
 fi
 
